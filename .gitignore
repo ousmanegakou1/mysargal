@@ -1,0 +1,23 @@
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Dépendances / build
+node_modules/
+dist/
+.wrangler/
+
+# Archives locales
+*.zip
+
+# Secrets — NE JAMAIS committer
+.env
+.env.*
+*secret*
+*.pem
+*.p8
+*.key
+supabase/.temp/

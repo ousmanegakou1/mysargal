@@ -1,0 +1,135 @@
+# Traduction du module mysargal_pos.
+# Le francais est la langue source : les chaines y sont ecrites en clair
+# dans le code, ce fichier ne porte que les autres langues.
+msgid ""
+msgstr ""
+"Project-Id-Version: MySargal Caisse\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-09\n"
+"Last-Translator: MySargal\n"
+"Language-Team: MySargal\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. module: mysargal_pos
+msgid "%(client)s a %(pts)s points — aucune récompense disponible pour l'instant."
+msgstr "%(client)s tiene %(pts)s puntos — ninguna recompensa disponible por ahora."
+
+#. module: mysargal_pos
+msgid "%(reward)s appliquée — %(pts)s points utilisés, il reste %(rest)s."
+msgstr "%(reward)s aplicada — %(pts)s puntos usados, quedan %(rest)s."
+
+#. module: mysargal_pos
+msgid "Ajoute d'abord les articles au ticket. Aucun point n'a été débité."
+msgstr "Añade primero los artículos al ticket. No se ha descontado ningún punto."
+
+#. module: mysargal_pos
+msgid "Aucune carte MySargal trouvée pour ce code ni pour ce numéro."
+msgstr "No se ha encontrado ninguna tarjeta MySargal con ese código ni ese número."
+
+#. module: mysargal_pos
+msgid "Carte %(code)s — solde %(balance)s, appliqué %(amount)s"
+msgstr "Tarjeta %(code)s — saldo %(balance)s, aplicado %(amount)s"
+
+#. module: mysargal_pos
+msgid "Carte cadeau"
+msgstr "Tarjeta regalo"
+
+#. module: mysargal_pos
+msgid "Carte cadeau MySargal"
+msgstr "Tarjeta regalo MySargal"
+
+#. module: mysargal_pos
+msgid "Carte de fidélité"
+msgstr "Tarjeta de fidelidad"
+
+#. module: mysargal_pos
+msgid "Carte introuvable."
+msgstr "Tarjeta no encontrada."
+
+#. module: mysargal_pos
+msgid "Carte inutilisable : "
+msgstr "Tarjeta inutilizable: "
+
+#. module: mysargal_pos
+msgid "Cette carte n'a plus de solde."
+msgstr "Esta tarjeta ya no tiene saldo."
+
+#. module: mysargal_pos
+msgid "Code de la carte ou numéro de téléphone du client."
+msgstr "Código de la tarjeta o número de teléfono del cliente."
+
+#. module: mysargal_pos
+msgid "Débit impossible : "
+msgstr "Cobro imposible: "
+
+#. module: mysargal_pos
+msgid "Débit refusé : "
+msgstr "Cobro rechazado: "
+
+#. module: mysargal_pos
+msgid "Débit refusé."
+msgstr "Cobro rechazado."
+
+#. module: mysargal_pos
+msgid "Fermer"
+msgstr "Cerrar"
+
+#. module: mysargal_pos
+msgid "Fidélité"
+msgstr "Fidelidad"
+
+#. module: mysargal_pos
+msgid "Impossible de lire la carte : "
+msgstr "No se puede leer la tarjeta: "
+
+#. module: mysargal_pos
+msgid "LC-XXXXXX ou 77 000 00 00"
+msgstr "LC-XXXXXX o 77 000 00 00"
+
+#. module: mysargal_pos
+msgid "La remise n'a pas pu être ajoutée au ticket. Aucun point n'a été débité."
+msgstr "El descuento no se ha podido añadir al ticket. No se ha descontado ningún punto."
+
+#. module: mysargal_pos
+msgid "Le produit de remise est introuvable dans cette caisse. Aucun point n'a été débité : redémarre Odoo puis mets à jour le module MySargal Caisse."
+msgstr "El producto de descuento no está en esta caja. No se ha descontado ningún punto: reinicia Odoo y actualiza el módulo MySargal Caja."
+
+#. module: mysargal_pos
+msgid "MySargal"
+msgstr "MySargal"
+
+#. module: mysargal_pos
+msgid "MySargal : +%(pts)s points pour %(client)s"
+msgstr "MySargal: +%(pts)s puntos para %(client)s"
+
+#. module: mysargal_pos
+msgid "OK"
+msgstr "OK"
+
+#. module: mysargal_pos
+msgid "Récompense"
+msgstr "Recompensa"
+
+#. module: mysargal_pos
+msgid "Récompenses disponibles"
+msgstr "Recompensas disponibles"
+
+#. module: mysargal_pos
+msgid "Saisissez ou scannez le code de la carte."
+msgstr "Introduce o escanea el código de la tarjeta."
+
+#. module: mysargal_pos
+msgid "Solde insuffisant sur la carte."
+msgstr "Saldo insuficiente en la tarjeta."
+
+#. module: mysargal_pos
+msgid "Vérification impossible : "
+msgstr "Verificación imposible: "
+
+#. module: mysargal_pos
+msgid "Le produit de remise est introuvable dans cette caisse. Aucun point n'a été débité : redémarre Odoo puis mets à jour le module MySargal Caisse."
+msgstr "El producto de descuento no está en esta caja. No se ha descontado ningún punto: reinicia Odoo y actualiza el módulo MySargal Caja."

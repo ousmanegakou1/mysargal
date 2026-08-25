@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Affichette comptoir — Programme de fidélité</title>
+<style>
+:root{--green:#0f7a4d;--greend:#0b5c3a;--greent:#eaf6f0;--greenl:#cdeadd;--ink:#152019;--mut:#6a7871;--line:#e7e9e7;--gold:#c9a24a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;background:#e9ebea;color:var(--ink);padding:24px 14px 60px}
+.tools{max-width:440px;margin:0 auto 20px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.tools h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:12px}
+.tools .f{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+.tools label{flex:0 0 120px;font-size:13px;color:#3a4c41}
+.tools input{flex:1;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:14px;font-family:inherit}
+.tools .btns{display:flex;gap:8px;margin-top:6px}
+.tools button{flex:1;background:var(--green);color:#fff;border:none;border-radius:9px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.tools button.sec{background:#fff;border:1px solid var(--green);color:var(--green)}
+.tools .hint{font-size:11.5px;color:var(--mut);margin-top:8px;line-height:1.5}
+
+/* ===== POSTER (A5-ish) ===== */
+.poster{width:420px;margin:0 auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(15,61,46,.14);border:1px solid var(--line)}
+.p-top{background:linear-gradient(135deg,var(--green),var(--greend));color:#fff;padding:34px 30px 30px;text-align:center;position:relative;overflow:hidden}
+.p-top:after{content:"";position:absolute;right:-50px;top:-50px;width:190px;height:190px;background:rgba(201,162,74,.28);border-radius:50%}
+.p-emo{font-size:40px;position:relative}
+.p-brand{font-size:22px;font-weight:800;margin-top:6px;position:relative}
+.p-hd{font-size:30px;font-weight:800;line-height:1.1;margin-top:16px;position:relative;letter-spacing:-.5px}
+.p-sub{font-size:14px;color:#d6efe2;margin-top:8px;position:relative}
+.p-qrwrap{padding:28px 30px 8px;text-align:center}
+.p-qr{width:220px;height:220px;margin:0 auto;border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff}
+.p-qr canvas{width:100%;height:100%}
+.p-scan{font-size:15px;font-weight:800;color:var(--green);margin-top:14px}
+.p-steps{padding:6px 34px 26px}
+.p-steps .s{display:flex;gap:12px;align-items:center;font-size:14px;color:#33453b;padding:7px 0}
+.p-steps .s .n{flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:var(--greent);color:var(--greend);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+.p-foot{background:#f6f7f6;border-top:1px solid var(--line);text-align:center;padding:12px;font-size:11.5px;color:var(--mut)}
+.p-foot b{color:var(--green)}
+
+@media print{
+  body{background:#fff;padding:0}
+  .tools{display:none}
+  .poster{box-shadow:none;border:none;width:100%;max-width:520px;border-radius:0}
+}
+</style>
+</head>
+<body>
+
+<div class="tools" id="tools">
+  <h3>Générer l'affichette</h3>
+  <div class="f"><label>Nom de la boutique</label><input id="i-name" placeholder="Ndeye Couture"/></div>
+  <div class="f"><label>ID boutique (MySargal)</label><input id="i-id" placeholder="ex. 3f2a...-uuid"/></div>
+  <div class="f"><label>Emoji (optionnel)</label><input id="i-emo" placeholder="🛍️" maxlength="4"/></div>
+  <div class="f"><label>Couleur hex (option.)</label><input id="i-col" placeholder="0f7a4d"/></div>
+  <div class="btns"><button onclick="gen()">Générer</button><button class="sec" onclick="window.print()">Imprimer</button></div>
+  <div class="hint">L'ID boutique se trouve dans votre espace MySargal. Le QR pointe vers la page d'inscription client. Imprimez et posez l'affichette au comptoir.</div>
+</div>
+
+<div class="poster" id="poster">
+  <div class="p-top">
+    <div class="p-emo" id="p-emo">🛍️</div>
+    <div class="p-brand" id="p-brand">Votre boutique</div>
+    <div class="p-hd">Gagnez des points<br/>à chaque achat</div>
+    <div class="p-sub">Programme de fidélité gratuit</div>
+  </div>
+  <div class="p-qrwrap">
+    <div class="p-qr"><div id="p-qr"></div></div>
+    <div class="p-scan">Scannez avec votre téléphone</div>
+  </div>
+  <div class="p-steps">
+    <div class="s"><span class="n">1</span> Ouvrez l'appareil photo</div>
+    <div class="s"><span class="n">2</span> Visez ce code</div>
+    <div class="s"><span class="n">3</span> Entrez votre numéro, c'est tout</div>
+  </div>
+  <div class="p-foot">Propulsé par <b>MySargal</b> · Fidélité &amp; cartes cadeaux</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const BASE='https://mysargal.com/boutique.html';
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderQR(elId,text,size){
+  var el=document.getElementById(elId);if(!el)return;el.innerHTML='';
+  try{ if(typeof QRCode!=='undefined'){ new QRCode(el,{text:text,width:size,height:size,colorDark:'#0b5c3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); return; } }catch(e){}
+  el.innerHTML='<div style="width:'+size+'px;height:'+size+'px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;padding:8px;text-align:center;word-break:break-all">'+esc(text)+'</div>';
+}
+const P=new URLSearchParams(location.search);
+function buildUrl(id,name,emo,col){
+  let u=BASE+'?m='+encodeURIComponent(id);
+  if(name)u+='&n='+encodeURIComponent(name);
+  if(emo)u+='&e='+encodeURIComponent(emo);
+  if(col)u+='&c='+encodeURIComponent(col.replace('#',''));
+  return u;
+}
+function render(id,name,emo,col){
+  document.getElementById('p-brand').textContent=name||'Votre boutique';
+  document.getElementById('p-emo').textContent=emo||'🛍️';
+  if(col&&/^#?[0-9a-fA-F]{6}$/.test(col)){document.documentElement.style.setProperty('--green','#'+col.replace('#',''));}
+  const url=id?buildUrl(id,name,emo,col):BASE;
+  renderQR('p-qr',url,240);
+}
+function gen(){
+  const id=document.getElementById('i-id').value.trim();
+  const name=document.getElementById('i-name').value.trim();
+  const emo=document.getElementById('i-emo').value.trim();
+  const col=document.getElementById('i-col').value.trim();
+  render(id,name,emo,col);
+}
+// pré-remplissage depuis l'URL si présent (?m=&n=&e=&c=)
+(function(){
+  const id=P.get('m')||'', name=P.get('n')||'', emo=P.get('e')||'', col=P.get('c')||'';
+  if(id){document.getElementById('i-id').value=id;}
+  if(name){document.getElementById('i-name').value=decodeURIComponent(name);}
+  if(emo){document.getElementById('i-emo').value=decodeURIComponent(emo);}
+  if(col){document.getElementById('i-col').value=col;}
+  render(id,decodeURIComponent(name),decodeURIComponent(emo),col);
+})();
+</script>
+</body>
+</html>

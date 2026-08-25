@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Triangle MARAZ">
+  <defs>
+    <symbol id="triangle-filled" viewBox="0 0 24 24">
+      <polygon points="12,3 22,21 2,21" fill="#c85a3e"/>
+    </symbol>
+    <symbol id="triangle-outline" viewBox="0 0 24 24">
+      <polygon points="12,3 22,21 2,21" fill="none" stroke="#c85a3e" stroke-width="2" stroke-linejoin="miter"/>
+    </symbol>
+  </defs>
+  <use href="#triangle-filled" x="0" y="0" width="24" height="24"/>
+</svg>

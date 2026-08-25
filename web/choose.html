@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><meta name="robots" content="noindex,follow"/><meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="MySargal — La fidélité digitale des commerçants"/><meta property="og:description" content="Cartes de fidélité digitales, gift cards et WhatsApp automatique pour les commerçants sénégalais. Zéro papier, démarre gratuitement."/><meta property="og:url" content="https://mysargal.com/"/><meta property="og:image" content="https://mysargal.com/og-image.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="MySargal — La fidélité digitale des commerçants"/><meta name="twitter:image" content="https://mysargal.com/og-image.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>MySargal — Cartes de fidélité digitales & cartes cadeaux pour commerçants au Sénégal</title><meta name="description" content="MySargal aide les commerçants sénégalais à fidéliser leurs clients : carte de fidélité digitale avec QR code, points automatiques, cartes cadeaux livrées par WhatsApp, Apple & Google Wallet. Gratuit pour démarrer."/>
+<meta name="theme-color" content="#060d06"/>
+<script>
+/* Thème : suit le système par défaut, mémorise le choix (clé partagée avec le reste de l'app) */
+(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';var b=document.getElementById('theme-fab');if(b)b.innerHTML='<svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+function toggleTheme(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+document.addEventListener('DOMContentLoaded',msThemeUI);
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060d06;--green:#22c55e;--green-dim:#16a34a;--gold:#f5c842;
+  --tx:#f0f7f0;--tx2:#8aab8a;--tx3:#3a5a3a;--line:rgba(255,255,255,.07);
+  --card:rgba(255,255,255,.03);--card-bd:rgba(255,255,255,.08);--card-hover:rgba(255,255,255,.06);--card-sh:none;
+  --logo-box:#f3faf3;--logo-ink:#0a2810;--noise:.4;
+  color-scheme:dark;
+}
+html[data-theme="light"]{
+  --bg:#eef3ef;--green:#16a34a;--tx:#12241a;--tx2:#526b58;--tx3:#7b9583;--line:rgba(20,45,28,.10);
+  --card:#ffffff;--card-bd:rgba(22,163,74,.14);--card-hover:#f5f8f5;--card-sh:0 6px 20px rgba(20,45,28,.08);
+  --logo-box:#0a0f0b;--logo-ink:#ffffff;--noise:.22;
+  color-scheme:light;
+}
+html,body{min-height:100%;overflow-x:hidden;background:var(--bg)}
+body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100svh;position:relative;transition:background .25s ease}
+
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:var(--noise)}
+
+.blob{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.blob-1{width:340px;height:340px;background:rgba(34,197,94,.10);top:-60px;left:-80px}
+.blob-2{width:280px;height:280px;background:rgba(245,200,66,.06);bottom:-40px;right:-60px}
+
+.theme-fab{position:fixed;top:max(env(safe-area-inset-top),14px);right:14px;z-index:40;width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--card-bd);box-shadow:var(--card-sh);display:flex;align-items:center;justify-content:center;font-size:1.02rem;cursor:pointer;color:var(--tx2);backdrop-filter:blur(8px);transition:transform .15s,background .2s}
+.theme-fab:active{transform:scale(.92)}
+
+/* LOGO SPLASH */
+#phase-logo{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;transition:opacity .6s ease,transform .6s ease}
+#phase-logo.out{opacity:0;transform:scale(1.04);pointer-events:none}
+.splash-logo{width:clamp(158px,48vw,208px);height:auto;display:block;filter:drop-shadow(0 12px 34px rgba(0,0,0,.4));animation:popIn .6s cubic-bezier(.34,1.56,.64,1) both}
+.logo-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.16em;margin-top:22px;animation:fadeUp .5s .25s ease both}
+.logo-dots{display:flex;gap:6px;margin-top:34px;animation:fadeUp .5s .4s ease both}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);opacity:.4;animation:pulse 1.4s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+
+/* ROLE PHASE */
+#phase-role{position:relative;min-height:100svh;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;z-index:9;opacity:0;pointer-events:none;transition:opacity .5s ease}
+#phase-role.in{opacity:1;pointer-events:all}
+.role-logo{display:flex;justify-content:center;margin-bottom:14px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+.role-logo svg{height:46px;width:auto;filter:drop-shadow(0 4px 14px rgba(0,0,0,.3))}
+#phase-role.in .role-logo{opacity:1;transform:none;transition-delay:.05s}
+.role-eyebrow{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.16em;margin-bottom:28px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+#phase-role.in .role-eyebrow{opacity:1;transform:none;transition-delay:.1s}
+.role-headline{font-family:'Montserrat',sans-serif;font-size:clamp(1.7rem,6.4vw,2.4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:var(--tx);text-align:center;margin-bottom:10px;opacity:0;transform:translateY(12px);transition:opacity .4s ease,transform .4s ease}
+.role-headline em{color:var(--green);font-style:normal}
+#phase-role.in .role-headline{opacity:1;transform:none;transition-delay:.18s}
+.role-sub{font-size:.88rem;color:var(--tx2);text-align:center;line-height:1.6;margin-bottom:40px;max-width:280px;opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease}
+#phase-role.in .role-sub{opacity:1;transform:none;transition-delay:.25s}
+
+.role-cards{display:flex;flex-direction:column;gap:14px;width:100%;max-width:330px;opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s ease}
+#phase-role.in .role-cards{opacity:1;transform:none;transition-delay:.33s}
+.rcard{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:18px;border:1px solid var(--card-bd);background:var(--card);box-shadow:var(--card-sh);cursor:pointer;text-decoration:none;transition:background .18s,border-color .18s,transform .18s;position:relative;overflow:hidden}
+.rcard:hover{background:var(--card-hover);transform:translateY(-1px)}
+.rcard:active{transform:scale(.98)}
+.rcard-icon{width:48px;height:48px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+.rcard.merchant .rcard-icon{background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.22)}
+.rcard.client .rcard-icon{background:rgba(245,200,66,.14);border:1px solid rgba(245,200,66,.24)}
+.rcard-text{flex:1}
+.rcard-label{font-size:.64rem;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}
+.rcard.merchant .rcard-label{color:var(--green)}
+.rcard.client .rcard-label{color:#c79a16}
+html[data-theme="dark"] .rcard.client .rcard-label{color:var(--gold)}
+.rcard-title{font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:700;color:var(--tx);line-height:1.2;letter-spacing:-.01em}
+.rcard-desc{font-size:.75rem;color:var(--tx2);margin-top:2px;line-height:1.4}
+.rcard-arrow{color:var(--tx3);font-size:1rem;transition:transform .18s,color .18s;flex-shrink:0}
+.rcard:hover .rcard-arrow{transform:translateX(3px);color:var(--tx2)}
+
+.role-divider{display:flex;align-items:center;gap:10px;width:100%;max-width:330px;margin:6px 0;opacity:0;transition:opacity .4s ease}
+#phase-role.in .role-divider{opacity:1;transition-delay:.38s}
+.role-divider::before,.role-divider::after{content:'';flex:1;height:1px;background:var(--line)}
+.role-divider span{font-size:.6rem;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.08em}
+
+.role-foot{margin-top:30px;font-size:.62rem;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.12em;text-align:center;text-transform:uppercase;opacity:0;transition:opacity .4s ease}
+#phase-role.in .role-foot{opacity:1;transition-delay:.5s}
+
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:.9}}
+
+/* ===== Section SEO ===== */
+#ms-seo{position:relative;z-index:5;width:100%;max-width:760px;margin:0 auto;padding:30px 24px 60px;opacity:0;transition:opacity .6s ease .3s}
+#ms-seo.in{opacity:1}
+#ms-seo h1{font-family:'Montserrat',sans-serif;font-size:1.35rem;font-weight:800;line-height:1.35;margin-bottom:14px;color:var(--tx,#ecf5ec)}
+#ms-seo h1 em{color:#22c55e;font-style:normal}
+#ms-seo h2{font-family:'Montserrat',sans-serif;font-size:1.02rem;font-weight:800;margin:26px 0 10px;color:var(--tx,#ecf5ec)}
+#ms-seo p{font-size:.9rem;line-height:1.75;color:var(--tx2,#7aaa7a);margin-bottom:10px}
+#ms-seo .faq-q{font-weight:700;font-size:.92rem;color:var(--tx,#ecf5ec);margin:18px 0 4px}
+#ms-seo .seo-foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--b2,rgba(34,197,94,.16));font-size:.78rem;color:var(--tx3,#3a5e3a);display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+#ms-seo .seo-foot a{color:var(--tx2,#7aaa7a);text-decoration:none}
+#ms-seo .scrollhint{display:block;text-align:center;font-size:.72rem;color:var(--tx3,#3a5e3a);margin-bottom:26px;font-family:'DM Mono',monospace;letter-spacing:.08em}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","name":"MySargal","url":"https://mysargal.com","logo":"https://mysargal.com/icon-512.png","sameAs":[],"contactPoint":{"@type":"ContactPoint","email":"support@mysargal.com","contactType":"customer service","availableLanguage":["fr"]}},
+{"@type":"WebSite","name":"MySargal","url":"https://mysargal.com"},
+{"@type":"SoftwareApplication","name":"MySargal","applicationCategory":"BusinessApplication","operatingSystem":"Web, iOS, Android","offers":{"@type":"Offer","price":"0","priceCurrency":"XOF"},"description":"Plateforme de fidélité digitale et de cartes cadeaux pour les commerçants au Sénégal."},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"C'est quoi MySargal ?","acceptedAnswer":{"@type":"Answer","text":"MySargal est une plateforme sénégalaise de fidélité digitale : chaque client reçoit une carte de fidélité avec QR code dans son téléphone, gagne des points à chaque achat et reçoit ses récompenses. Les commerçants peuvent aussi vendre des cartes cadeaux digitales livrées par WhatsApp."}},
+{"@type":"Question","name":"Combien coûte MySargal ?","acceptedAnswer":{"@type":"Answer","text":"MySargal est gratuit pour démarrer. Le commerçant crée sa boutique, ses cartes de fidélité et commence à scanner sans rien payer."}},
+{"@type":"Question","name":"Faut-il télécharger une application ?","acceptedAnswer":{"@type":"Answer","text":"Non. Tout fonctionne dans le navigateur du téléphone. Les clients peuvent ajouter leur carte à Apple Wallet ou Google Wallet, et le commerçant gère sa boutique depuis son propre téléphone."}},
+{"@type":"Question","name":"Comment mes clients gagnent-ils des points ?","acceptedAnswer":{"@type":"Answer","text":"À chaque achat, le commerçant scanne le QR code de la carte du client : les points sont ajoutés instantanément et le client est notifié sur WhatsApp. Le commerçant choisit ses règles : points par passage ou par montant dépensé."}},
+{"@type":"Question","name":"Qu'est-ce qu'une carte cadeau MySargal ?","acceptedAnswer":{"@type":"Answer","text":"Une carte cadeau digitale d'une boutique, achetable en ligne et envoyée par WhatsApp avec une animation de déballage. Le destinataire l'utilise en caisse grâce à son QR code, en une ou plusieurs fois."}}
+]}]}
+</script><script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol>
+<symbol id="ic-store" viewBox="0 0 24 24"><path d="M4 9l1.2-4h13.6L20 9"/><path d="M4 9a2 2 0 004 0 2 2 0 004 0 2 2 0 004 0 2 2 0 004 0"/><path d="M5 11v8h14v-8"/><path d="M9 19v-4h4v4"/></symbol>
+</defs></svg>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="theme-fab" id="theme-fab" onclick="toggleTheme()" title="Changer de thème"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></div>
+
+<!-- PHASE 1 : Logo splash -->
+<div id="phase-logo">
+  <svg class="splash-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg>
+  <div class="logo-sub">Fidélité &amp; Cartes cadeaux</div>
+  <div class="logo-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+
+<!-- PHASE 2 : Choix de rôle -->
+<div id="phase-role">
+  <div class="role-logo"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg></div>
+  <div class="role-eyebrow">Bienvenue</div>
+  <div class="role-headline">Vous êtes<br><em>qui aujourd'hui ?</em></div>
+  <p class="role-sub">Choisissez votre espace pour continuer</p>
+
+  <div class="role-cards">
+    <a class="rcard merchant" href="/merchant/" id="btn-merchant">
+      <div class="rcard-icon" style="color:var(--green)"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-store"></use></svg></div>
+      <div class="rcard-text">
+        <div class="rcard-label">Espace pro</div>
+        <div class="rcard-title">Je suis commerçant</div>
+        <div class="rcard-desc">Gérer ma boutique, mes clients, mes cartes cadeaux</div>
+      </div>
+      <div class="rcard-arrow">→</div>
+    </a>
+
+    <div class="role-divider"><span>ou</span></div>
+
+    <a class="rcard client" href="/client-app/" id="btn-client">
+      <div class="rcard-icon" style="color:#c79a16"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div>
+      <div class="rcard-text">
+        <div class="rcard-label">Espace client</div>
+        <div class="rcard-title">Je suis client</div>
+        <div class="rcard-desc">Voir ma carte fidélité ou ma carte cadeau</div>
+      </div>
+      <div class="rcard-arrow">→</div>
+    </a>
+  </div>
+
+  <div class="role-foot">Cartes de fidélité &amp; cartes cadeaux</div>
+</div>
+
+
+<!-- ===== Contenu SEO (visible en scrollant) ===== -->
+<section id="ms-seo">
+  <span class="scrollhint">— EN SAVOIR PLUS —</span>
+  <h1>MySargal : cartes de fidélité digitales et <em>cartes cadeaux</em> pour les commerçants au Sénégal</h1>
+  <p>MySargal aide les boutiques, salons de coiffure, restaurants, épiceries et commerces de téléphonie à <b>fidéliser leurs clients</b> sans carnet papier. Chaque client reçoit une carte de fidélité digitale avec QR code, directement sur son téléphone — utilisable à Dakar, Thiès, Saint-Louis et partout au Sénégal.</p>
+  <h2>Comment ça marche ?</h2>
+  <p>Le commerçant scanne le QR code du client à chaque achat : les points s'ajoutent automatiquement, le client est notifié sur <b>WhatsApp</b> et peut ajouter sa carte à <b>Apple Wallet</b> ou <b>Google Wallet</b>. Relances des clients inactifs, vœux d'anniversaire et bonus de parrainage sont envoyés automatiquement.</p>
+  <h2>Des cartes cadeaux digitales livrées par WhatsApp</h2>
+  <p>Avec les <b>cartes cadeaux MySargal</b>, vos clients offrent votre boutique en cadeau : carte achetée en ligne, envoyée par WhatsApp avec une animation de déballage, et utilisable en caisse en une ou plusieurs fois. Parfait pour la Tabaski, la Korité, les anniversaires et la Saint-Valentin.</p>
+  <h2>Questions fréquentes</h2>
+  <div class="faq-q">C'est quoi MySargal ?</div>
+  <p>Une plateforme sénégalaise de fidélité digitale : cartes de fidélité avec QR code, points automatiques, récompenses et cartes cadeaux digitales pour les commerçants et leurs clients.</p>
+  <div class="faq-q">Combien ça coûte ?</div>
+  <p>C'est gratuit pour démarrer : créez votre boutique, vos cartes et commencez à scanner sans rien payer.</p>
+  <div class="faq-q">Faut-il télécharger une application ?</div>
+  <p>Non. Tout fonctionne dans le navigateur du téléphone, pour le commerçant comme pour le client.</p>
+  <div class="faq-q">Comment mes clients gagnent-ils des points ?</div>
+  <p>Un scan du QR code en caisse suffit : points ajoutés instantanément, client averti sur WhatsApp. Vous choisissez vos règles (par passage ou par montant).</p>
+  <div class="faq-q">Qu'est-ce qu'une carte cadeau MySargal ?</div>
+  <p>Une carte cadeau digitale de votre boutique, envoyée par WhatsApp, encaissable via QR code.</p>
+  <div class="seo-foot">
+    <a href="/merchant/">Espace commerçant</a>
+    <a href="/client-app/">Espace client</a>
+    <a href="/buy-giftcard.html">Offrir une carte cadeau</a>
+    <a href="/conditions.html">Conditions</a>
+    <a href="/privacy-policy.html">Confidentialité</a>
+    <a href="/delete-account.html">Supprimer mon compte</a>
+  </div>
+</section>
+<script>
+setTimeout(function(){document.getElementById('phase-logo').classList.add('out');setTimeout(function(){document.getElementById('phase-role').classList.add('in');document.getElementById('ms-seo').classList.add('in');},400);},2000);
+document.getElementById('btn-merchant').addEventListener('click',function(){try{localStorage.setItem('ms_last_role','merchant');}catch(e){}});
+document.getElementById('btn-client').addEventListener('click',function(){try{localStorage.setItem('ms_last_role','client');}catch(e){}});
+</script>
+</body>
+</html>

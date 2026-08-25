@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Ascension">
+  <defs>
+    <style>
+      .a-fill{fill:#f3ede0}
+      .a-stroke{fill:none;stroke:#c85a3e;stroke-width:2;stroke-linejoin:miter}
+      .a-tri{fill:#c85a3e}
+      .a-txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;letter-spacing:5px;fill:#1e3a5f;font-size:14px}
+    </style>
+  </defs>
+  <polygon class="a-fill" points="80,10 148,45 148,115 80,150 12,115 12,45"/>
+  <polygon class="a-stroke" points="80,10 148,45 148,115 80,150 12,115 12,45"/>
+  <polygon class="a-tri" points="80,30 90,46 70,46"/>
+  <text class="a-txt" x="80" y="98" text-anchor="middle">ASCENSION</text>
+</svg>

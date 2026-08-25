@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#060d06"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Espace Marque — MySargal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#fbfbfa;--surface:#ffffff;--s2:#f6f7f6;--s3:#f0f2f0;
+  --b1:#ececed;--b2:#e0e3e0;--tx:#0b0d0c;--tx2:#5c6360;--tx3:#9aa19d;
+  --grn:#16a34a;--grn2:#15803d;--brand:#16a34a;--gold:#b7791f;--red:#dc2626;
+  --navbg:rgba(251,251,250,.82);--tint:#eefaf1;--r:14px;--ease:cubic-bezier(.22,1,.36,1)
+}
+html[data-theme="dark"]{
+  --bg:#0a0d0a;--surface:#0f150f;--s2:#131b13;--s3:#182218;
+  --b1:rgba(255,255,255,.08);--b2:rgba(255,255,255,.15);--tx:#f0f7f0;--tx2:#93a893;--tx3:#5b6f5b;
+  --grn:#22c55e;--grn2:#16a34a;--brand:#22c55e;--gold:#f5c842;--red:#f87171;
+  --navbg:rgba(10,13,10,.82);--tint:rgba(34,197,94,.1)
+}
+html{transition:background .25s ease}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',-apple-system,Helvetica,Arial,sans-serif;min-height:100vh;line-height:1.6;letter-spacing:-.011em}
+.thbtn{width:38px;height:38px;border-radius:11px;background:var(--surface);border:1px solid var(--b1);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);transition:.18s var(--ease)}
+.thbtn:hover{border-color:var(--b2);transform:translateY(-1px)}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:var(--navbg);backdrop-filter:saturate(180%) blur(20px);z-index:10}
+.brandbar{display:flex;align-items:center;gap:12px}
+.brandbar .lg{width:40px;height:40px;border-radius:12px;background:var(--tint);display:flex;align-items:center;justify-content:center;font-family:'Inter';font-weight:700;overflow:hidden;color:var(--brand);flex-shrink:0}
+.brandbar .lg img{width:100%;height:100%;object-fit:contain;padding:4px}
+.brandbar .nm{font-weight:700;font-size:1.02rem;letter-spacing:-.02em}
+.brandbar .sb{font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:1px}
+.nav{display:flex;gap:2px;padding:14px 22px 0;max-width:940px;margin:0 auto;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{background:none;border:none;color:var(--tx2);font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;padding:10px 16px;border-radius:100px;cursor:pointer;white-space:nowrap;transition:.18s var(--ease)}
+.nav button:hover{color:var(--tx);background:var(--surface)}
+.nav button.on{color:#fff;background:var(--tx)}
+html[data-theme="dark"] .nav button.on{color:var(--bg);background:var(--tx)}
+.wrap{max-width:940px;margin:0 auto;padding:32px 22px 90px}
+.card{background:var(--surface);border:1px solid var(--b1);border-radius:22px;padding:26px;margin-bottom:18px;box-shadow:0 1px 2px rgba(11,13,12,.03),0 10px 30px -20px rgba(11,13,12,.12)}
+h2{font-weight:700;font-size:1.18rem;margin-bottom:5px;letter-spacing:-.025em}
+.hint{font-size:.9rem;color:var(--tx2);margin-bottom:18px;line-height:1.55}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--tx2);margin:14px 0 7px;letter-spacing:-.01em}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:13px 14px;color:var(--tx);font-family:inherit;font-size:.94rem;outline:none;transition:.18s var(--ease)}
+input:focus,textarea:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--tint)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{border:1px solid transparent;border-radius:100px;padding:12px 22px;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;background:var(--tx);color:var(--bg);transition:.2s var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(11,13,12,.4)}
+.btn:active{transform:translateY(0)}
+.btn.g{background:var(--surface);border-color:var(--b2);color:var(--tx);box-shadow:none}
+.btn.g:hover{border-color:var(--tx3)}
+.btn.sm{padding:9px 15px;font-size:.82rem}
+.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--b1);border-radius:18px;padding:20px;transition:.24s var(--ease);position:relative;overflow:hidden}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(11,13,12,.28);border-color:var(--b2)}
+.kpi .v{font-weight:700;font-size:2rem;line-height:1;letter-spacing:-.03em}
+.kpi .l{font-size:.68rem;color:var(--tx3);text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:9px;letter-spacing:.5px}
+.kpi .s{font-size:.76rem;color:var(--tx2);margin-top:4px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem}
+.tbl th{text-align:left;color:var(--tx3);font-family:'DM Mono',monospace;font-size:.64rem;text-transform:uppercase;letter-spacing:.5px;padding:10px 8px;border-bottom:1px solid var(--b1)}
+.tbl td{padding:12px 8px;border-bottom:1px solid var(--b1);color:var(--tx2)}
+.tbl tr{transition:background .15s}
+.tbl tbody tr:hover,.tbl tr:hover{background:var(--s2)}
+.tbl td b{color:var(--tx);font-weight:600}
+.rank{width:26px;height:26px;border-radius:9px;background:var(--tint);display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.74rem;color:var(--brand)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);border:none;border-radius:100px;padding:13px 22px;font-size:.86rem;font-weight:500;z-index:60;display:none;max-width:90vw;box-shadow:0 16px 40px rgba(11,13,12,.3)}
+.toast.show{display:block}
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.lcard{background:var(--surface);border:1px solid var(--b1);border-radius:26px;padding:38px 34px;max-width:390px;width:100%;text-align:center;box-shadow:0 30px 70px -30px rgba(11,13,12,.35)}
+.logo{font-family:'Inter',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:6px;display:inline-flex;align-items:center;justify-content:center;letter-spacing:-.03em}
+.logo i{font-style:normal;color:var(--grn)}
+.logo .ms-ico{height:30px;width:auto;margin-right:9px}
+.muted{font-size:.85rem;color:var(--tx2);line-height:1.6}
+.hide{display:none}#login.hide{display:none!important}
+.logo-prev{width:48px;height:48px;border-radius:12px;background:var(--s2);border:1px solid var(--b1);object-fit:contain;padding:5px;display:none}
+.flex{display:flex;gap:11px;align-items:center}
+.chart{display:flex;align-items:flex-end;gap:6px;height:136px;margin-top:8px}
+.bar{flex:1;background:linear-gradient(180deg,var(--grn),color-mix(in srgb,var(--grn) 55%,#000));border-radius:6px 6px 0 0;min-height:3px;position:relative;transition:height .7s var(--ease)}
+.bar span{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--tx2);font-family:'DM Mono',monospace}
+.xlab{display:flex;gap:6px;margin-top:8px}.xlab div{flex:1;text-align:center;font-size:.56rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.prog{height:12px;background:var(--s2);border-radius:100px;overflow:hidden;margin:12px 0}
+.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--gold));border-radius:100px;transition:width 1s var(--ease)}
+.pill{display:inline-block;font-size:.72rem;font-family:'DM Mono',monospace;color:var(--brand);background:var(--tint);border:1px solid color-mix(in srgb,var(--brand) 20%,transparent);border-radius:100px;padding:5px 12px}
+.empty{text-align:center;color:var(--tx3);padding:28px;font-size:.88rem}
+/* ===== HERO DE MARQUE (aperçu perso animé) ===== */
+.bhero{position:relative;overflow:hidden;border-radius:24px;padding:32px;margin-bottom:20px;color:#fff;box-shadow:0 24px 60px -28px rgba(11,13,12,.5);min-height:200px;display:flex;align-items:center;justify-content:space-between;gap:26px;flex-wrap:wrap;animation:bhFade .5s var(--ease)}
+@keyframes bhFade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.bhero .sh{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.24) 50%,transparent 60%);transform:translateX(-120%) skewX(-16deg);animation:bhShine 5.5s ease-in-out infinite;pointer-events:none;z-index:1}
+@keyframes bhShine{0%{transform:translateX(-120%) skewX(-16deg)}60%,100%{transform:translateX(230%) skewX(-16deg)}}
+.bhero .glow{position:absolute;top:-45%;right:-8%;width:340px;height:340px;background:radial-gradient(closest-side,rgba(255,255,255,.28),transparent 70%);pointer-events:none;animation:bhGlow 8s ease-in-out infinite;z-index:0}
+@keyframes bhGlow{0%,100%{transform:translate(0,0)}50%{transform:translate(-26px,18px)}}
+.bh-l{position:relative;z-index:2;max-width:58%}
+.bh-logo{width:54px;height:54px;border-radius:15px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;overflow:hidden;margin-bottom:15px;border:1px solid rgba(255,255,255,.28)}
+.bh-logo img{width:100%;height:100%;object-fit:contain;padding:6px}
+.bh-name{font-size:1.8rem;font-weight:800;letter-spacing:-.035em;line-height:1.08}
+.bh-tag{font-size:.92rem;opacity:.92;margin-top:7px;max-width:42ch;line-height:1.5}
+.bh-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.bh-chip{font-size:.72rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);border-radius:100px;padding:6px 13px}
+.bh-btn{margin-top:20px;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0b0d0c;border:none;border-radius:100px;padding:12px 22px;font-weight:600;font-size:.88rem;cursor:pointer;font-family:'Inter',sans-serif;transition:.2s var(--ease)}
+.bh-btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.28)}
+.bh-card{position:relative;z-index:2;width:230px;aspect-ratio:1.586;border-radius:16px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.3);padding:17px;display:flex;flex-direction:column;justify-content:space-between;animation:bhFloat 6s ease-in-out infinite;box-shadow:0 20px 44px -18px rgba(0,0,0,.55)}
+@keyframes bhFloat{0%,100%{transform:translateY(0) rotate(-2.5deg)}50%{transform:translateY(-9px) rotate(-2.5deg)}}
+.bh-card .t{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:.84rem}
+.bh-card .num{font-size:2.1rem;font-weight:800;line-height:1}
+.bh-card .lbl{font-size:.54rem;text-transform:uppercase;letter-spacing:.1em;opacity:.72}
+@media(max-width:720px){.bh-l{max-width:100%}.bh-card{display:none}}
+@media(prefers-reduced-motion:reduce){.bhero,.bhero .sh,.bhero .glow,.bh-card{animation:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n-console.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+</defs></svg>
+<div id="login">
+  <form class="lcard" onsubmit="event.preventDefault();login();" style="position:relative">
+    <button type="button" class="thbtn" onclick="msToggle()" title="Thème" style="position:absolute;top:16px;right:16px"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+    <div class="logo"><img class="ms-ico" src="/favicon.svg"/>My<i>Sargal</i></div>
+    <div class="muted" style="margin-bottom:18px">Espace Marque — pilotez votre campagne fidélité</div>
+    <input id="l-login" autocomplete="username" placeholder="Identifiant" style="margin-bottom:10px"/>
+    <input id="l-pass" type="password" autocomplete="current-password" placeholder="Mot de passe"/>
+    <button class="btn" type="submit" style="width:100%;margin-top:14px">Se connecter →</button>
+    <div class="muted" id="lerr" style="color:#f87171;margin-top:10px"></div>
+    <div class="muted" style="margin-top:16px;font-size:.72rem">Pas encore d'accès ? Contactez MySargal.</div>
+  </form>
+</div>
+
+<div id="app" class="hide">
+  <div class="top">
+    <div class="brandbar"><div class="lg" id="b-lg">M</div><div><div class="nm" id="b-nm">Marque</div><div class="sb">Espace Marque · MySargal</div></div></div>
+    <div style="display:flex;gap:8px;align-items:center"><button class="thbtn" onclick="msToggle()" title="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button><button class="btn g sm" onclick="logout()">Quitter</button></div>
+  </div>
+  <div class="nav">
+    <button id="t-ov" class="on" onclick="show('ov')">Vue d'ensemble</button>
+    <button id="t-cl" onclick="show('cl')">Clients</button>
+    <button id="t-co" onclick="show('co')">Codes</button>
+    <button id="t-rw" onclick="show('rw')">Récompenses</button>
+    <button id="t-pe" onclick="show('pe')">Personnalisation</button>
+  </div>
+  <div class="wrap">
+
+    <section id="sec-ov">
+      <div id="ov-hero"></div>
+      <div class="kpis" id="ov-kpis"><div class="muted">Chargement…</div></div>
+      <div class="card" style="margin-top:16px">
+        <h2>Scans — 14 derniers jours</h2>
+        <div class="hint">Activité quotidienne de scan de vos codes.</div>
+        <div class="chart" id="ov-chart"></div>
+        <div class="xlab" id="ov-xlab"></div>
+      </div>
+      <div class="card">
+        <h2>Progression vers la récompense</h2>
+        <div class="hint" id="ov-prog-h"></div>
+        <div class="prog"><i id="ov-prog" style="width:0%"></i></div>
+      </div>
+    </section>
+
+    <section id="sec-cl" class="hide">
+      <div class="card">
+        <h2>Vos clients fidèles</h2>
+        <div class="hint">Tous les consommateurs ayant scanné au moins un code, triés par cumul de points.</div>
+        <div class="flex" style="margin-bottom:12px"><input id="cl-q" placeholder="Filtrer par numéro ou nom…" oninput="renderClients()"/></div>
+        <div id="cl-list"><div class="muted">Chargement…</div></div>
+      </div>
+    </section>
+
+    <section id="sec-co" class="hide">
+      <div class="card">
+        <h2>Codes QR</h2>
+        <div class="hint">Générez des codes uniques, puis téléchargez les vraies images QR (PNG) ou une planche prête à imprimer — sinon le CSV (code + lien) pour votre imprimeur.</div>
+        <div class="acts">
+          <input id="gen-n" type="number" value="500" style="width:110px;padding:10px"/>
+          <button class="btn" onclick="genCodes()" id="btn-gen">Générer</button>
+          <button class="btn g" onclick="genQrZip()" id="btn-zip">Télécharger QR (PNG .zip)</button>
+          <button class="btn g" onclick="printSheet()" id="btn-sheet">Planche à imprimer</button>
+          <button class="btn g" onclick="exportCsv()">Exporter CSV (non scannés)</button>
+          <button class="btn g" onclick="exportCsv(true)">Exporter tout</button>
+        </div>
+        <div class="kpis" style="margin-top:16px">
+          <div class="kpi"><div class="v" id="co-total">0</div><div class="l">Codes émis</div></div>
+          <div class="kpi"><div class="v" style="color:var(--grn)" id="co-scan">0</div><div class="l">Scannés</div></div>
+          <div class="kpi"><div class="v" id="co-left">0</div><div class="l">Disponibles</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Derniers scans</h2>
+        <div class="hint">Activité récente sur le terrain.</div>
+        <div id="co-recent"><div class="muted">Chargement…</div></div>
+      </div>
+    </section>
+
+    <section id="sec-rw" class="hide">
+      <div class="card">
+        <h2>Mécanique de récompense</h2>
+        <div class="hint">Définissez combien de points par scan et le seuil pour gagner.</div>
+        <div class="row">
+          <div><label>Points par scan</label><input id="r-pps" type="number"/></div>
+          <div><label>Seuil récompense</label><input id="r-thr" type="number"/></div>
+        </div>
+        <label>Récompense principale (au seuil)</label><input id="r-rwd" placeholder="Un pack d'eau offert"/>
+        <label>Catalogue de paliers (1 par ligne : nom | coût)</label>
+        <textarea id="r-cat" rows="5" placeholder="Pack d'eau (6 bouteilles) | 10&#10;Casquette | 25"></textarea>
+        <button class="btn" style="margin-top:14px" onclick="saveRewards()" id="btn-rw">Enregistrer</button>
+      </div>
+    </section>
+
+    <section id="sec-pe" class="hide">
+      <div class="card">
+        <h2>Personnalisation</h2>
+        <div class="hint">Ce que voient vos clients sur la page de scan.</div>
+        <div class="row">
+          <div><label>Couleur de marque</label><input id="e-color"/></div>
+          <div><label>Slogan</label><input id="e-tag"/></div>
+        </div>
+        <label>Logo (PNG / SVG)</label>
+        <div class="flex"><input id="e-logo" type="file" accept="image/*" onchange="prev(this,'e-logo-prev')" style="padding:9px"/><img id="e-logo-prev" class="logo-prev"/></div>
+        <button class="btn" style="margin-top:14px" onclick="saveBranding()" id="btn-save">Enregistrer</button>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Bannière publicitaire</h2>
+        <div class="hint">Affichez une promo sur la page de scan de vos clients. Optionnel — laissez décoché pour la masquer.</div>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:4px"><input type="checkbox" id="ad-on" onchange="adToggleUI()" style="width:18px;height:18px;accent-color:var(--grn,#16a34a);cursor:pointer"/> <span style="font-weight:600">Activer la bannière sur la page de scan</span></label>
+        <div id="ad-fields">
+          <label>Titre</label><input id="ad-title" maxlength="70" placeholder="Ex : -20% sur le pack de 12 bouteilles"/>
+          <label>Texte</label><textarea id="ad-text" rows="2" maxlength="180" placeholder="Offre valable jusqu'au 31 juillet dans tous les points de vente."></textarea>
+          <label>Lien (optionnel — bouton « En savoir plus »)</label><input id="ad-link" placeholder="https://votre-site.com/promo"/>
+          <label>Image (optionnel — format paysage recommandé)</label>
+          <div class="flex"><input id="ad-img" type="file" accept="image/*" onchange="prev(this,'ad-img-prev')" style="padding:9px"/><img id="ad-img-prev" class="logo-prev"/></div>
+        </div>
+        <button class="btn" style="margin-top:14px" onclick="saveAd()" id="btn-ad">Enregistrer</button>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Carrousel publicitaire</h2>
+        <div class="hint">Plusieurs visuels qui défilent sur la page de scan. Une image seule (déjà conçue) s'affiche plein cadre ; sinon ajoutez une accroche + une pastille. Prioritaire sur la bannière simple ci-dessus.</div>
+        <div id="slides-list"></div>
+        <button class="btn g" style="margin-top:10px" onclick="addSlide()">+ Ajouter une slide</button>
+        <button class="btn" style="margin-top:10px" onclick="saveSlides()" id="btn-slides">Enregistrer le carrousel</button>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Hero de la page de scan</h2>
+        <div class="hint">Personnalisez le haut de la page vue par vos clients : titre d'accroche, sous-titre et image de fond.</div>
+        <label>Titre d'accroche</label><input id="hero-head" maxlength="80" placeholder="Ex : Merci de nous faire confiance"/>
+        <label>Sous-titre</label><textarea id="hero-sub" rows="2" maxlength="160" placeholder="Chaque produit vous rapproche d'un cadeau."></textarea>
+        <div class="row">
+          <div><label>Mise en page</label><select id="hero-lay"><option value="centre">Centré</option><option value="image">Image plein écran</option><option value="compact">Compact</option></select></div>
+          <div><label>Police</label><select id="hero-font"><option value="moderne">Moderne</option><option value="elegant">Élégant (serif)</option><option value="classique">Classique</option></select></div>
+        </div>
+        <label>Image de fond (optionnel — format paysage)</label>
+        <div class="flex"><input id="hero-img" type="file" accept="image/*" onchange="prev(this,'hero-img-prev')" style="padding:9px"/><img id="hero-img-prev" class="logo-prev"/></div>
+        <button class="btn" style="margin-top:14px" onclick="saveHero()" id="btn-hero">Enregistrer</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+function tok(){try{return localStorage.getItem('brand_dash_jwt')||'';}catch(e){return '';}}
+const H={'apikey':SA,get Authorization(){return 'Bearer '+(tok()||SA);},'Content-Type':'application/json'};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let CAMP=null,CAMPID=null,PREFIX='CODE',CLIENTS=[];
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+msThemeUI();
+function prev(inp,id){var f=inp.files&&inp.files[0];var p=document.getElementById(id);if(f){p.src=URL.createObjectURL(f);p.style.display='block';}else{p.style.display='none';}}
+function claims(t){try{return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));}catch(e){return null;}}
+function isAuth(){var t=tok();if(!t)return false;var c=claims(t);return c&&c.exp*1000>Date.now()&&c.brand_campaign;}
+
+function login(){
+  const login=document.getElementById('l-login').value.trim();const pass=document.getElementById('l-pass').value;
+  if(!login||!pass){document.getElementById('lerr').textContent='Identifiant et mot de passe requis';return;}
+  document.getElementById('lerr').textContent='Connexion…';
+  const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),12000);
+  fetch(SB+'/functions/v1/brand-login',{method:'POST',headers:{'apikey':SA,'Content-Type':'application/json'},body:JSON.stringify({login,password:pass}),signal:ctrl.signal})
+  .then(async r=>{clearTimeout(to);const d=await r.json().catch(()=>({}));if(r.status===401)throw new Error('Identifiants incorrects');if(!r.ok||!d.token)throw new Error(d.error||('Erreur '+r.status));
+    localStorage.setItem('brand_dash_jwt',d.token);document.getElementById('lerr').textContent='';enter();})
+  .catch(e=>document.getElementById('lerr').textContent=(e.name==='AbortError'?'Délai dépassé — réessaie':e.message));
+}
+function logout(){localStorage.removeItem('brand_dash_jwt');location.reload();}
+function enter(){const c=claims(tok());CAMPID=c.brand_campaign;document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';document.getElementById('app').classList.remove('hide');document.getElementById('b-nm').textContent=c.brand_name||'Ma marque';
+  if(c.imp_by){var s=document.createElement('div');s.innerHTML='Mode administrateur — vous agissez comme <b>'+esc(c.brand_name||'cette marque')+'</b>';s.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#0b0d0c;color:#fff;font:600 12px/1.2 Inter,system-ui,sans-serif;text-align:center;padding:9px 12px;letter-spacing:.02em';document.body.appendChild(s);document.body.style.paddingTop='32px';}
+  loadAll();}
+function show(t){['ov','cl','co','rw','pe'].forEach(x=>{document.getElementById('sec-'+x).classList.toggle('hide',x!==t);document.getElementById('t-'+x).classList.toggle('on',x===t);});}
+
+async function sbGet(path){const r=await fetch(SB+'/rest/v1'+path,{headers:H});return r.ok?r.json():[];}
+async function rpc(fn,body){const r=await fetch(SB+'/rest/v1/rpc/'+fn,{method:'POST',headers:H,body:JSON.stringify(body||{})});return r.ok?r.json():null;}
+
+async function loadAll(){
+  const rows=await sbGet('/brand_campaigns?id=eq.'+CAMPID+'&limit=1');CAMP=rows[0];
+  if(!CAMP){toast('Campagne introuvable — accès expiré ?');return;}
+  PREFIX=(CAMP.brand_name||'CODE').replace(/[^A-Za-z]/g,'').substring(0,4).toUpperCase()||'CODE';
+  document.getElementById('b-nm').textContent=CAMP.brand_name||'Ma marque';
+  document.getElementById('b-lg').innerHTML=CAMP.logo_url?'<img src="'+esc(CAMP.logo_url)+'"/>':((CAMP.brand_name||'M').trim()[0]||'M').toUpperCase();
+  // remplir formulaires
+  document.getElementById('e-color').value=CAMP.brand_color||'#22c55e';
+  document.getElementById('e-tag').value=CAMP.tagline||'';
+  document.getElementById('r-pps').value=CAMP.points_per_scan;
+  document.getElementById('r-thr').value=CAMP.reward_threshold;
+  document.getElementById('r-rwd').value=CAMP.reward_label||'';
+  document.getElementById('r-cat').value=(CAMP.rewards_catalog||[]).map(r=>r.label+' | '+r.cost).join('\n');
+  document.getElementById('ad-on').checked=!!CAMP.ad_enabled;
+  document.getElementById('ad-title').value=CAMP.ad_title||'';
+  document.getElementById('ad-text').value=CAMP.ad_text||'';
+  document.getElementById('ad-link').value=CAMP.ad_link||'';
+  var aip=document.getElementById('ad-img-prev');if(CAMP.ad_image_url){aip.src=CAMP.ad_image_url;aip.style.display='';}else{aip.style.display='none';}
+  document.getElementById('hero-head').value=CAMP.hero_headline||'';
+  document.getElementById('hero-sub').value=CAMP.hero_subtext||'';
+  document.getElementById('hero-lay').value=CAMP.hero_layout||'centre';
+  document.getElementById('hero-font').value=CAMP.hero_font||'moderne';
+  slidesFromCamp();
+  var hp=document.getElementById('hero-img-prev');if(CAMP.hero_image_url){hp.src=CAMP.hero_image_url;hp.style.display='';}else{hp.style.display='none';}
+  adToggleUI();
+  renderBrandHero();
+  loadOverview();loadClients();loadCodes();
+}
+
+function renderBrandHero(){
+  var el=document.getElementById('ov-hero');if(!el||!CAMP)return;
+  var bc=(CAMP.brand_color||'#22c55e');
+  if(!/^#[0-9a-fA-F]{3,8}$/.test(bc))bc='#22c55e';
+  var name=esc(CAMP.brand_name||'Ma marque');
+  var tag=esc(CAMP.tagline||'Votre programme de fidélité, à votre image.');
+  var logo=CAMP.logo_url?('<img src="'+esc(CAMP.logo_url)+'"/>'):(((CAMP.brand_name||'M').trim()[0])||'M').toUpperCase();
+  var thr=parseInt(CAMP.reward_threshold)||10, pps=parseInt(CAMP.points_per_scan)||1, rwd=esc(CAMP.reward_label||'Récompense');
+  var demo=Math.max(1,Math.round(thr*0.7));
+  el.innerHTML='<div class="bhero" style="background:linear-gradient(135deg,'+bc+',color-mix(in srgb,'+bc+' 55%,#000))">'
+    +'<div class="glow"></div><div class="sh"></div>'
+    +'<div class="bh-l"><div class="bh-logo">'+logo+'</div>'
+    +'<div class="bh-name">'+name+'</div>'
+    +'<div class="bh-tag">'+tag+'</div>'
+    +'<div class="bh-meta"><span class="bh-chip">'+pps+' pt / scan</span><span class="bh-chip">Récompense à '+thr+' pts</span><span class="bh-chip">'+rwd+'</span></div>'
+    +'<button class="bh-btn" onclick="show(\'pe\')">Personnaliser ma marque <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>'
+    +'</div>'
+    +'<div class="bh-card"><div class="t"><span>'+name+'</span><span class="lbl">Fidélité</span></div>'
+    +'<div><div class="lbl">points</div><div class="num">'+demo+'</div><div style="font-size:.6rem;opacity:.78;margin-top:3px">/ '+thr+' pour '+rwd+'</div></div></div>'
+    +'</div>';
+}
+
+async function loadOverview(){
+  const s=await rpc('brand_campaign_stats',{p_campaign:CAMPID})||{};
+  const rate=s.codes_total?Math.round((s.codes_scanned/s.codes_total)*100):0;
+  document.getElementById('ov-kpis').innerHTML=`
+    <div class="kpi"><div class="v">${s.codes_total||0}</div><div class="l">Codes émis</div></div>
+    <div class="kpi"><div class="v" style="color:var(--grn)">${s.codes_scanned||0}</div><div class="l">Scannés</div><div class="s">${rate}% activés</div></div>
+    <div class="kpi"><div class="v">${s.consumers||0}</div><div class="l">Clients</div></div>
+    <div class="kpi"><div class="v" style="color:var(--gold)">${s.rewards_won||0}</div><div class="l">Récompenses</div><div class="s">${s.rewards_pending||0} à remettre · ${s.rewards_redeemed||0} remises</div></div>`;
+  // graphe
+  const series=await rpc('brand_daily_scans',{p_campaign:CAMPID,p_days:14})||[];
+  const max=Math.max(1,...series.map(x=>x.n));
+  document.getElementById('ov-chart').innerHTML=series.map(x=>`<div class="bar" style="height:${Math.round((x.n/max)*100)}%" title="${x.d}: ${x.n}">${x.n?'<span>'+x.n+'</span>':''}</div>`).join('')||'<div class="empty">Aucune donnée</div>';
+  document.getElementById('ov-xlab').innerHTML=series.map((x,i)=>`<div>${(i%2===0)?x.d.slice(8)+'/'+x.d.slice(5,7):''}</div>`).join('');
+  // progression moyenne
+  const totalLife=CLIENTS.reduce((a,c)=>a+(c.points||0),0);
+  const thr=CAMP.reward_threshold||10;const avg=CLIENTS.length?Math.round(totalLife/CLIENTS.length):0;
+  document.getElementById('ov-prog-h').innerHTML=`Solde moyen : <b style="color:var(--tx)">${avg}</b> / ${thr} points. ${s.rewards_won||0} récompense(s) déjà débloquée(s).`;
+  document.getElementById('ov-prog').style.width=Math.min(100,Math.round(avg/thr*100))+'%';
+}
+
+async function loadClients(){
+  CLIENTS=await sbGet('/brand_cards?campaign_id=eq.'+CAMPID+'&select=phone,name,points,lifetime_points,rewards_won&order=lifetime_points.desc&limit=1000');
+  renderClients();
+  // recalcul progression une fois clients chargés
+  const thr=CAMP.reward_threshold||10;const avg=CLIENTS.length?Math.round(CLIENTS.reduce((a,c)=>a+(c.points||0),0)/CLIENTS.length):0;
+  const el=document.getElementById('ov-prog');if(el)el.style.width=Math.min(100,Math.round(avg/thr*100))+'%';
+  const h=document.getElementById('ov-prog-h');if(h)h.innerHTML=`Solde moyen : <b style="color:var(--tx)">${avg}</b> / ${thr} points sur ${CLIENTS.length} client(s).`;
+}
+function renderClients(){
+  const q=(document.getElementById('cl-q').value||'').toLowerCase();
+  const list=CLIENTS.filter(c=>!q||(c.phone||'').includes(q)||(c.name||'').toLowerCase().includes(q));
+  document.getElementById('cl-list').innerHTML=list.length?('<table class="tbl"><tr><th>#</th><th>Client</th><th>Numéro</th><th>Solde</th><th>Cumul</th><th>Récomp.</th></tr>'+list.map((c,i)=>`<tr><td><span class="rank">${i+1}</span></td><td><b>${esc(c.name||'—')}</b></td><td>${esc(c.phone)}</td><td>${c.points}</td><td>${c.lifetime_points}</td><td style="color:var(--gold)">${c.rewards_won}</td></tr>`).join('')+'</table>'):'<div class="empty">Aucun client pour l\'instant.</div>';
+}
+
+async function loadCodes(){
+  const s=await rpc('brand_campaign_stats',{p_campaign:CAMPID})||{};
+  document.getElementById('co-total').textContent=s.codes_total||0;
+  document.getElementById('co-scan').textContent=s.codes_scanned||0;
+  document.getElementById('co-left').textContent=Math.max(0,(s.codes_total||0)-(s.codes_scanned||0));
+  const recent=await sbGet('/brand_codes?campaign_id=eq.'+CAMPID+'&scanned=eq.true&select=code,scanned_by,scanned_at&order=scanned_at.desc&limit=15');
+  document.getElementById('co-recent').innerHTML=recent.length?('<table class="tbl"><tr><th>Code</th><th>Client</th><th>Quand</th></tr>'+recent.map(r=>`<tr><td><b style="font-family:DM Mono">${esc(r.code)}</b></td><td>${esc(r.scanned_by||'—')}</td><td>${r.scanned_at?new Date(r.scanned_at).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—'}</td></tr>`).join('')+'</table>'):'<div class="empty">Aucun scan pour l\'instant.</div>';
+}
+
+function parseCat(v){return v.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const p=l.split('|').map(x=>x.trim());return {label:p[0]||'Récompense',cost:parseInt(p[1])||10};});}
+async function patchCamp(body){const r=await fetch(SB+'/rest/v1/brand_campaigns?id=eq.'+CAMPID,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify(body)});if(!r.ok)throw new Error('HTTP '+r.status);}
+
+async function saveRewards(){
+  const btn=document.getElementById('btn-rw');btn.disabled=true;btn.textContent='Enregistrement…';
+  try{await patchCamp({points_per_scan:parseInt(document.getElementById('r-pps').value)||1,reward_threshold:parseInt(document.getElementById('r-thr').value)||10,reward_label:document.getElementById('r-rwd').value||'',rewards_catalog:parseCat(document.getElementById('r-cat').value)});toast('Récompenses enregistrées ✓');loadAll();}catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Enregistrer';
+}
+
+async function uploadLogo(file){
+  const ext=(file.name.split('.').pop()||'png').toLowerCase().replace(/[^a-z0-9]/g,'')||'png';
+  const path=CAMPID+'-'+Date.now()+'.'+ext;
+  const r=await fetch(SB+'/storage/v1/object/brand-logos/'+path,{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+(tok()||SA),'Content-Type':file.type||'image/png','x-upsert':'true'},body:file});
+  if(!r.ok)throw new Error('Upload logo: '+r.status);
+  return SB+'/storage/v1/object/public/brand-logos/'+path;
+}
+async function saveBranding(){
+  const btn=document.getElementById('btn-save');btn.disabled=true;btn.textContent='Enregistrement…';
+  try{const body={brand_color:document.getElementById('e-color').value||'#22c55e',tagline:document.getElementById('e-tag').value||''};const f=document.getElementById('e-logo').files[0];if(f){body.logo_url=await uploadLogo(f);}await patchCamp(body);toast('Enregistré ✓');document.getElementById('e-logo').value='';document.getElementById('e-logo-prev').style.display='none';loadAll();}catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Enregistrer';
+}
+
+function adToggleUI(){var on=document.getElementById('ad-on').checked;var f=document.getElementById('ad-fields');f.style.opacity=on?'1':'.45';f.style.pointerEvents=on?'':'none';}
+async function saveAd(){
+  const btn=document.getElementById('btn-ad');btn.disabled=true;btn.textContent='Enregistrement…';
+  try{
+    const body={ad_enabled:document.getElementById('ad-on').checked,
+      ad_title:document.getElementById('ad-title').value.trim()||null,
+      ad_text:document.getElementById('ad-text').value.trim()||null,
+      ad_link:document.getElementById('ad-link').value.trim()||null};
+    const f=document.getElementById('ad-img').files[0];if(f){body.ad_image_url=await uploadLogo(f);}
+    await patchCamp(body);toast('Bannière enregistrée ✓');document.getElementById('ad-img').value='';loadAll();
+  }catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Enregistrer';
+}
+
+// ── Carrousel publicitaire (slides) ──
+var SLIDES=[];
+function slidesFromCamp(){SLIDES=(Array.isArray(CAMP.ad_slides)?CAMP.ad_slides:[]).map(function(s){return {image_url:s.image_url||'',headline:s.headline||'',tag:s.tag||'',link:s.link||'',_file:null};});renderSlides();}
+function addSlide(){SLIDES.push({image_url:'',headline:'',tag:'',link:'',_file:null});renderSlides();}
+function rmSlide(i){SLIDES.splice(i,1);renderSlides();}
+function slideFile(i,inp){SLIDES[i]._file=(inp.files&&inp.files[0])||null;}
+function renderSlides(){
+  var el=document.getElementById('slides-list');if(!el)return;
+  if(!SLIDES.length){el.innerHTML='<div class="muted" style="padding:2px 0 6px">Aucune slide. Ajoutez-en une, ou laissez vide pour utiliser la bannière simple.</div>';return;}
+  el.innerHTML=SLIDES.map(function(s,i){return '<div style="border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:12px;margin-bottom:10px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:.85rem">Slide '+(i+1)+'</b><button class="btn g sm" onclick="rmSlide('+i+')">Supprimer</button></div>'
+    +'<label>Image (visuel plein cadre)</label><div class="flex"><input type="file" accept="image/*" onchange="slideFile('+i+',this)" style="padding:9px"/>'+(s.image_url?'<img src="'+esc(s.image_url)+'" class="logo-prev" style="display:block"/>':'')+'</div>'
+    +'<label>Accroche (option)</label><input value="'+esc(s.headline)+'" oninput="SLIDES['+i+'].headline=this.value" maxlength="60" placeholder="ZERO FRAIS DE SERVICE"/>'
+    +'<label>Pastille (option)</label><input value="'+esc(s.tag)+'" oninput="SLIDES['+i+'].tag=this.value" maxlength="50" placeholder="Livraison à partir de 500 FCFA"/>'
+    +'<label>Lien (option)</label><input value="'+esc(s.link)+'" oninput="SLIDES['+i+'].link=this.value" placeholder="https://…"/>'
+    +'</div>';}).join('');
+}
+async function saveSlides(){
+  const btn=document.getElementById('btn-slides');btn.disabled=true;btn.textContent='Enregistrement…';
+  try{
+    for(var i=0;i<SLIDES.length;i++){if(SLIDES[i]._file){SLIDES[i].image_url=await uploadLogo(SLIDES[i]._file);SLIDES[i]._file=null;}}
+    var clean=SLIDES.map(function(s){return {image_url:s.image_url||null,headline:(s.headline||'').trim(),tag:(s.tag||'').trim(),link:(s.link||'').trim()};}).filter(function(s){return s.image_url||s.headline||s.tag;});
+    await patchCamp({ad_slides:clean});toast('Carrousel enregistré ✓');loadAll();
+  }catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Enregistrer le carrousel';
+}
+
+async function saveHero(){
+  const btn=document.getElementById('btn-hero');btn.disabled=true;btn.textContent='Enregistrement…';
+  try{
+    const body={hero_headline:document.getElementById('hero-head').value.trim()||null,hero_subtext:document.getElementById('hero-sub').value.trim()||null,hero_layout:document.getElementById('hero-lay').value||'centre',hero_font:document.getElementById('hero-font').value||'moderne'};
+    const f=document.getElementById('hero-img').files[0];if(f){body.hero_image_url=await uploadLogo(f);}
+    await patchCamp(body);toast('Hero enregistré ✓');document.getElementById('hero-img').value='';loadAll();
+  }catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Enregistrer';
+}
+
+async function genCodes(){
+  const n=parseInt(document.getElementById('gen-n').value)||0;if(n<1||n>100000){toast('Entre 1 et 100 000');return;}
+  const btn=document.getElementById('btn-gen');btn.disabled=true;btn.textContent='Génération…';
+  try{const r=await fetch(SB+'/rest/v1/rpc/brand_generate_codes',{method:'POST',headers:H,body:JSON.stringify({p_campaign:CAMPID,p_count:n,p_prefix:PREFIX})});const created=await r.json();if(!r.ok)throw new Error(created.message||'Erreur');toast(created+' codes générés ✓');loadCodes();loadOverview();}catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Générer';
+}
+async function exportCsv(all){
+  toast('Préparation du CSV…');let rowsAll=[],from=0;const filt=all?'':'&scanned=eq.false';
+  while(true){const rows=await fetch(SB+'/rest/v1/brand_codes?campaign_id=eq.'+CAMPID+filt+'&select=code,scanned&order=created_at.asc&limit=10000&offset='+from,{headers:H}).then(r=>r.json());if(!rows.length)break;rowsAll=rowsAll.concat(rows);from+=rows.length;if(rows.length<10000)break;}
+  if(!rowsAll.length){toast('Aucun code à exporter');return;}
+  const lines=['code,url_qr,scanne'];rowsAll.forEach(r=>lines.push(`${r.code},https://mysargal.com/scan.html?c=${r.code},${r.scanned?'oui':'non'}`));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='codes-'+(CAMP.brand_name||'marque').replace(/\s/g,'-').toLowerCase()+(all?'-tout':'-dispo')+'.csv';a.click();toast(rowsAll.length+' codes exportés ✓');
+}
+
+// ── Vraies images QR (PNG) ──
+const SCAN_BASE='https://mysargal.com/scan.html?c=';
+function slug(){return (CAMP&&CAMP.brand_name||'marque').replace(/\s+/g,'-').toLowerCase();}
+async function fetchCodes(all){
+  let rowsAll=[],from=0;const filt=all?'':'&scanned=eq.false';
+  while(true){const rows=await fetch(SB+'/rest/v1/brand_codes?campaign_id=eq.'+CAMPID+filt+'&select=code,scanned&order=created_at.asc&limit=10000&offset='+from,{headers:H}).then(r=>r.json());if(!rows||!rows.length)break;rowsAll=rowsAll.concat(rows);from+=rows.length;if(rows.length<10000)break;}
+  return rowsAll;
+}
+// couleur QR = couleur de marque, assombrie si trop claire (scan fiable)
+function brandFg(){
+  var c=(CAMP&&CAMP.brand_color)||'#101828',h=String(c).replace('#','');
+  if(h.length===3)h=h.split('').map(function(x){return x+x;}).join('');
+  var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  if([r,g,b].some(isNaN))return '#101828';
+  var lum=0.2126*r+0.7152*g+0.0722*b;
+  if(lum>115){var f=(115/(lum||1))*0.6;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);}
+  return '#'+[r,g,b].map(function(v){return ('0'+Math.max(0,Math.min(255,v)).toString(16)).slice(-2);}).join('');
+}
+var _logoImg=null,_logoTried=false;
+function loadLogoImg(){return new Promise(function(res){
+  if(_logoTried)return res(_logoImg);_logoTried=true;
+  var u=CAMP&&CAMP.logo_url;if(!u)return res(null);
+  var im=new Image();im.crossOrigin='anonymous';
+  im.onload=function(){_logoImg=im;res(im);};im.onerror=function(){res(null);};im.src=u;
+});}
+function qrCompose(text,size,logo){
+  try{
+    var cv=document.createElement('canvas');
+    new QRious({element:cv,value:text,size:size||600,level:logo?'H':'M',padding:18,background:'#ffffff',foreground:brandFg()});
+    if(logo){var ctx=cv.getContext('2d'),s=cv.width,box=Math.round(s*0.24),o=Math.round((s-box)/2),pad=Math.round(box*0.12);
+      ctx.fillStyle='#fff';ctx.fillRect(o,o,box,box);ctx.drawImage(logo,o+pad,o+pad,box-2*pad,box-2*pad);}
+    return cv.toDataURL('image/png');
+  }catch(e){
+    var q=new QRious({value:text,size:size||600,level:'M',padding:18,background:'#ffffff',foreground:brandFg()});
+    return q.toDataURL('image/png');
+  }
+}
+function qrPng(text,size){return qrCompose(text,size,_logoImg);}
+async function genQrZip(all){
+  if(typeof QRious==='undefined'||typeof JSZip==='undefined'){toast('Librairie QR en cours de chargement, réessayez.');return;}
+  const btn=document.getElementById('btn-zip');btn.disabled=true;btn.textContent='Préparation…';
+  try{
+    let rows=await fetchCodes(all);
+    if(!rows.length){toast('Aucun code à générer');return;}
+    const CAP=2000;let capped=false;if(rows.length>CAP){rows=rows.slice(0,CAP);capped=true;}
+    const logo=await loadLogoImg();
+    const zip=new JSZip(),folder=zip.folder('qr-'+slug());
+    for(let i=0;i<rows.length;i++){
+      const data=qrCompose(SCAN_BASE+rows[i].code,600,logo).split(',')[1];
+      folder.file(rows[i].code+'.png',data,{base64:true});
+      if(i%40===0){btn.textContent='QR '+(i+1)+'/'+rows.length;await new Promise(r=>setTimeout(r,0));}
+    }
+    btn.textContent='Compression…';
+    const blob=await zip.generateAsync({type:'blob'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr-'+slug()+'.zip';a.click();
+    toast(rows.length+' QR téléchargés'+(capped?' (lot max 2000 — relancez pour la suite)':'')+' ✓');
+  }catch(e){toast(e.message||'Erreur QR');}
+  btn.disabled=false;btn.textContent='Télécharger QR (PNG .zip)';
+}
+async function printSheet(all){
+  if(typeof QRious==='undefined'){toast('Librairie QR en cours de chargement, réessayez.');return;}
+  const btn=document.getElementById('btn-sheet');btn.disabled=true;btn.textContent='Préparation…';
+  try{
+    let rows=await fetchCodes(all);
+    if(!rows.length){toast('Aucun code à imprimer');return;}
+    const CAP=600;let capped=false;if(rows.length>CAP){rows=rows.slice(0,CAP);capped=true;}
+    const logo=await loadLogoImg();
+    const cells=rows.map(function(r){return '<div class="q"><img src="'+qrCompose(SCAN_BASE+r.code,300,logo)+'"/><div class="c">'+esc(r.code)+'</div></div>';}).join('');
+    const w=window.open('','_blank');if(!w){toast('Autorisez les pop-ups pour imprimer');return;}
+    w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>QR MySargal — '+esc(CAMP.brand_name||'')+'</title><style>body{font-family:Arial,Helvetica,sans-serif;margin:16px;color:#111}h1{font-size:15px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.q{border:1px solid #e5e7eb;border-radius:8px;padding:8px;text-align:center;break-inside:avoid}.q img{width:100%;height:auto;display:block}.c{font:700 9.5px/1.2 monospace;margin-top:5px;word-break:break-all}@media print{.q{border-color:#eee}}</style></head><body><h1>QR MySargal — '+esc(CAMP.brand_name||'')+' · '+rows.length+' code'+(rows.length>1?'s':'')+(capped?' (planche limitée à 600)':'')+'</h1><div class="grid">'+cells+'</div></body></html>');
+    w.document.close();setTimeout(function(){try{w.focus();w.print();}catch(e){}},500);
+    toast('Planche prête'+(capped?' (600 max par planche)':'')+' ✓');
+  }catch(e){toast(e.message||'Erreur planche');}
+  btn.disabled=false;btn.textContent='Planche à imprimer';
+}
+
+if(isAuth()){enter();}
+</script>
+</body>
+</html>

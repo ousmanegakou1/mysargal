@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Bon d achat">
+  <defs>
+    <style>
+      .bg{fill:#f3ede0}
+      .marine{fill:#1e3a5f}
+      .orange{fill:#c85a3e}
+      .txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;fill:#1e3a5f;letter-spacing:6px;font-size:22px}
+      .sub{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:600;fill:#c85a3e;letter-spacing:8px;font-size:11px}
+      .line{stroke:#1e3a5f;stroke-width:1.5;fill:none}
+    </style>
+  </defs>
+  <rect class="bg" width="400" height="300"/>
+  <rect x="30" y="30" width="340" height="240" class="line"/>
+  <polygon class="orange" points="60,80 90,140 30,140"/>
+  <polygon class="marine" points="370,220 340,160 400,160"/>
+  <text class="sub" x="200" y="140" text-anchor="middle">BON D ACHAT</text>
+  <text class="txt" x="200" y="180" text-anchor="middle">MARAZ</text>
+  <line class="line" x1="80" y1="200" x2="320" y2="200"/>
+</svg>

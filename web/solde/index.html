@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#16a34a"/>
+<title>Vérifier ma carte cadeau — MySargal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f4f8f4;--card:#ffffff;--ink:#0c1f14;--ink2:#557056;--ink3:#8aa08c;--line:#e3ece4;--grn:#16a34a;--grn2:#22c55e;--gold:#e0a912;--red:#dc2626}
+html[data-theme="dark"]{--bg:#060d06;--card:#0e160e;--ink:#f0f7f0;--ink2:#8aab8a;--ink3:#5b7f6a;--line:rgba(255,255,255,.08)}
+html{transition:background .25s}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.thbtn{position:fixed;top:14px;right:14px;width:38px;height:38px;border-radius:11px;background:var(--card);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;color:var(--ink2);z-index:5}
+.wrap{max-width:460px;margin:0 auto;padding:48px 18px 60px}
+.logo{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px}
+.logo i{font-style:normal;color:var(--grn)}.logo img{height:30px}
+.sub{text-align:center;color:var(--ink2);font-size:.9rem;margin-bottom:26px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 16px 40px rgba(12,31,20,.06)}
+h1{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.25rem;letter-spacing:-.3px}
+.hint{font-size:.86rem;color:var(--ink2);margin:6px 0 16px;line-height:1.5}
+label{display:block;font-size:.74rem;font-weight:700;color:var(--ink2);margin:0 0 7px}
+input{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:15px;color:var(--ink);font-family:'DM Mono',monospace;font-size:1.1rem;letter-spacing:.1em;text-transform:uppercase;outline:none}
+input:focus{border-color:var(--grn)}
+.btn{width:100%;border:none;border-radius:14px;padding:16px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;margin-top:16px;background:var(--grn);color:#fff;transition:filter .15s}
+.btn:active{filter:brightness(.95)}.btn:disabled{opacity:.6}
+.msg{margin-top:14px;font-size:.86rem;padding:12px 14px;border-radius:12px;display:none;text-align:center}
+.msg.err{background:rgba(220,38,38,.1);color:var(--red);display:block}
+.res{margin-top:22px;display:none}
+.bal{text-align:center;padding:8px 0 4px}
+.bal .lbl{font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);font-weight:700}
+.bal .v{font-family:'Montserrat',sans-serif;font-weight:900;font-size:3.4rem;line-height:1.05;color:var(--grn);margin-top:4px}
+.prog{height:12px;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:18px 0 8px}
+.prog>i{display:block;height:100%;background:linear-gradient(90deg,var(--grn),var(--grn2));border-radius:10px;transition:width .9s ease}
+.meta{display:flex;justify-content:space-between;font-size:.82rem;color:var(--ink2);margin-top:6px}
+.badge{display:inline-block;font-size:.7rem;font-weight:800;font-family:'DM Mono';padding:4px 12px;border-radius:20px;margin:14px auto 0}
+.badge.ok{background:rgba(34,197,94,.14);color:var(--grn)}.badge.off{background:rgba(220,38,38,.12);color:var(--red)}
+.who{text-align:center;font-size:.92rem;color:var(--ink);margin-top:6px}.who b{color:var(--grn)}
+.note-card{background:var(--bg);border:1px dashed var(--line);border-radius:14px;padding:14px;margin-top:16px;font-size:.88rem;color:var(--ink2);text-align:center;font-style:italic}
+.hsec{font-family:'Montserrat';font-weight:700;font-size:.92rem;margin:24px 0 10px}
+.tx{display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--ink2);padding:10px 0;border-bottom:1px solid var(--line)}
+.tx .amt{margin-left:auto;font-family:'DM Mono';font-weight:700}
+.tx .amt.neg{color:var(--red)}.tx .amt.pos{color:var(--grn)}
+.foot{text-align:center;font-size:.74rem;color:var(--ink3);font-weight:600;margin-top:26px}.foot b{color:var(--grn)}
+.spin{width:17px;height:17px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+</defs></svg>
+<button class="thbtn" onclick="msToggle()" title="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+<div class="wrap">
+  <div class="logo"><img src="/favicon.svg" alt=""/>My<i>Sargal</i></div>
+  <div class="sub">Vérifie le solde de ta carte cadeau</div>
+
+  <div class="card">
+    <h1>Ta carte cadeau</h1>
+    <div class="hint">Entre le code de ta carte (il commence par <b>GC-</b>) pour voir ton solde. Aucun compte nécessaire.</div>
+    <label>Code de la carte</label>
+    <input id="code" placeholder="GC-XXXXXX" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="20" onkeydown="if(event.key==='Enter')check()"/>
+    <button class="btn" id="btn" onclick="check()"><span id="lbl">Vérifier le solde</span></button>
+    <div class="msg" id="msg"></div>
+
+    <div class="res" id="res">
+      <div class="bal">
+        <div class="lbl">Solde disponible</div>
+        <div class="v"><span id="bal">0</span> <span style="font-size:1.4rem" id="bal-devise">FCFA</span></div>
+      </div>
+      <div class="prog"><i id="bar" style="width:0%"></i></div>
+      <div class="meta"><span id="m-init"></span><span id="m-exp"></span></div>
+      <div style="text-align:center"><span class="badge" id="badge"></span></div>
+      <div class="who" id="who"></div>
+      <div class="note-card" id="note" style="display:none"></div>
+      <div id="hist-wrap" style="display:none">
+        <div class="hsec">Historique</div>
+        <div id="hist"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Propulsé par My<b>Sargal</b> · mysargal.com</div>
+</div>
+
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'light';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msUI();}
+function msUI(){var t=document.documentElement.getAttribute('data-theme')||'light';var ic=(t==='light'?'moon':'sun');document.querySelectorAll('.thbtn').forEach(b=>b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+ic+'"></use></svg>');}
+msUI();
+const fmt=n=>(Math.round(n||0)).toLocaleString('fr-FR');
+function msg(t){var e=document.getElementById('msg');e.className='msg err';e.textContent=t;}
+function clearMsg(){var e=document.getElementById('msg');e.className='msg';e.textContent='';}
+
+// pré-remplir depuis ?c=CODE
+try{var c=new URLSearchParams(location.search).get('c');if(c){document.getElementById('code').value=c.toUpperCase();}}catch(e){}
+
+async function check(){
+  clearMsg();document.getElementById('res').style.display='none';
+  const code=(document.getElementById('code').value||'').trim().toUpperCase();
+  if(code.length<4){msg('Entre le code de ta carte.');return;}
+  const btn=document.getElementById('btn'),lbl=document.getElementById('lbl');
+  btn.disabled=true;lbl.innerHTML='<span class="spin"></span>';
+  try{
+    const r=await fetch(SB+'/rest/v1/rpc/gift_card_public_balance',{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+SA,'Content-Type':'application/json'},body:JSON.stringify({p_code:code})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error('Service indisponible, réessaie');
+    if(!d||!d.found){msg('Carte introuvable. Vérifie le code (ex : GC-AB12CD).');return;}
+    render(d);
+  }catch(e){msg(e.message||'Erreur réseau');}
+  finally{btn.disabled=false;lbl.textContent='Vérifier le solde';}
+}
+
+/* Devise de la boutique — symbole et décimales suivent le pays. */
+var MS_DEVISES={XOF:{s:'FCFA',d:0},XAF:{s:'FCFA',d:0},NGN:{s:'₦',d:2},KES:{s:'KSh',d:2},
+  TZS:{s:'TSh',d:0},RWF:{s:'FRw',d:0},UGX:{s:'USh',d:0},GHS:{s:'GH₵',d:2},
+  ZAR:{s:'R',d:2},MAD:{s:'DH',d:2},DZD:{s:'DA',d:2},TND:{s:'DT',d:3},
+  EUR:{s:'€',d:2},USD:{s:'US$',d:2},GBP:{s:'£',d:2},CAD:{s:'CA$',d:2},BRL:{s:'R$',d:2},
+  // Huit monnaies manquaient : une carte lue depuis Banjul, Nouakchott,
+  // Praia, Conakry, Bujumbura, Addis-Abeba, Lusaka ou Geneve retombait
+  // silencieusement sur le franc CFA, et le client voyait un montant
+  // libelle dans une monnaie qui n'a pas cours chez lui.
+  GMD:{s:'D',d:2},MRU:{s:'UM',d:2},CVE:{s:'$',d:0},GNF:{s:'FG',d:0},
+  BIF:{s:'FBu',d:0},ETB:{s:'Br',d:2},ZMW:{s:'ZK',d:2},CHF:{s:'CHF',d:2}};
+
+function render(d){
+  const init=d.initial_amount||0, bal=d.balance||0;
+  const dv=MS_DEVISES[d.currency]||MS_DEVISES.XOF;
+  const nb=n=>new Intl.NumberFormat('fr-FR',{minimumFractionDigits:dv.d,maximumFractionDigits:dv.d}).format(Number(n)||0);
+  const pct=init?Math.max(0,Math.min(100,Math.round(bal/init*100))):0;
+  document.getElementById('bal').textContent=nb(bal);
+  const bd=document.getElementById('bal-devise'); if(bd) bd.textContent=dv.s;
+  setTimeout(()=>document.getElementById('bar').style.width=pct+'%',120);
+  document.getElementById('m-init').textContent='Montant initial : '+nb(init)+' '+dv.s;
+  let exp='';
+  if(d.expires_at){const dt=new Date(d.expires_at);exp = dt>new Date()?('Valable jusqu\'au '+dt.toLocaleDateString('fr-FR')):('Expirée le '+dt.toLocaleDateString('fr-FR'));}
+  document.getElementById('m-exp').textContent=exp;
+  const b=document.getElementById('badge');
+  if(d.status==='active'&&bal>0){b.className='badge ok';b.textContent='ACTIVE';}
+  else if(d.status==='used'||bal<=0){b.className='badge off';b.textContent='SOLDÉE / UTILISÉE';}
+  else{b.className='badge off';b.textContent=String(d.status||'').toUpperCase();}
+  document.getElementById('who').innerHTML=d.merchant?('Carte valable chez <b>'+esc(d.merchant)+'</b>'):'';
+  const note=document.getElementById('note');
+  if(d.message){note.style.display='block';note.textContent='« '+d.message+' »';}else{note.style.display='none';}
+  // historique
+  const hist=d.history||[];const hw=document.getElementById('hist-wrap'),hl=document.getElementById('hist');
+  if(hist.length){hw.style.display='block';
+    hl.innerHTML=hist.map(t=>{
+      const neg=(t.amount||0)<0;
+      const label={debit:'Encaissement',recharge:'Recharge',load:'Chargement initial'}[t.type]||(t.note||'Opération');
+      const when=t.at?new Date(t.at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'2-digit'}):'';
+      return '<div class="tx"><div><div style="font-weight:600;color:var(--ink)">'+esc(label)+'</div><div style="font-size:.72rem">'+when+'</div></div><div class="amt '+(neg?'neg':'pos')+'">'+(neg?'':'+')+fmt(t.amount)+' F</div></div>';
+    }).join('');
+  }else{hw.style.display='none';}
+  document.getElementById('res').style.display='block';
+}
+</script>
+</body>
+</html>

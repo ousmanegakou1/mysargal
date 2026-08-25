@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Cagnotte cadeau collective — MySargal</title>
+<meta name="theme-color" content="#0b5c3a"/>
+<style>
+:root{--green:#0f7a4d;--greend:#0b5c3a;--greent:#eaf6f0;--greenl:#cdeadd;--ink:#152019;--mut:#6a7871;--line:#e7e9e7;--soft:#f6f7f6;--bg:#eef0ef;--gold:#c9a24a;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,'SF Pro Display',Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding:22px 14px 50px}
+.wrap{max-width:460px;margin:0 auto}
+.brand{text-align:center;font-weight:800;font-size:20px;margin-bottom:16px}.brand span{color:var(--green)}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 16px 40px rgba(15,61,46,.08);overflow:hidden}
+.hd{background:linear-gradient(135deg,var(--green),var(--greend));color:#fff;padding:24px 22px;text-align:center;position:relative;overflow:hidden}
+.hd:after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;background:rgba(201,162,74,.28);border-radius:50%}
+.hd .k{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#ffe6b8;font-weight:700;position:relative}
+.hd h1{font-size:22px;font-weight:800;margin-top:6px;position:relative}
+.hd .sub{font-size:13px;color:#d6efe2;margin-top:4px;position:relative}
+.bd{padding:22px}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 6px}
+.inp,select{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;font-size:15px;font-family:inherit;background:#fafbfa;color:var(--ink)}
+.inp:focus,select:focus{outline:none;border-color:var(--green);background:#fff}
+textarea.inp{min-height:60px;resize:vertical}
+.btn{width:100%;background:var(--green);color:#fff;font-weight:800;font-size:16px;padding:15px;border:none;border-radius:13px;cursor:pointer;font-family:inherit;margin-top:16px}
+.btn:disabled{opacity:.6}
+.btn.ghost{background:#fff;border:1.5px solid var(--green);color:var(--green)}
+.btn.gold{background:var(--gold);color:#231a06}
+.msg{font-size:13px;min-height:18px;margin:8px 0;text-align:center}.msg.err{color:var(--err)}.msg.ok{color:var(--green)}
+.prog{height:14px;background:var(--soft);border-radius:20px;overflow:hidden;margin:14px 0 6px;border:1px solid var(--line)}
+.prog .fill{height:100%;background:linear-gradient(90deg,var(--green),var(--greend));width:0;transition:width .5s}
+.amtrow{display:flex;justify-content:space-between;font-size:13px;color:var(--mut)}
+.amtrow b{color:var(--ink)}
+.big{font-size:30px;font-weight:800;color:var(--green);text-align:center;margin:4px 0}
+.contribs{margin-top:16px}
+.contrib{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.contrib .a{font-weight:700;color:var(--greend)}
+.chips{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--greenl);background:var(--greent);color:var(--greend);border-radius:20px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.share{background:var(--greent);border:1px solid var(--greenl);border-radius:14px;padding:16px;text-align:center;margin-top:16px}
+.share .lk{font-family:'DM Mono',ui-monospace,monospace;font-size:12.5px;word-break:break-all;color:var(--greend);margin:8px 0}
+.qr{width:180px;height:180px;margin:10px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.qr>div,.qr canvas,.qr img{width:156px!important;height:156px!important}
+.hide{display:none}
+.note{font-size:12px;color:var(--mut);text-align:center;margin-top:14px;line-height:1.5}
+.pw{text-align:center;font-size:11px;color:var(--mut);margin-top:16px}.pw b{color:var(--green)}
+.done{text-align:center}
+.done .ic{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--greend));display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.done .ic svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2.5}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">My<span>Sargal</span> · Cagnotte cadeau</div>
+  <div class="card">
+    <div class="hd">
+      <div class="k">Cagnotte collective</div>
+      <h1 id="h-title">Offrez une carte cadeau à plusieurs</h1>
+      <div class="sub" id="h-sub">Chacun participe, le/la bénéficiaire reçoit une seule carte.</div>
+    </div>
+    <div class="bd">
+
+      <!-- CREATE -->
+      <div id="mode-create">
+        <label>Ton nom (organisateur)</label>
+        <input class="inp" id="c-org" placeholder="Ex. Awa"/>
+        <label>Pour qui ? (bénéficiaire)</label>
+        <input class="inp" id="c-rcpt" placeholder="Ex. Fatou"/>
+        <label>Son numéro WhatsApp (pour recevoir la carte)</label>
+        <input class="inp" id="c-phone" inputmode="tel" placeholder="77 123 45 67"/>
+        <label>Enseigne (optionnel)</label>
+        <select id="c-merch"><option value="">Carte cadeau universelle</option></select>
+        <label>Objectif en FCFA (optionnel)</label>
+        <input class="inp" id="c-target" inputmode="numeric" placeholder="Ex. 50 000"/>
+        <label>Petit mot (optionnel)</label>
+        <textarea class="inp" id="c-msg" placeholder="Joyeux anniversaire de la part de tous !"></textarea>
+        <div class="msg" id="c-msg-e"></div>
+        <button class="btn" id="c-btn" onclick="createPool()">Créer la cagnotte</button>
+        <div class="note">Tu obtiens un lien à partager. Chacun participe, et tu clôtures quand tu veux : le/la bénéficiaire reçoit la carte cadeau sur WhatsApp.</div>
+      </div>
+
+      <!-- VIEW / CONTRIBUTE -->
+      <div id="mode-view" class="hide">
+        <div class="big" id="v-collected">0 F</div>
+        <div class="amtrow"><span>Collecté</span><span id="v-target"></span></div>
+        <div class="prog"><div class="fill" id="v-fill"></div></div>
+        <div class="amtrow" style="margin-top:4px"><span id="v-count">0 participation</span><span id="v-status"></span></div>
+
+        <div id="v-contribute">
+          <label>Ton nom</label>
+          <input class="inp" id="ct-name" placeholder="Ex. Modou"/>
+          <label>Ta participation (FCFA)</label>
+          <input class="inp" id="ct-amt" inputmode="numeric" placeholder="Ex. 5 000"/>
+          <div class="chips" id="ct-chips"></div>
+          <div class="msg" id="ct-msg"></div>
+          <button class="btn" id="ct-btn" onclick="contribute()">Participer</button>
+        </div>
+
+        <div class="contribs" id="v-contribs"></div>
+
+        <div id="v-manage" class="hide">
+          <button class="btn gold" onclick="closePool()">Clôturer et envoyer la carte</button>
+          <div class="note">À faire par l'organisateur, quand tout le monde a participé.</div>
+        </div>
+
+        <div class="share hide" id="v-share">
+          <div style="font-weight:700;color:var(--greend)">Partage la cagnotte</div>
+          <div class="qr" id="v-qr"></div>
+          <div class="lk" id="v-link"></div>
+          <button class="btn ghost" style="margin-top:6px" onclick="shareLink()">Partager le lien</button>
+        </div>
+      </div>
+
+      <!-- DONE -->
+      <div id="mode-done" class="hide done">
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h2 style="font-size:20px;font-weight:800">Cagnotte clôturée</h2>
+        <div class="note" id="done-txt"></div>
+      </div>
+
+      <div class="pw">Propulsé par <b>MySargal</b></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const SB_URL='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const H={'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'};
+const WAVE_PAY_LINK='https://pay.wave.com/m/M_sn_1n3_7fYSl-lo/c/sn/';
+const P=new URLSearchParams(location.search);
+const CODE=(P.get('c')||'').toUpperCase();
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmt(n){return (Math.round(Number(n)||0)).toLocaleString('fr-FR').replace(/,/g,' ')+' F';}
+function show(id,on){document.getElementById(id).classList.toggle('hide',!on);}
+async function api(action,body){
+  const r=await fetch(SB_URL+'/functions/v1/giftcard-pool',{method:'POST',headers:H,body:JSON.stringify(Object.assign({action},body||{}))});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.success)throw new Error(d.error||'Erreur');
+  return d;
+}
+function renderQR(el,text,size){el.innerHTML='';try{if(typeof QRCode!=='undefined'){new QRCode(el,{text:text,width:size,height:size,colorDark:'#0b5c3a',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});return;}}catch(e){}el.innerHTML='<div style="font-size:11px;font-family:monospace;word-break:break-all;padding:8px">'+esc(text)+'</div>';}
+
+// Charge les enseignes participantes (optionnel)
+async function loadMerchants(){
+  try{const r=await fetch(SB_URL+'/rest/v1/marketplace_directory?order=name.asc',{headers:H});const rows=await r.json();if(Array.isArray(rows)){const sel=document.getElementById('c-merch');rows.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.name;sel.appendChild(o);});
+    // enseigne pré-sélectionnée quand on arrive depuis une page boutique (?m=<id>)
+    const pre=P.get('m');
+    if(pre && Array.prototype.some.call(sel.options,o=>o.value===pre)) sel.value=pre;
+  }}catch(e){}
+}
+
+async function createPool(){
+  const e=document.getElementById('c-msg-e');e.className='msg';e.textContent='';
+  const rcpt=document.getElementById('c-rcpt').value.trim();
+  if(!rcpt){e.className='msg err';e.textContent='Indique le/la bénéficiaire.';return;}
+  const btn=document.getElementById('c-btn');btn.disabled=true;
+  try{
+    const d=await api('create',{organizer_name:document.getElementById('c-org').value.trim(),recipient_name:rcpt,recipient_phone:document.getElementById('c-phone').value.replace(/\D/g,''),merchant_id:document.getElementById('c-merch').value||null,target_amount:parseInt(document.getElementById('c-target').value.replace(/\D/g,''))||null,message:document.getElementById('c-msg').value.trim()||null});
+    location.href='/cagnotte.html?c='+encodeURIComponent(d.pool.code)+'&owner=1';
+  }catch(err){e.className='msg err';e.textContent=err.message;btn.disabled=false;}
+}
+
+function renderPool(p){
+  show('mode-create',false);show('mode-view',true);
+  document.getElementById('h-title').textContent='Cagnotte pour '+esc(p.recipient_name);
+  document.getElementById('h-sub').textContent=(p.organizer_name?('Organisée par '+esc(p.organizer_name)+' · '):'')+esc(p.merchant_name);
+  document.getElementById('v-collected').textContent=fmt(p.collected);
+  document.getElementById('v-target').textContent=p.target_amount?('Objectif '+fmt(p.target_amount)):'';
+  const pct=p.target_amount?Math.min(100,Math.round(p.collected/p.target_amount*100)):(p.collected>0?100:0);
+  setTimeout(()=>{document.getElementById('v-fill').style.width=pct+'%';},80);
+  document.getElementById('v-count').textContent=p.contributions.length+' participation'+(p.contributions.length>1?'s':'');
+  document.getElementById('v-status').textContent=p.status==='open'?'Ouverte':'Clôturée';
+  document.getElementById('v-contribs').innerHTML=p.contributions.slice().reverse().map(c=>'<div class="contrib"><span>'+esc(c.name)+'</span><span class="a">'+fmt(c.amount)+'</span></div>').join('');
+  document.getElementById('ct-chips').innerHTML=[1000,2000,5000,10000].map(a=>'<span class="chip" onclick="document.getElementById(\'ct-amt\').value='+a+'">'+fmt(a)+'</span>').join('');
+  const open=p.status==='open';
+  show('v-contribute',open);
+  show('v-manage',open && P.get('owner')==='1');
+  // share
+  show('v-share',open);
+  const link='https://mysargal.com/cagnotte.html?c='+p.code;
+  document.getElementById('v-link').textContent=link;
+  renderQR(document.getElementById('v-qr'),link,156);
+  window._poolLink=link;
+  if(p.status==='closed'){
+    show('mode-view',false);show('mode-done',true);
+    document.getElementById('done-txt').innerHTML='Total '+fmt(p.collected)+' envoyé à '+esc(p.recipient_name)+' sur WhatsApp.'+(p.gift_card_code?'<br/>Carte : <b>'+esc(p.gift_card_code)+'</b>':'');
+  }
+}
+
+async function contribute(){
+  const e=document.getElementById('ct-msg');e.className='msg';e.textContent='';
+  const amt=parseInt(document.getElementById('ct-amt').value.replace(/\D/g,''))||0;
+  if(amt<100){e.className='msg err';e.textContent='Montant minimum 100 FCFA.';return;}
+  window.open(WAVE_PAY_LINK,'_blank');
+  if(!confirm('Paie '+fmt(amt)+' via Wave dans le nouvel onglet, puis clique OK pour valider ta participation.')){return;}
+  const btn=document.getElementById('ct-btn');btn.disabled=true;
+  try{
+    const d=await api('contribute',{code:CODE,contributor_name:document.getElementById('ct-name').value.trim(),amount:amt});
+    document.getElementById('ct-amt').value='';document.getElementById('ct-name').value='';
+    e.className='msg ok';e.textContent='Merci pour ta participation !';
+    renderPool(d.pool);
+  }catch(err){e.className='msg err';e.textContent=err.message;}
+  btn.disabled=false;
+}
+async function closePool(){
+  if(!confirm('Clôturer la cagnotte et envoyer la carte cadeau au bénéficiaire ?'))return;
+  try{const d=await api('close',{code:CODE});renderPool(d.pool);}catch(err){alert(err.message);}
+}
+function shareLink(){const l=window._poolLink||location.href;if(navigator.share){navigator.share({title:'Cagnotte cadeau MySargal',text:'Participe à la cagnotte cadeau',url:l}).catch(()=>{});}else{navigator.clipboard&&navigator.clipboard.writeText(l);alert('Lien copié : '+l);}}
+
+// boot
+if(CODE){ api('get',{code:CODE}).then(d=>renderPool(d.pool)).catch(e=>{document.getElementById('h-title').textContent='Cagnotte introuvable';show('mode-create',false);}); }
+else{ loadMerchants(); }
+</script>
+</body>
+</html>

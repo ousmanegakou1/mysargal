@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Rejoindre le programme de fidélité</title>
+<style>
+:root{
+  --green:#0f7a4d;--greend:#0b5c3a;--greent:#eaf6f0;--greenl:#cdeadd;
+  --ink:#152019;--mut:#6a7871;--line:#e7e9e7;--soft:#f6f7f6;--bg:#eef0ef;--gold:#c9a24a;--err:#c0392b
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,'SF Pro Display',Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:22px 14px 40px}
+.wrap{width:100%;max-width:420px}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:0 20px 50px rgba(15,61,46,.10);overflow:hidden}
+.hd{background:linear-gradient(135deg,var(--green),var(--greend));color:#fff;padding:26px 24px 24px;text-align:center;position:relative;overflow:hidden}
+.hd:after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;background:rgba(201,162,74,.28);border-radius:50%}
+.hd .emo{font-size:34px;line-height:1;margin-bottom:8px;position:relative}
+.hd .nm{font-size:21px;font-weight:800;letter-spacing:-.3px;position:relative}
+.hd .sub{font-size:13px;color:#d6efe2;margin-top:4px;position:relative}
+.bd{padding:22px 22px 24px}
+.earn{display:flex;gap:10px;align-items:flex-start;background:var(--greent);border:1px solid var(--greenl);border-radius:13px;padding:12px 13px;font-size:13.5px;color:var(--greend);line-height:1.5;margin-bottom:18px}
+.earn .dot{flex:0 0 9px;width:9px;height:9px;border-radius:50%;background:var(--green);margin-top:5px}
+.earn b{color:var(--greend)}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:0 0 6px}
+.inp{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:15px;font-family:inherit;background:#fafbfa;margin-bottom:15px;color:var(--ink)}
+.inp:focus{outline:none;border-color:var(--green);background:#fff}
+.phrow{display:flex;gap:8px}
+.phrow select{flex:0 0 96px;border:1.5px solid var(--line);border-radius:12px;padding:13px 8px;font-size:14px;font-family:inherit;background:#fafbfa;margin-bottom:15px}
+.phrow .inp{flex:1}
+.btn{width:100%;background:var(--green);color:#fff;font-weight:800;font-size:16px;padding:15px;border:none;border-radius:13px;cursor:pointer;font-family:inherit;letter-spacing:.2px}
+.btn:disabled{opacity:.6}
+.btn.ghost{background:#fff;border:1.5px solid var(--green);color:var(--green);margin-top:10px}
+.spin{display:inline-block;width:17px;height:17px;border:2.4px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.msg{font-size:13px;min-height:18px;margin:2px 0 10px;text-align:center}
+.msg.err{color:var(--err)}.msg.ok{color:var(--green)}
+.trust{display:flex;align-items:center;justify-content:center;gap:7px;font-size:11.5px;color:var(--mut);margin-top:16px}
+.trust svg{width:14px;height:14px;stroke:var(--green);fill:none;stroke-width:2.2}
+.consent{font-size:11px;color:var(--mut);text-align:center;margin-top:10px;line-height:1.5}
+.consent a{color:var(--green)}
+.hide{display:none}
+.otp-dest{font-weight:700;color:var(--ink)}
+.back{background:none;border:none;color:var(--mut);font-size:13px;cursor:pointer;margin-top:12px;width:100%;font-family:inherit}
+/* result */
+.rok{text-align:center}
+.rok .ic{width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--greend));display:flex;align-items:center;justify-content:center;margin:2px auto 12px}
+.rok .ic svg{width:34px;height:34px;stroke:#fff;fill:none;stroke-width:2.4}
+.rok h2{font-size:22px;font-weight:800}
+.rok .rs{font-size:13.5px;color:var(--mut);margin-top:4px}
+.qrbox{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin:18px 0 6px;text-align:center}
+.qrbox canvas,.qrbox img{width:190px;height:190px}
+.qrbox .cc{font-family:'DM Mono',ui-monospace,monospace;font-size:15px;font-weight:700;letter-spacing:1px;margin-top:10px}
+.present{background:var(--greent);border:1px solid var(--greenl);border-radius:12px;padding:12px 13px;font-size:13px;color:var(--greend);text-align:center;line-height:1.5;margin-top:6px}
+.present b{color:var(--greend)}
+.walrow{display:flex;gap:8px;margin-top:14px}
+.walrow a{flex:1;text-align:center;border:1px solid var(--line);border-radius:11px;padding:11px;font-size:12.5px;color:var(--ink);text-decoration:none;font-weight:600}
+.pw{text-align:center;font-size:11px;color:var(--mut);margin-top:16px}
+.pw b{color:var(--green)}
+/* kiosk */
+body.kiosk .wrap{max-width:520px}
+body.kiosk .hd .nm{font-size:26px}
+body.kiosk .hd .emo{font-size:44px}
+body.kiosk .inp,body.kiosk .phrow select{font-size:19px;padding:17px}
+body.kiosk .btn{font-size:20px;padding:19px}
+body.kiosk .qrbox canvas,body.kiosk .qrbox img{width:230px;height:230px}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="hd">
+      <div class="emo" id="m-emo">🛍️</div>
+      <div class="nm" id="m-name">Programme de fidélité</div>
+      <div class="sub">Fidélité &amp; cartes cadeaux</div>
+    </div>
+
+    <div class="bd">
+      <!-- STEP PHONE -->
+      <div id="step-phone">
+        <div class="earn"><span class="dot"></span><span><b>Gagnez des points à chaque achat.</b> Entrez votre numéro pour recevoir votre carte de fidélité sur WhatsApp. Aucune application à installer.</span></div>
+        <label>Votre prénom</label>
+        <input class="inp" id="f-name" placeholder="Ex. Awa" autocomplete="given-name"/>
+        <label>Votre numéro WhatsApp</label>
+        <div class="phrow">
+          <select id="f-cc">
+            <option value="221" selected>SN +221</option>
+            <option value="225">CI +225</option>
+            <option value="223">ML +223</option>
+            <option value="226">BF +226</option>
+            <option value="228">TG +228</option>
+            <option value="229">BJ +229</option>
+            <option value="224">GN +224</option>
+            <option value="227">NE +227</option>
+            <option value="33">FR +33</option>
+          </select>
+          <input class="inp" id="f-phone" inputmode="numeric" placeholder="77 123 45 67" autocomplete="tel"/>
+        </div>
+        <div class="msg" id="msg"></div>
+        <button class="btn" id="btn-cont" onclick="onContinue()"><span id="cont-lbl">Recevoir mes points</span></button>
+        <div class="trust"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>100% gratuit · vos points sont conservés</div>
+        <div class="consent">En continuant, vous acceptez de recevoir votre carte et des offres par WhatsApp. Vos données ne sont jamais revendues. <a href="/support" target="_blank" rel="noopener">En savoir plus</a>.</div>
+      </div>
+
+      <!-- STEP OTP -->
+      <div id="step-otp" class="hide">
+        <div class="earn"><span class="dot"></span><span>Nous avons envoyé un code de vérification sur WhatsApp au <span class="otp-dest" id="otp-dest"></span>. Entrez-le pour confirmer votre numéro.</span></div>
+        <label>Code de vérification</label>
+        <input class="inp" id="f-otp" inputmode="numeric" maxlength="6" placeholder="0 0 0 0" style="text-align:center;letter-spacing:6px;font-size:22px;font-weight:700"/>
+        <div class="msg" id="msg-otp"></div>
+        <button class="btn" id="btn-otp" onclick="verifyOtp()"><span id="otp-lbl">Valider</span></button>
+        <button class="back" onclick="resendOtp()">Renvoyer le code</button>
+        <button class="back" onclick="backToPhone()">Modifier mon numéro</button>
+      </div>
+
+      <!-- STEP RESULT -->
+      <div id="step-result" class="hide">
+        <div class="rok">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <h2 id="r-title">Bienvenue !</h2>
+          <div class="rs" id="r-sub">Votre carte de fidélité est prête.</div>
+          <div class="qrbox">
+            <div id="r-qr"></div>
+            <div class="cc" id="r-code">LC-000000</div>
+          </div>
+          <div class="present"><b>Présentez ce code au caissier</b> pour créditer votre achat du jour.</div>
+          <div class="walrow">
+            <a id="r-apple" href="#" target="_blank" rel="noopener">Apple Wallet</a>
+            <a id="r-google" href="#" target="_blank" rel="noopener">Google Pay</a>
+          </div>
+          <button class="btn ghost" id="r-view" onclick="openCard()" style="margin-top:14px">Voir ma carte</button>
+          <div class="pw" id="kiosk-reset"></div>
+        </div>
+      </div>
+
+      <div class="pw">Propulsé par <b>MySargal</b></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const SB_URL='https://iiocxlvcuoqafzlisqwd.supabase.co';
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderQR(elId,text,size){
+  var el=document.getElementById(elId);if(!el)return;el.innerHTML='';
+  try{ if(typeof QRCode!=='undefined'){ new QRCode(el,{text:text,width:size,height:size,colorDark:'#0b5c3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); return; } }catch(e){}
+  // fallback SVG/local
+  try{
+    var tmp=document.createElement('div');tmp.style.position='fixed';tmp.style.left='-9999px';document.body.appendChild(tmp);
+    new QRCode(tmp,{text:text,width:size,height:size,colorDark:'#0b5c3a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    var img=tmp.querySelector('img'),cv=tmp.querySelector('canvas'),src='';
+    if(img&&img.src)src=img.src;else if(cv&&cv.toDataURL)src=cv.toDataURL('image/png');
+    tmp.remove();
+    if(src){el.innerHTML='<img src="'+src+'" width="'+size+'" height="'+size+'" style="display:block"/>';return;}
+  }catch(e){}
+  el.innerHTML='<div style="width:'+size+'px;height:'+size+'px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:12px">'+esc(text)+'</div>';
+}
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const P=new URLSearchParams(location.search);
+const MERCHANT=(P.get('m')||'').trim();
+const KIOSK=P.get('kiosk')==='1';
+let pendingPhone=null, cardUrl='';
+
+if(KIOSK)document.body.classList.add('kiosk');
+// Branding depuis les paramètres (l'affichette est générée par le marchand)
+(function(){
+  const n=P.get('n'); const e=P.get('e'); const c=P.get('c');
+  if(n)document.getElementById('m-name').textContent=decodeURIComponent(n);
+  if(e)document.getElementById('m-emo').textContent=decodeURIComponent(e);
+  if(c&&/^#?[0-9a-fA-F]{6}$/.test(c)){const col='#'+c.replace('#','');document.documentElement.style.setProperty('--green',col);}
+  if(!MERCHANT){document.getElementById('msg').textContent='Lien invalide : boutique manquante.';document.getElementById('btn-cont').disabled=true;}
+})();
+
+function clientJwt(){try{return localStorage.getItem('ms_client_jwt')||'';}catch(e){return '';}}
+function jwtPhone(t){try{var p=JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return (p.exp*1000>Date.now())?String(p.phone||'').replace(/\D/g,''):'';}catch(e){return '';}}
+function msg(id,t,ok){var el=document.getElementById(id);el.className='msg '+(ok?'ok':'err');el.textContent=t;}
+function clearMsg(id){var el=document.getElementById(id);el.className='msg';el.textContent='';}
+function load(btn,lbl,on,txt){btn.disabled=on;lbl.innerHTML=on?'<span class="spin"></span>':txt;}
+function currentFull(){const cc=document.getElementById('f-cc').value;const ph=document.getElementById('f-phone').value.replace(/\D/g,'');return {cc,ph,full:(cc+ph).replace(/\D/g,'')};}
+
+async function onContinue(){
+  clearMsg('msg');
+  if(!MERCHANT){msg('msg','Lien invalide.');return;}
+  const {ph,full}=currentFull();
+  if(ph.length<8){msg('msg','Entrez un numéro de téléphone valide.');return;}
+  const name=document.getElementById('f-name').value.trim();
+  try{localStorage.setItem('ms_store_user',JSON.stringify({name}));}catch(e){}
+  const t=clientJwt();
+  if(t && jwtPhone(t)===full){return doEnroll();}   // déjà vérifié sur cet appareil
+  pendingPhone='+'+full;
+  await sendOtp();
+}
+async function sendOtp(){
+  const btn=document.getElementById('btn-cont'),lbl=document.getElementById('cont-lbl');
+  load(btn,lbl,true,'Recevoir mes points');
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/send-client-otp',{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({phone:pendingPhone})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||'Envoi impossible');
+    document.getElementById('otp-dest').textContent=pendingPhone;
+    document.getElementById('step-phone').classList.add('hide');
+    document.getElementById('step-otp').classList.remove('hide');
+    document.getElementById('f-otp').focus();
+  }catch(e){msg('msg',e.message||'Erreur réseau');}
+  load(btn,lbl,false,'Recevoir mes points');
+}
+function resendOtp(){clearMsg('msg-otp');fetch(SB_URL+'/functions/v1/send-client-otp',{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({phone:pendingPhone})}).then(r=>r.json()).then(d=>{msg('msg-otp','Nouveau code envoyé',true);}).catch(()=>msg('msg-otp','Erreur'));}
+function backToPhone(){document.getElementById('step-otp').classList.add('hide');document.getElementById('step-phone').classList.remove('hide');clearMsg('msg');}
+async function verifyOtp(){
+  clearMsg('msg-otp');
+  const code=document.getElementById('f-otp').value.replace(/\D/g,'');
+  if(code.length<4){msg('msg-otp','Entrez le code reçu.');return;}
+  const btn=document.getElementById('btn-otp'),lbl=document.getElementById('otp-lbl');
+  load(btn,lbl,true,'Valider');
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/verify-client-otp',{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({phone:pendingPhone,code})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.token)throw new Error(d.error||'Code incorrect');
+    try{localStorage.setItem('ms_client_jwt',d.token);}catch(e){}
+    await doEnroll();
+  }catch(e){msg('msg-otp',e.message||'Erreur');load(btn,lbl,false,'Valider');}
+}
+async function doEnroll(){
+  const btn=document.getElementById('btn-cont'),lbl=document.getElementById('cont-lbl');
+  load(btn,lbl,true,'Recevoir mes points');
+  const name=document.getElementById('f-name').value.trim()||'Client';
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/enroll-loyalty',{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+(clientJwt()||SB_ANON),'Content-Type':'application/json'},body:JSON.stringify({merchant_id:MERCHANT,name})});
+    const d=await r.json().catch(()=>({}));
+    if(d&&d.needs_otp){const {full}=currentFull();pendingPhone='+'+full;document.getElementById('step-otp').classList.add('hide');document.getElementById('step-phone').classList.remove('hide');load(btn,lbl,false,'Recevoir mes points');return sendOtp();}
+    if(!r.ok||!d.success)throw new Error(d.error||'Inscription impossible');
+    showResult(d,name);
+  }catch(e){
+    document.getElementById('step-otp').classList.add('hide');document.getElementById('step-phone').classList.remove('hide');
+    msg('msg',e.message||'Erreur réseau');load(btn,lbl,false,'Recevoir mes points');
+  }
+}
+function showResult(d,name){
+  cardUrl=d.card_url||('https://mysargal.com/c/?code='+d.card_code);
+  document.getElementById('step-phone').classList.add('hide');
+  document.getElementById('step-otp').classList.add('hide');
+  document.getElementById('step-result').classList.remove('hide');
+  if(d.already){document.getElementById('r-title').textContent='Content de vous revoir'+(name&&name!=='Client'?', '+name:'');document.getElementById('r-sub').textContent='Votre carte est déjà active.';}
+  else{document.getElementById('r-title').textContent='Bienvenue'+(name&&name!=='Client'?', '+name:'')+' !';document.getElementById('r-sub').textContent=(d.welcome>0?('+'+d.welcome+' points de bienvenue. '):'')+'Votre carte est prête et envoyée sur WhatsApp.';}
+  document.getElementById('r-code').textContent=d.card_code;
+  renderQR('r-qr',cardUrl,KIOSK?230:190);
+  document.getElementById('r-apple').href=SB_URL+'/functions/v1/get-apple-pass?code='+encodeURIComponent(d.card_code);
+  document.getElementById('r-google').href=SB_URL+'/functions/v1/get-google-pass?code='+encodeURIComponent(d.card_code);
+  if(KIOSK){
+    let s=25;const k=document.getElementById('kiosk-reset');
+    const iv=setInterval(function(){s--;k.textContent='Nouvel écran dans '+s+' s';if(s<=0){clearInterval(iv);resetKiosk();}},1000);
+  }
+}
+function openCard(){if(cardUrl)window.open(cardUrl,'_blank','noopener');}
+function resetKiosk(){
+  document.getElementById('f-name').value='';document.getElementById('f-phone').value='';document.getElementById('f-otp').value='';
+  clearMsg('msg');clearMsg('msg-otp');
+  document.getElementById('step-result').classList.add('hide');
+  document.getElementById('step-otp').classList.add('hide');
+  document.getElementById('step-phone').classList.remove('hide');
+  const btn=document.getElementById('btn-cont');btn.disabled=false;document.getElementById('cont-lbl').textContent='Recevoir mes points';
+}
+document.getElementById('f-otp').addEventListener('keydown',function(e){if(e.key==='Enter')verifyOtp();});
+document.getElementById('f-phone').addEventListener('keydown',function(e){if(e.key==='Enter')onContinue();});
+</script>
+</body>
+</html>

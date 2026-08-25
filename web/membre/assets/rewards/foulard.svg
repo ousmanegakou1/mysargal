@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Foulard">
+  <defs>
+    <style>
+      .bg{fill:#f3ede0}
+      .marine{fill:#1e3a5f}
+      .orange{fill:#c85a3e}
+      .txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;fill:#1e3a5f;letter-spacing:6px;font-size:22px}
+      .sub{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:600;fill:#c85a3e;letter-spacing:8px;font-size:11px}
+    </style>
+  </defs>
+  <rect class="bg" width="400" height="300"/>
+  <!-- silk swatch: rotated square with geometric pattern -->
+  <g transform="translate(200,140) rotate(45)">
+    <rect x="-70" y="-70" width="140" height="140" fill="#1e3a5f"/>
+    <rect x="-52" y="-52" width="104" height="104" fill="none" stroke="#c85a3e" stroke-width="2"/>
+    <polygon fill="#c85a3e" points="0,-32 20,0 0,32 -20,0"/>
+    <polygon fill="#f3ede0" points="0,-14 10,0 0,14 -10,0"/>
+  </g>
+  <text class="sub" x="200" y="245" text-anchor="middle">CADEAU SIGNATURE</text>
+  <text class="txt" x="200" y="278" text-anchor="middle">MARAZ</text>
+</svg>

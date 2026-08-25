@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+  <t t-name="mysargal_pos.RewardButton">
+    <span class="control-button" t-on-click="onClick">
+      <i class="fa fa-gift" role="img" aria-label="Récompense" title="Récompense MySargal"/>
+      <span> Récompense</span>
+    </span>
+  </t>
+</templates>

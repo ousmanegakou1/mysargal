@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+document.addEventListener('DOMContentLoaded',msThemeUI);</script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0a0f0a"/>
+<title>Créer ma boutique — MySargal</title>
+<meta name="description" content="Crée ta boutique MySargal en 2 minutes : cartes de fidélité digitales et cartes cadeaux pour ton commerce. Gratuit, sans carte bancaire."/>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="canonical" href="https://mysargal.com/onboarding/"/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="Créer ma boutique — MySargal"/><meta property="og:description" content="Cartes de fidélité digitales et cartes cadeaux pour ton commerce. Gratuit, prêt en 2 minutes."/><meta property="og:url" content="https://mysargal.com/onboarding/"/><meta property="og:image" content="https://mysargal.com/og-image.png"/><meta name="twitter:card" content="summary_large_image"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & BASE ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:#0a0f0a;
+  color:#f0ede8;
+  min-height:100%;
+  min-height:100svh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── VARIABLES ── */
+:root{
+  --green:#16a34a;
+  --green2:#22c55e;
+  --green3:#4ade80;
+  --greenlt:#052e16;
+  --greenmid:#14532d;
+  --gold:#f5c842;
+  --wave:#00c4a3;
+  --orange:#f97316;
+  --surface:#111a11;
+  --surface2:#192019;
+  --surface3:#1f2d1f;
+  --border:rgba(34,197,94,0.12);
+  --border2:rgba(34,197,94,0.22);
+  --tx:#f0ede8;
+  --tx2:#9aab96;
+  --tx3:#4a5e47;
+  --r:14px;
+  --r2:20px;
+  --r3:28px;
+  --logo-box:#f3faf3;--logo-ink:#0a2810;
+}
+html[data-theme="light"]{
+  --surface:#ffffff;--surface2:#ffffff;--surface3:#f1f6f1;
+  --border:rgba(22,163,74,.14);--border2:rgba(22,163,74,.28);
+  --tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;
+  --logo-box:#0a0f0b;--logo-ink:#ffffff;
+}
+html[data-theme="light"] body{background:#eef3ef;color:#12241a}
+.ms-logo{height:34px;width:auto;display:block}
+.thbtn{width:38px;height:38px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;color:var(--tx2);box-shadow:0 4px 14px rgba(20,45,28,.08);transition:transform .18s,box-shadow .18s}
+.thbtn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(20,45,28,.12)}
+
+/* ── LAYOUT ── */
+.app{
+  display:flex;
+  flex-direction:column;
+  min-height:100svh;
+  max-width:480px;
+  margin:0 auto;
+  position:relative;
+}
+
+/* ── BACKGROUND ── */
+.bg-glow{
+  position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+}
+.bg-glow::before{
+  content:'';position:absolute;
+  top:-30vh;left:50%;transform:translateX(-50%);
+  width:80vw;height:80vw;
+  background:radial-gradient(circle,rgba(22,163,74,.18) 0%,transparent 70%);
+}
+.bg-glow::after{
+  content:'';position:absolute;
+  bottom:-20vh;right:-20vw;
+  width:60vw;height:60vw;
+  background:radial-gradient(circle,rgba(0,196,163,.08) 0%,transparent 70%);
+}
+
+/* ── HEADER ── */
+.header{
+  position:relative;z-index:10;
+  padding:20px 24px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+  font-family:'Montserrat',sans-serif;
+  font-size:1.3rem;font-weight:900;
+  letter-spacing:-0.02em;color:var(--tx);
+}
+.logo span{color:var(--green2)}
+.back-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1.1rem;color:var(--tx2);
+  box-shadow:0 4px 14px rgba(20,45,28,.08);
+  transition:transform .18s,box-shadow .18s,background .2s,color .2s;
+}
+.back-btn:active{transform:scale(.94)}
+.back-btn:hover{background:var(--surface3);color:var(--tx)}
+
+/* ── PROGRESS ── */
+.progress-wrap{
+  position:relative;z-index:10;
+  padding:20px 24px 0;
+  display:flex;align-items:center;gap:10px;
+}
+.prog-steps{display:flex;gap:6px;flex:1}
+.prog-step{
+  flex:1;height:3px;border-radius:20px;
+  background:var(--surface3);overflow:hidden;
+}
+.prog-fill{
+  height:100%;border-radius:20px;
+  background:linear-gradient(90deg,var(--green),var(--green3));
+  box-shadow:0 0 8px rgba(34,197,94,.55);
+  transition:width .45s cubic-bezier(.4,0,.2,1);
+}
+.prog-label{
+  font-family:'DM Mono',monospace;
+  font-size:.68rem;color:var(--tx3);
+  white-space:nowrap;
+}
+
+/* ── MAIN CONTENT ── */
+.content{
+  position:relative;z-index:10;
+  flex:1;display:flex;flex-direction:column;
+  padding:28px 24px 32px;
+}
+
+/* ── STEP ── */
+.step{display:none;flex-direction:column;flex:1;animation:stepIn .35s ease}
+.step.active{display:flex}
+@keyframes stepIn{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+
+/* ── STEP ICON ── */
+.step-icon{
+  width:66px;height:66px;border-radius:20px;margin-bottom:22px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,rgba(34,197,94,.20),rgba(0,196,163,.10));
+  border:1px solid rgba(34,197,94,.28);
+  box-shadow:0 12px 30px rgba(22,163,74,.20),inset 0 1px 0 rgba(255,255,255,.14);
+  animation:iconPop .45s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+.step-icon::after{content:'';position:absolute;inset:-5px;border-radius:24px;border:1px solid rgba(34,197,94,.12);pointer-events:none}
+.step-icon svg{width:32px!important;height:32px!important}
+html[data-theme="light"] .step-icon{background:linear-gradient(140deg,rgba(34,197,94,.14),rgba(0,196,163,.08));box-shadow:0 12px 28px rgba(22,163,74,.14),inset 0 1px 0 rgba(255,255,255,.6)}
+@keyframes iconPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ── STEP TEXTS ── */
+.step-title{
+  font-family:'Montserrat',sans-serif;
+  font-size:1.9rem;font-weight:900;
+  line-height:1.1;letter-spacing:-0.02em;
+  color:var(--tx);margin-bottom:8px;
+}
+.step-title em{color:var(--green2);font-style:normal}
+.step-sub{
+  font-size:.9rem;color:var(--tx2);
+  line-height:1.6;margin-bottom:32px;font-weight:300;
+}
+
+/* ── PHONE INPUT ── */
+.phone-row{
+  display:flex;gap:10px;align-items:stretch;margin-bottom:14px;
+}
+.country-badge{
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:var(--r);padding:0 14px;
+  font-family:'DM Mono',monospace;font-size:.82rem;
+  color:var(--tx2);white-space:nowrap;flex-shrink:0;
+  cursor:default;
+}
+.country-flag{font-size:1.1rem}
+.phone-input{
+  flex:1;padding:15px 16px;
+  background:var(--surface2);
+  border:1.5px solid var(--border);
+  border-radius:var(--r);
+  font-family:'DM Mono',monospace;font-size:1.05rem;
+  color:var(--tx);letter-spacing:.08em;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;
+}
+.phone-input:focus{
+  border-color:var(--green2);
+  box-shadow:0 0 0 3px rgba(34,197,94,.12);
+}
+.phone-input::placeholder{color:var(--tx3)}
+
+/* ── OTP INPUT ── */
+.otp-row{
+  display:flex;gap:10px;justify-content:center;
+  margin-bottom:16px;
+}
+.otp-digit{
+  width:60px;height:68px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--r);
+  font-family:'Montserrat',sans-serif;font-size:1.8rem;font-weight:700;
+  color:var(--tx);text-align:center;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;caret-color:var(--green2);
+}
+.otp-digit:focus{
+  border-color:var(--green2);
+  box-shadow:0 0 0 3px rgba(34,197,94,.15);
+}
+.otp-digit.filled{border-color:var(--green);background:rgba(22,163,74,.06)}
+
+/* ── TYPE SELECTOR ── */
+.type-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-bottom:20px;
+}
+.type-card{
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--r2);padding:20px 14px;
+  cursor:pointer;transition:transform .2s cubic-bezier(.34,1.3,.64,1),border-color .2s,box-shadow .2s,background .2s;
+  text-align:center;
+  box-shadow:0 2px 12px rgba(20,45,28,.05);
+  -webkit-tap-highlight-color:transparent;
+}
+.type-card:hover{
+  border-color:rgba(34,197,94,.4);transform:translateY(-3px);
+  box-shadow:0 12px 28px rgba(22,163,74,.13);
+}
+.type-card:active{transform:translateY(-1px) scale(.99)}
+.type-card.selected{
+  border-color:var(--green2);background:rgba(22,163,74,.08);
+  box-shadow:0 0 0 3px rgba(34,197,94,.16),0 10px 26px rgba(22,163,74,.15);
+}
+.type-emoji{
+  width:52px;height:52px;border-radius:50%;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(34,197,94,.10);transition:background .2s,transform .2s;
+}
+.type-card:hover .type-emoji,.type-card.selected .type-emoji{background:rgba(34,197,94,.18)}
+.type-card.selected .type-emoji{transform:scale(1.06)}
+.type-emoji svg{width:26px!important;height:26px!important}
+.type-name{
+  font-size:.82rem;font-weight:600;color:var(--tx);margin-bottom:2px;
+}
+.type-hint{font-size:.68rem;color:var(--tx3)}
+
+/* ── MODE DE POINTS ── */
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.mode-seg{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r2);padding:15px 12px;cursor:pointer;text-align:center;transition:transform .18s,border-color .18s,box-shadow .18s,background .18s;box-shadow:0 2px 10px rgba(20,45,28,.05)}
+.mode-seg:hover{transform:translateY(-2px);border-color:rgba(34,197,94,.4)}
+.mode-seg.selected{border-color:var(--green2);background:rgba(22,163,74,.08);box-shadow:0 0 0 3px rgba(34,197,94,.15),0 8px 20px rgba(22,163,74,.13)}
+.mode-seg .mt{font-size:.84rem;font-weight:600;color:var(--tx)}
+.mode-seg .ms{font-size:.66rem;color:var(--tx3);margin-top:2px}
+.fcfa-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.fcfa-btn{flex:1;min-width:70px;padding:13px 8px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:600;color:var(--tx2);text-align:center;transition:all .18s}
+.fcfa-btn.selected{border-color:var(--green2);background:rgba(22,163,74,.1);color:var(--green2)}
+
+/* ── REWARD SECTION ── */
+.reward-num-row{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;
+}
+.rnum-btn{
+  flex:1;min-width:52px;padding:14px 10px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--r);cursor:pointer;
+  font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:700;
+  color:var(--tx2);text-align:center;transition:all .18s;
+}
+.rnum-btn:hover,.rnum-btn:active{
+  border-color:var(--green);color:var(--tx);
+}
+.rnum-btn.selected{
+  border-color:var(--green2);background:rgba(22,163,74,.1);color:var(--green2);
+  box-shadow:0 0 0 3px rgba(34,197,94,.16),0 8px 20px rgba(22,163,74,.14);
+  transform:translateY(-2px);
+}
+.reward-input-wrap{position:relative;margin-bottom:20px}
+.reward-input{
+  width:100%;padding:15px 16px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.95rem;
+  color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;
+}
+.reward-input:focus{
+  border-color:var(--green2);
+  box-shadow:0 0 0 3px rgba(34,197,94,.12);
+}
+.reward-input::placeholder{color:var(--tx3)}
+.reward-examples{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.rex{
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:20px;padding:5px 12px;
+  font-size:.72rem;color:var(--tx2);cursor:pointer;
+  transition:all .15s;
+}
+.rex:hover,.rex:active{border-color:var(--green);color:var(--green2)}
+
+/* ── SHOP NAME INPUT ── */
+.shop-input{
+  width:100%;padding:16px 18px;
+  background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:1.05rem;
+  color:var(--tx);outline:none;transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;margin-bottom:12px;
+}
+.shop-input:focus{
+  border-color:var(--green2);
+  box-shadow:0 0 0 3px rgba(34,197,94,.12);
+}
+.shop-input::placeholder{color:var(--tx3)}
+
+/* ── CTA BUTTON ── */
+.cta{
+  width:100%;padding:17px;
+  background:linear-gradient(135deg,var(--green2),var(--green));color:#fff;
+  border:none;border-radius:16px;
+  font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.01em;
+  cursor:pointer;transition:transform .2s,box-shadow .2s,filter .2s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-top:auto;
+  box-shadow:0 12px 28px rgba(22,163,74,.32),inset 0 1px 0 rgba(255,255,255,.18);
+  -webkit-tap-highlight-color:transparent;
+}
+.cta:hover{filter:brightness(1.06);transform:translateY(-2px);box-shadow:0 16px 34px rgba(22,163,74,.42),inset 0 1px 0 rgba(255,255,255,.18)}
+.cta:active{transform:translateY(0) scale(.985)}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.cta.loading{pointer-events:none}
+
+/* ── SECONDARY BTN ── */
+.cta-ghost{
+  width:100%;padding:13px;
+  background:transparent;color:var(--tx2);
+  border:1.5px solid var(--border);border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:10px;
+}
+.cta-ghost:hover{border-color:var(--border2);color:var(--tx)}
+.cta-ghost:active{transform:scale(.98)}
+
+/* ── SPINNER ── */
+.spin{
+  width:18px;height:18px;
+  border:2.5px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;
+  animation:sp .7s linear infinite;display:none;
+}
+.cta.loading .spin{display:inline-block}
+.cta.loading .cta-label{display:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── HINT LINE ── */
+.hint{
+  font-size:.75rem;color:var(--tx3);
+  display:flex;align-items:center;gap:5px;
+  margin-bottom:12px;
+}
+
+/* ── WAVE PILL ── */
+.wave-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(0,196,163,.08);border:1px solid rgba(0,196,163,.2);
+  border-radius:20px;padding:6px 14px;margin-bottom:24px;
+}
+.wave-dot{width:7px;height:7px;border-radius:50%;background:var(--wave);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.wave-txt{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--wave);letter-spacing:.3px}
+
+/* ── SUCCESS STATE ── */
+.success-wrap{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:40px 24px;
+}
+.success-icon{
+  width:96px;height:96px;border-radius:28px;margin-bottom:24px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(140deg,rgba(34,197,94,.22),rgba(0,196,163,.12));
+  border:1px solid rgba(34,197,94,.3);
+  box-shadow:0 18px 44px rgba(22,163,74,.26),inset 0 1px 0 rgba(255,255,255,.16);
+  animation:successPop .55s cubic-bezier(.34,1.56,.64,1);
+}
+.success-icon svg{width:48px!important;height:48px!important}
+@keyframes successPop{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.success-title{
+  font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;
+  color:var(--tx);margin-bottom:12px;letter-spacing:-0.02em;
+}
+.success-title em{color:var(--green2);font-style:normal}
+.success-sub{font-size:.9rem;color:var(--tx2);line-height:1.6;margin-bottom:32px;max-width:320px}
+
+/* ── CONFIRM CARD ── */
+.confirm-card{
+  background:var(--surface2);border:1.5px solid var(--border2);
+  border-radius:var(--r2);padding:20px;margin-bottom:28px;
+  text-align:left;width:100%;
+  box-shadow:0 14px 34px rgba(20,45,28,.10),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.confirm-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid var(--border);font-size:.84rem;
+}
+.confirm-row:last-child{border-bottom:none}
+.confirm-key{color:var(--tx3);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+.confirm-val{color:var(--tx);font-weight:600}
+
+/* ── RESEND ── */
+.resend-row{text-align:center;margin-top:14px}
+.resend-btn{
+  background:none;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--tx3);
+  transition:color .2s;
+}
+.resend-btn:not(:disabled):hover{color:var(--green2)}
+.resend-btn:disabled{cursor:default}
+#resend-count{color:var(--tx3)}
+
+/* ── LATER LINK ── */
+.later-link{
+  text-align:center;margin-top:14px;
+  font-size:.78rem;color:var(--tx3);cursor:pointer;transition:color .2s;
+}
+.later-link:hover{color:var(--tx2)}
+
+/* ── TOAST ── */
+.toast-wrap{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  z-index:9999;pointer-events:none;
+  display:flex;flex-direction:column;gap:8px;align-items:center;
+}
+.toast{
+  background:var(--surface3);border:1px solid var(--border2);
+  border-radius:var(--r);padding:11px 20px;
+  font-size:.82rem;font-weight:500;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  animation:toastIn .3s ease;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;
+}
+.toast.ok{border-left:3px solid var(--green2);color:var(--green3)}
+.toast.err{border-left:3px solid #f87171;color:#f87171}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ── ANIMATIONS TRANSITION ── */
+.ob-choix{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 18px}
+.ob-choix-c{display:flex;flex-direction:column;gap:6px}
+.ob-choix-l{font-size:.70rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--tx3)}
+.ob-select{
+  width:100%;height:50px;padding:0 12px;cursor:pointer;outline:none;
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:14px;
+  color:var(--tx);font-family:inherit;font-size:.86rem;font-weight:600;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2378808f' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;background-size:15px;
+  padding-right:34px;
+}
+.ob-select:focus{border-color:var(--green2)}
+@media(max-width:360px){.ob-choix{grid-template-columns:1fr}}
+
+.step.exit{
+  animation:stepOut .2s ease forwards;
+}
+@keyframes stepOut{to{opacity:0;transform:translateY(-10px)}}
+
+/* ── SAFE AREA ── */
+@supports(padding-bottom:env(safe-area-inset-bottom)){
+  .content{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
+}
+</style>
+
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n-landing.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol>
+<symbol id="ic-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9.5h18M6 15h4"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+<symbol id="ic-store" viewBox="0 0 24 24"><path d="M4 9l1.2-4h13.6L20 9"/><path d="M4 9a2 2 0 004 0 2 2 0 004 0 2 2 0 004 0 2 2 0 004 0"/><path d="M5 11v8h14v-8"/><path d="M9 19v-4h4v4"/></symbol>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.5"/></symbol>
+<symbol id="ic-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></symbol>
+<symbol id="ic-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.4 12.2a1 1 0 001 .8h9.5a1 1 0 001-.8L21 7H6"/></symbol>
+<symbol id="ic-utensils" viewBox="0 0 24 24"><path d="M7 3v6a2 2 0 004 0V3M9 11v10"/><path d="M16.5 3c-1.4 1-2 3-2 6s.3 4 2 4.2V21"/></symbol>
+<symbol id="ic-scissors" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2.5"/><circle cx="6" cy="17" r="2.5"/><path d="M8 8.5L20 17M8 15.5L20 7"/></symbol>
+<symbol id="ic-wrench" viewBox="0 0 24 24"><path d="M15 6a3.5 3.5 0 00-4.6 4.6L4 17v3h3l6.4-6.4A3.5 3.5 0 0018 9"/></symbol>
+<symbol id="ic-coins" viewBox="0 0 24 24"><circle cx="9" cy="9" r="5.5"/><path d="M14.5 4.2a5.5 5.5 0 010 9.6M9 6.5v5M6.7 9h4.6"/></symbol>
+<symbol id="ic-bulb" viewBox="0 0 24 24"><path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 00-4 10.5c.8.7 1 1.3 1 2.5h6c0-1.2.2-1.8 1-2.5A6 6 0 0012 3z"/></symbol>
+<symbol id="ic-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></symbol>
+<symbol id="ic-cam" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="13" rx="2.5"/><circle cx="12" cy="13" r="3.4"/><path d="M8.5 6.5L10 4h4l1.5 2.5"/></symbol>
+</defs></svg>
+
+<div class="bg-glow"></div>
+
+<div class="app" id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <a href="/" class="logo" style="text-decoration:none;display:flex;align-items:center" aria-label="MySargal"><svg class="ms-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg></a>
+    <div style="display:flex;gap:8px;align-items:center"><button class="thbtn" onclick="msToggle()" title="Changer de thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button><button class="back-btn" id="back-btn" onclick="goBack()" style="display:none">←</button></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="prog-steps" id="prog-steps">
+      <div class="prog-step"><div class="prog-fill" id="p1" style="width:0%"></div></div>
+      <div class="prog-step"><div class="prog-fill" id="p2" style="width:0%"></div></div>
+      <div class="prog-step"><div class="prog-fill" id="p3" style="width:0%"></div></div>
+      <div class="prog-step"><div class="prog-fill" id="p4" style="width:0%"></div></div>
+    </div>
+    <div class="prog-label" id="prog-label">1 / 4</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════ STEP 1 — NOM DE LA BOUTIQUE ════ -->
+    <div class="step active" id="step-1">
+      <div class="step-icon"><svg viewBox="0 0 24 24" style="width:52px;height:52px;stroke:var(--green2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-store"></use></svg></div>
+      <div class="step-title">Comment s'appelle<br><em>ta boutique ?</em></div>
+      <div class="step-sub">Un seul champ. C'est tout ce dont on a besoin pour commencer.</div>
+
+      <input class="shop-input" id="shop-name" type="text"
+        placeholder="Ex: Café Touba, Épicerie Ndiaye..."
+        autocomplete="off" autocorrect="off"
+        maxlength="60"
+        oninput="updateCTA1()"
+        onkeydown="if(event.key==='Enter')nextStep(1)"/>
+
+      <div class="type-grid" id="type-grid">
+        <div class="type-card" data-type="restaurant" onclick="selectType(this)">
+          <span class="type-emoji"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--green2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-utensils"></use></svg></span>
+          <div class="type-name">Restaurant / Café</div>
+          <div class="type-hint">Thiébou dieune, café touba...</div>
+        </div>
+        <div class="type-card" data-type="epicerie" onclick="selectType(this)">
+          <span class="type-emoji"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--green2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-cart"></use></svg></span>
+          <div class="type-name">Épicerie / Boutique</div>
+          <div class="type-hint">Alimentation, produits...</div>
+        </div>
+        <div class="type-card" data-type="beaute" onclick="selectType(this)">
+          <span class="type-emoji"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--green2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-scissors"></use></svg></span>
+          <div class="type-name">Beauté / Coiffure</div>
+          <div class="type-hint">Salon, tresses, soins...</div>
+        </div>
+        <div class="type-card" data-type="service" onclick="selectType(this)">
+          <span class="type-emoji"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--green2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-wrench"></use></svg></span>
+          <div class="type-name">Service / Autre</div>
+          <div class="type-hint">Livraison, pressing...</div>
+        </div>
+      </div>
+
+      <!-- Le pays était demandé à l'étape du téléphone, donc APRÈS les paliers
+           de récompense : une boutique de Nairobi lisait des francs CFA avant
+           d'avoir pu dire où elle se trouvait. On le demande maintenant en
+           premier, et la langue avec, pour que rien ne soit deviné. -->
+      <div class="ob-choix">
+        <label class="ob-choix-c">
+          <span class="ob-choix-l">Pays et monnaie</span>
+          <select id="ob-pays" class="ob-select" onchange="obChangerPays(this.value)"></select>
+        </label>
+        <label class="ob-choix-c">
+          <span class="ob-choix-l">Langue</span>
+          <select id="ob-langue" class="ob-select" onchange="obChangerLangue(this.value)">
+            <option value="fr">Français</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </label>
+      </div>
+
+      <button class="cta" id="cta-1" onclick="nextStep(1)" disabled>
+        <span class="cta-label">Continuer →</span>
+        <span class="spin"></span>
+      </button>
+    </div>
+
+    <!-- ════ STEP 2 — RÉCOMPENSE ════ -->
+    <div class="step" id="step-2">
+      <div class="step-icon"><svg viewBox="0 0 24 24" style="width:52px;height:52px;stroke:var(--green2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div>
+      <div class="step-title">Quelle est ta<br><em>récompense ?</em></div>
+      <div class="step-sub">Après combien d'achats tu offres quelque chose à ton client ?</div>
+
+      <div class="mode-row">
+        <div class="mode-seg selected" id="mode-visit" onclick="setPtsMode(false)"><div class="mt"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:5px"><use href="#ic-store"></use></svg>Par passage</div><div class="ms">1 visite = 1 point</div></div>
+        <div class="mode-seg" id="mode-amount" onclick="setPtsMode(true)"><div class="mt"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:5px"><use href="#ic-coins"></use></svg>Par montant</div><div class="ms">1 point = X FCFA dépensés</div></div>
+      </div>
+
+      <div id="fcfa-block" style="display:none">
+        <div style="font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px" id="fcfa-label">1 point = combien ?</div>
+        <div class="fcfa-row" id="fcfa-row"></div>
+      </div>
+
+      <div style="font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px" id="threshold-label">Nombre d'achats →</div>
+      <div class="reward-num-row">
+        <div class="rnum-btn" data-num="5" onclick="selectNum(this)">5</div>
+        <div class="rnum-btn" data-num="8" onclick="selectNum(this)">8</div>
+        <div class="rnum-btn selected" data-num="10" onclick="selectNum(this)">10</div>
+        <div class="rnum-btn" data-num="15" onclick="selectNum(this)">15</div>
+        <div class="rnum-btn" data-num="20" onclick="selectNum(this)">20</div>
+      </div>
+
+      <div style="font-size:.72rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Tu offres quoi ?</div>
+      <div class="reward-examples" id="reward-examples"></div>
+      <input class="reward-input" id="reward-desc" type="text"
+        placeholder="Ex: Un café gratuit, 10% de réduction..."
+        autocomplete="off" oninput="updateCTA2()"
+        onkeydown="if(event.key==='Enter')nextStep(2)"/>
+
+      <div class="hint"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0"><use href="#ic-bulb"></use></svg><span>Tu peux changer ça à tout moment dans tes paramètres</span></div>
+
+      <button class="cta" id="cta-2" onclick="nextStep(2)" disabled>
+        <span class="cta-label">C'est ma récompense →</span>
+        <span class="spin"></span>
+      </button>
+      <div class="later-link" onclick="skipReward()">Décider plus tard</div>
+    </div>
+
+    <!-- ════ STEP 3 — TÉLÉPHONE ════ -->
+    <div class="step" id="step-3">
+      <div class="step-icon"><svg viewBox="0 0 24 24" style="width:52px;height:52px;stroke:var(--green2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-phone"></use></svg></div>
+      <div class="step-title">Ton numéro<br><em>de téléphone</em></div>
+      <div class="step-sub">On t'envoie un code par WhatsApp pour sécuriser ton compte. Pas de mot de passe à retenir.</div>
+
+      <div class="phone-row">
+        <select id="country-code" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:12px;padding:0 8px;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--tx2);outline:none;cursor:pointer;height:52px;max-width:110px" onchange="STATE.countryCode=this.value">
+          <option value="+221">🇸🇳 +221</option><option value="+225">🇨🇮 +225</option><option value="+223">🇲🇱 +223</option><option value="+226">🇧🇫 +226</option><option value="+229">🇧🇯 +229</option><option value="+228">🇹🇬 +228</option><option value="+227">🇳🇪 +227</option><option value="+245">🇬🇼 +245</option><option value="+224">🇬🇳 +224</option><option value="+220">🇬🇲 +220</option><option value="+222">🇲🇷 +222</option><option value="+238">🇨🇻 +238</option><option value="+234">🇳🇬 +234</option><option value="+233">🇬🇭 +233</option><option value="+254">🇰🇪 +254</option><option value="+255">🇹🇿 +255</option><option value="+250">🇷🇼 +250</option><option value="+256">🇺🇬 +256</option><option value="+257">🇧🇮 +257</option><option value="+251">🇪🇹 +251</option><option value="+260">🇿🇲 +260</option><option value="+27">🇿🇦 +27</option><option value="+237">🇨🇲 +237</option><option value="+241">🇬🇦 +241</option><option value="+242">🇨🇬 +242</option><option value="+243">🇨🇩 +243</option><option value="+212">🇲🇦 +212</option><option value="+213">🇩🇿 +213</option><option value="+216">🇹🇳 +216</option><option value="+33">🇫🇷 +33</option><option value="+32">🇧🇪 +32</option><option value="+41">🇨🇭 +41</option><option value="+39">🇮🇹 +39</option><option value="+34">🇪🇸 +34</option><option value="+351">🇵🇹 +351</option><option value="+44">🇬🇧 +44</option><option value="+49">🇩🇪 +49</option><option value="+1">🇺🇸 +1</option><option value="+55">🇧🇷 +55</option></select>
+        <input class="phone-input" id="phone-input" type="tel"
+          placeholder="Numéro"
+          inputmode="tel"
+          autocomplete="tel"
+          oninput="formatPhone(this)"
+          onkeydown="if(event.key==='Enter')nextStep(3)"/>
+      </div>
+
+      <div class="hint">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0"><use href="#ic-lock"></use></svg>
+        <span>Ton numéro ne sera jamais partagé ni vendu</span>
+      </div>
+
+      <button class="cta" id="cta-3" onclick="nextStep(3)" disabled>
+        <span class="cta-label">Recevoir mon code WhatsApp →</span>
+        <span class="spin"></span>
+      </button>
+    </div>
+
+    <!-- ════ STEP 4 — OTP ════ -->
+    <div class="step" id="step-4">
+      <div class="step-icon"><svg viewBox="0 0 24 24" style="width:52px;height:52px;stroke:var(--green2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg></div>
+      <div class="step-title">Code reçu<br><em>sur WhatsApp</em></div>
+      <div class="step-sub" id="otp-sub">Saisis les 6 chiffres envoyés au <strong id="phone-display"></strong></div>
+
+      <div class="otp-row">
+        <input class="otp-digit" id="otp0" type="tel" inputmode="numeric" maxlength="1" onkeyup="otpKey(this,0)" oninput="otpInput(this,0)"/>
+        <input class="otp-digit" id="otp1" type="tel" inputmode="numeric" maxlength="1" onkeyup="otpKey(this,1)" oninput="otpInput(this,1)"/>
+        <input class="otp-digit" id="otp2" type="tel" inputmode="numeric" maxlength="1" onkeyup="otpKey(this,2)" oninput="otpInput(this,2)"/>
+        <input class="otp-digit" id="otp3" type="tel" inputmode="numeric" maxlength="1" onkeyup="otpKey(this,3)" oninput="otpInput(this,3)"/>
+        <input class="otp-digit" id="otp4" type="tel" inputmode="numeric" maxlength="1" onkeyup="otpKey(this,4)" oninput="otpInput(this,4)"/>
+        <input class="otp-digit" id="otp5" type="tel" inputmode="numeric" maxlength="1" onkeyup="otpKey(this,5)" oninput="otpInput(this,5)"/>
+      </div>
+
+      <button class="cta" id="cta-4" onclick="verifyOTP()" disabled>
+        <span class="cta-label">Vérifier →</span>
+        <span class="spin"></span>
+      </button>
+
+      <div class="resend-row">
+        <button class="resend-btn" id="resend-btn" disabled>
+          Renvoyer le code <span id="resend-count"></span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ════ SUCCESS ════ -->
+    <div class="step" id="step-success">
+      <div class="success-wrap">
+        <div class="success-icon"><svg viewBox="0 0 24 24" style="width:76px;height:76px;stroke:var(--green2);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-check"></use></svg></div>
+        <div class="success-title">Bienvenue<br><em id="success-name"></em></div>
+        <div class="success-sub">Ton espace est prêt. Tu peux scanner ta première carte client maintenant.</div>
+
+        <div class="confirm-card">
+          <div class="confirm-row">
+            <span class="confirm-key">Boutique</span>
+            <span class="confirm-val" id="c-shop"></span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Type</span>
+            <span class="confirm-val" id="c-type"></span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Récompense</span>
+            <span class="confirm-val" id="c-reward"></span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Téléphone</span>
+            <span class="confirm-val" id="c-phone"></span>
+          </div>
+          <div class="confirm-row">
+            <span class="confirm-key">Plan</span>
+            <span class="confirm-val" style="color:var(--green2)">Essai gratuit — 3 mois offerts</span>
+          </div>
+        </div>
+
+        <button class="cta" onclick="launchApp()">
+          <svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-cam"></use></svg>
+          <span>Scanner mon premier client</span>
+        </button>
+        <button class="cta-ghost" onclick="goToDashboard()">
+          Aller au tableau de bord
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const STATE = {
+  step: 1,
+  shopName: '',
+  shopType: '',
+  rewardNum: 10,
+  rewardDesc: '',
+  phone: '',
+  otp: ['','','','','',''],
+  countryCode: '+221',
+  resendTimer: null,
+};
+
+STATE.amountMode = false;
+STATE.fcfaPerPoint = 1000;
+STATE.fcfaRang = 1;
+
+function setPtsMode(amount){
+  STATE.amountMode = amount;
+  document.getElementById('mode-visit').classList.toggle('selected', !amount);
+  document.getElementById('mode-amount').classList.toggle('selected', amount);
+  document.getElementById('fcfa-block').style.display = amount ? '' : 'none';
+  const lbl = document.getElementById('threshold-label');
+  if (lbl) lbl.textContent = amount ? 'Récompense à combien de points ?' : "Nombre d'achats →";
+}
+// Indicatif → [devise, symbole, décimales, paliers proposés].
+// Les montants sont ronds et correspondent à un petit achat local. Ce ne sont
+// pas des conversions de change : ils ne bougeront pas avec les taux.
+// Indicatif → [monnaie, nom du pays, drapeau]. Huit monnaies manquaient et
+// huit pays pointaient vers la mauvaise : Banjul, Nouakchott, Praia, Conakry,
+// Bujumbura, Addis-Abeba, Lusaka et Genève voyaient une monnaie qui n'a pas
+// cours chez eux.
+const OB_LISTE = [
+  ['+221','XOF','Sénégal','🇸🇳'],          ['+225','XOF','Côte d’Ivoire','🇨🇮'],
+  ['+223','XOF','Mali','🇲🇱'],             ['+226','XOF','Burkina Faso','🇧🇫'],
+  ['+229','XOF','Bénin','🇧🇯'],            ['+228','XOF','Togo','🇹🇬'],
+  ['+227','XOF','Niger','🇳🇪'],            ['+245','XOF','Guinée-Bissau','🇬🇼'],
+  ['+224','GNF','Guinée','🇬🇳'],           ['+220','GMD','Gambie','🇬🇲'],
+  ['+222','MRU','Mauritanie','🇲🇷'],       ['+238','CVE','Cap-Vert','🇨🇻'],
+  ['+234','NGN','Nigeria','🇳🇬'],          ['+233','GHS','Ghana','🇬🇭'],
+  ['+254','KES','Kenya','🇰🇪'],            ['+255','TZS','Tanzanie','🇹🇿'],
+  ['+250','RWF','Rwanda','🇷🇼'],           ['+256','UGX','Ouganda','🇺🇬'],
+  ['+257','BIF','Burundi','🇧🇮'],          ['+251','ETB','Éthiopie','🇪🇹'],
+  ['+260','ZMW','Zambie','🇿🇲'],           ['+27','ZAR','Afrique du Sud','🇿🇦'],
+  ['+237','XAF','Cameroun','🇨🇲'],         ['+241','XAF','Gabon','🇬🇦'],
+  ['+242','XAF','Congo','🇨🇬'],            ['+243','XAF','RD Congo','🇨🇩'],
+  ['+212','MAD','Maroc','🇲🇦'],            ['+213','DZD','Algérie','🇩🇿'],
+  ['+216','TND','Tunisie','🇹🇳'],          ['+33','EUR','France','🇫🇷'],
+  ['+32','EUR','Belgique','🇧🇪'],          ['+41','CHF','Suisse','🇨🇭'],
+  ['+39','EUR','Italie','🇮🇹'],            ['+34','EUR','Espagne','🇪🇸'],
+  ['+351','EUR','Portugal','🇵🇹'],         ['+49','EUR','Allemagne','🇩🇪'],
+  ['+44','GBP','Royaume-Uni','🇬🇧'],       ['+55','BRL','Brésil','🇧🇷'],
+  ['+1','USD','États-Unis / Canada','🇺🇸'],
+];
+const OB_PAYS = {};
+OB_LISTE.forEach(function(p){ OB_PAYS[p[0]] = p[1]; });
+const OB_DEVISES = {
+  XOF:['FCFA',0,[500,1000,2000,5000]],   XAF:['FCFA',0,[500,1000,2000,5000]],
+  NGN:['₦',0,[1000,2000,5000,10000]],    KES:['KSh',0,[100,200,500,1000]],
+  TZS:['TSh',0,[2000,5000,10000,20000]], UGX:['USh',0,[2000,5000,10000,20000]],
+  RWF:['FRw',0,[1000,2000,5000,10000]],  GHS:['GH₵',0,[10,20,50,100]],
+  ZAR:['R',0,[10,30,50,100]],            MAD:['DH',0,[10,20,50,100]],
+  DZD:['DA',0,[100,200,500,1000]],       TND:['DT',0,[2,5,10,20]],
+  EUR:['€',0,[1,2,5,10]],                USD:['US$',0,[1,2,5,10]],
+  GBP:['£',0,[1,2,5,10]],                BRL:['R$',0,[5,10,20,50]],
+  CAD:['CA$',0,[1,2,5,10]],              CHF:['CHF',0,[1,2,5,10]],
+  GMD:['D',0,[50,100,200,500]],          MRU:['UM',0,[20,50,100,200]],
+  CVE:['$',0,[100,200,500,1000]],        GNF:['FG',0,[5000,10000,20000,50000]],
+  BIF:['FBu',0,[2000,5000,10000,20000]], ETB:['Br',0,[100,200,500,1000]],
+  ZMW:['ZK',0,[20,50,100,200]],
+};
+const OB_AVANT = new Set(['NGN','KES','TZS','RWF','UGX','GHS','ZAR','USD','GBP','BRL','CAD','CHF','CVE','ZMW','ETB']);
+
+function obDevise(){ return OB_PAYS[STATE.countryCode || '+221'] || 'XOF'; }
+function obFmt(n){
+  const c = obDevise(); const d = OB_DEVISES[c] || OB_DEVISES.XOF;
+  const v = new Intl.NumberFormat('fr-FR').format(n);
+  return OB_AVANT.has(c) ? (d[0] + ' ' + v) : (v + ' ' + d[0]);
+}
+
+// Redessine les paliers dans la monnaie du pays choisi. Appelé au chargement
+// et à chaque changement d'indicatif : le pays est demandé à l'étape du
+// téléphone, donc après celle de la récompense.
+function obPeindrePaliers(){
+  const row = document.getElementById('fcfa-row');
+  const lab = document.getElementById('fcfa-label');
+  if(!row) return;
+  const c = obDevise(); const d = OB_DEVISES[c] || OB_DEVISES.XOF;
+  // Ce libellé est construit en JavaScript : le dictionnaire ne le voit pas
+  // passer, il faut donc le traduire ici.
+  if(lab){
+    const L=(function(){ try{ if(window.msI18nLanding&&msI18nLanding.langue) return msI18nLanding.langue; }catch(e){}
+      try{ var q=new URLSearchParams(location.search).get('lang'); if(['fr','en','es'].indexOf(q)>=0) return q;
+           var m=localStorage.getItem('ms_lang'); if(['fr','en','es'].indexOf(m)>=0) return m; }catch(e){}
+      return 'fr'; })();
+    const MODELE={ fr:'1 point = combien de %s ?', en:'1 point = how much in %s?', es:'1 punto = ¿cuánto en %s?' };
+    lab.textContent = (MODELE[L]||MODELE.fr).replace('%s', d[0]);
+  }
+  const choix = d[2];
+  // On garde le RANG choisi, jamais le montant. Chercher le montant dans la
+  // nouvelle liste donnait un faux positif : 1 000 existe en FCFA, en KSh et
+  // en naira, mais ne s'y trouve pas au même rang, si bien qu'un passage du
+  // Sénégal au Kenya sélectionnait le palier le plus cher.
+  let rang = (typeof STATE.fcfaRang === 'number') ? STATE.fcfaRang : 1;
+  if(rang < 0 || rang >= choix.length) rang = 1;
+  STATE.fcfaRang = rang;
+  STATE.fcfaPerPoint = choix[rang];
+  row.innerHTML = '';
+  choix.forEach(function(v, i){
+    const b = document.createElement('div');
+    b.className = 'fcfa-btn' + (i === rang ? ' selected' : '');
+    b.dataset.fcfa = v;
+    b.textContent = obFmt(v);
+    b.onclick = function(){ selectFcfa(b); };
+    row.appendChild(b);
+  });
+}
+
+function selectFcfa(el){
+  document.querySelectorAll('.fcfa-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  STATE.fcfaPerPoint = parseInt(el.dataset.fcfa) || (OB_DEVISES[obDevise()]||OB_DEVISES.XOF)[2][1];
+  // Le rang suit le bouton cliqué : c'est lui qui survit à un changement de pays.
+  const freres = [...document.querySelectorAll('#fcfa-row .fcfa-btn')];
+  const r = freres.indexOf(el);
+  if(r >= 0) STATE.fcfaRang = r;
+}
+
+const TYPE_LABELS = {
+  restaurant: 'Restaurant / Café',
+  epicerie:   'Épicerie / Boutique',
+  beaute:     'Beauté / Coiffure',
+  service:    'Service / Autre',
+};
+
+// Deux exemples annonçaient un montant en francs CFA. À Nairobi, la première
+// suggestion de récompense parlait donc d'une monnaie étrangère. Ils sont
+// maintenant écrits dans la monnaie de la boutique, quelle qu'elle soit.
+function REWARD_EXAMPLES_DE(type){
+  const petit = obFmt((OB_DEVISES[obDevise()] || OB_DEVISES.XOF)[2][0]);
+  const gros  = obFmt((OB_DEVISES[obDevise()] || OB_DEVISES.XOF)[2][2]);
+  const T = {
+    restaurant: ['Un café gratuit','Un repas offert','10% de réduction','Une boisson offerte'],
+    epicerie:   [petit + ' offerts','1 kg de sucre gratuit','10% sur les courses','Un produit offert'],
+    beaute:     ['Un soin offert','15% de réduction','Manucure gratuite','Tresses 50% off'],
+    service:    ['Une livraison gratuite','10% de réduction','Service prioritaire','Bon de ' + gros],
+  };
+  return T[type] || T.service;
+}
+
+// ════════════════════════════════════════
+// PROGRESS
+// ════════════════════════════════════════
+function updateProgress(step) {
+  for (let i = 1; i <= 4; i++) {
+    const fill = document.getElementById('p' + i);
+    if (!fill) continue;
+    if (i < step)      fill.style.width = '100%';
+    else if (i === step) fill.style.width = '50%';
+    else               fill.style.width = '0%';
+  }
+  const lbl = document.getElementById('prog-label');
+  if (lbl) lbl.textContent = step + ' / 4';
+
+  const back = document.getElementById('back-btn');
+  if (back) back.style.display = step > 1 && step < 5 ? 'flex' : 'none';
+}
+
+// ════════════════════════════════════════
+// STEP NAVIGATION
+// ════════════════════════════════════════
+function goTo(n) {
+  const prev = document.getElementById('step-' + (STATE.step === 5 ? 'success' : STATE.step));
+  if (prev) {
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 200);
+  }
+  STATE.step = n;
+  const next = document.getElementById(n === 5 ? 'step-success' : 'step-' + n);
+  if (next) setTimeout(() => next.classList.add('active'), 50);
+  updateProgress(Math.min(n, 4));
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  if (STATE.step <= 1) return;
+  const cur = document.getElementById('step-' + STATE.step);
+  if (cur) cur.classList.remove('active');
+  STATE.step--;
+  const prev = document.getElementById('step-' + STATE.step);
+  if (prev) prev.classList.add('active');
+  updateProgress(STATE.step);
+}
+
+function nextStep(from) {
+  if (from === 1) {
+    STATE.shopName = document.getElementById('shop-name').value.trim();
+    if (!STATE.shopName) return;
+    // update reward examples
+    const exWrap = document.getElementById('reward-examples');
+    const examples = REWARD_EXAMPLES_DE(STATE.shopType || 'restaurant');
+    exWrap.innerHTML = examples.map(e =>
+      `<div class="rex" onclick="useExample(this,'${e}')">${e}</div>`
+    ).join('');
+    goTo(2);
+  } else if (from === 2) {
+    STATE.rewardDesc = document.getElementById('reward-desc').value.trim() || 'Récompense à définir';
+    goTo(3);
+  } else if (from === 3) {
+    sendOTP();
+  }
+}
+
+function skipReward() {
+  STATE.rewardDesc = 'À définir';
+  goTo(3);
+}
+
+// ════════════════════════════════════════
+// STEP 1 — SHOP TYPE
+// ════════════════════════════════════════
+function selectType(el) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  STATE.shopType = el.dataset.type;
+  updateCTA1();
+}
+
+function updateCTA1() {
+  const name = document.getElementById('shop-name').value.trim();
+  const btn  = document.getElementById('cta-1');
+  if (btn) btn.disabled = !name;
+  if (name && !STATE.shopType) {
+    // auto-select first if none selected
+    const first = document.querySelector('.type-card');
+    if (first && !document.querySelector('.type-card.selected')) {
+      selectType(first);
+    }
+  }
+}
+
+// ════════════════════════════════════════
+// STEP 2 — REWARD
+// ════════════════════════════════════════
+function selectNum(el) {
+  document.querySelectorAll('.rnum-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  STATE.rewardNum = parseInt(el.dataset.num);
+}
+
+function useExample(el, text) {
+  document.getElementById('reward-desc').value = text;
+  STATE.rewardDesc = text;
+  updateCTA2();
+  document.querySelectorAll('.rex').forEach(r => r.style.borderColor = '');
+  el.style.borderColor = 'var(--green2)';
+}
+
+function updateCTA2() {
+  const val = document.getElementById('reward-desc').value.trim();
+  const btn = document.getElementById('cta-2');
+  if (btn) btn.disabled = !val;
+}
+
+// ════════════════════════════════════════
+// STEP 3 — PHONE
+// ════════════════════════════════════════
+function formatPhone(input) {
+  // No auto-formatting — just strip non-digits and let the user type freely
+  const val = input.value.replace(/\D/g, '').slice(0, 15);
+  input.value = val;
+  STATE.phone = val;
+  const btn = document.getElementById('cta-3');
+  if (btn) btn.disabled = val.length < 6;
+}
+
+// ════════════════════════════════════════
+// STEP 3 — SEND OTP
+// ════════════════════════════════════════
+async function sendOTP() {
+  const btn = document.getElementById('cta-3');
+  setLoading(btn, true);
+  const rawPhone = document.getElementById('phone-input').value.replace(/\D/g,'');
+  const countryCode = document.getElementById('country-code')?.value || '+221';
+  const fullPhone = countryCode + rawPhone;
+  STATE.phone = rawPhone;
+  STATE.countryCode = countryCode;
+  STATE.fullPhone = fullPhone;
+  try {
+    const SB_URL = 'https://iiocxlvcuoqafzlisqwd.supabase.co';
+    const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+    const r = await fetch(SB_URL + '/functions/v1/send-whatsapp-otp', {
+      method: 'POST',
+      headers: { 'apikey': SB_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Erreur envoi');
+    setLoading(btn, false);
+    goTo(4);
+    document.getElementById('phone-display').textContent = fullPhone;
+    startResendTimer();
+    setTimeout(() => document.getElementById('otp0').focus(), 300);
+    toast('Code envoyé sur WhatsApp !', 'ok');
+  } catch(e) {
+    setLoading(btn, false);
+    toast(e.message || 'Erreur envoi', 'err');
+  }
+}
+
+// ════════════════════════════════════════
+// STEP 4 — OTP
+// ════════════════════════════════════════
+function otpInput(el, idx) {
+  const val = el.value.replace(/\D/g, '').slice(-1);
+  el.value = val;
+  STATE.otp[idx] = val;
+  el.classList.toggle('filled', !!val);
+
+  if (val && idx < 5) {
+    document.getElementById('otp' + (idx + 1)).focus();
+  }
+
+  const full = STATE.otp.join('');
+  const btn  = document.getElementById('cta-4');
+  if (btn) btn.disabled = full.length < 6;
+
+  // Auto-verify when 4 digits entered
+  if (full.length === 6) setTimeout(() => verifyOTP(), 200);
+}
+
+function otpKey(el, idx) {
+  if (event.key === 'Backspace' && !el.value && idx > 0) {
+    const prev = document.getElementById('otp' + (idx - 1));
+    prev.value = '';
+    prev.classList.remove('filled');
+    STATE.otp[idx - 1] = '';
+    prev.focus();
+  }
+}
+
+async function verifyOTP() {
+  const code = STATE.otp.join('');
+  const btn  = document.getElementById('cta-4');
+  setLoading(btn, true);
+  try {
+    const SB_URL = 'https://iiocxlvcuoqafzlisqwd.supabase.co';
+    const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+    const fullPhone = STATE.fullPhone || ((STATE.countryCode || '+221') + STATE.phone);
+    const r = await fetch(SB_URL + '/functions/v1/verify-whatsapp-otp', {
+      method: 'POST',
+      headers: { 'apikey': SB_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone, code })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Code incorrect');
+    STATE.token = d.token || null; // vrai jeton de session (JWT signé)
+    setLoading(btn, false);
+    saveAndLaunch();
+  } catch(e) {
+    setLoading(btn, false);
+    toast(e.message || 'Code incorrect', 'err');
+    STATE.otp = ['','','','','',''];
+    for (let i = 0; i < 6; i++) {
+      const el = document.getElementById('otp' + i);
+      if(el){el.value='';el.classList.remove('filled');}
+    }
+    document.getElementById('otp0').focus();
+  }
+}
+
+// ════════════════════════════════════════
+// RESEND TIMER
+// ════════════════════════════════════════
+function startResendTimer() {
+  let secs = 60;
+  const btn = document.getElementById('resend-btn');
+  const cnt = document.getElementById('resend-count');
+  if (!btn || !cnt) return;
+  btn.disabled = true;
+  cnt.textContent = '(' + secs + 's)';
+  if (STATE.resendTimer) clearInterval(STATE.resendTimer);
+  STATE.resendTimer = setInterval(() => {
+    secs--;
+    if (secs <= 0) {
+      clearInterval(STATE.resendTimer);
+      btn.disabled = false;
+      cnt.textContent = '';
+      btn.onclick = () => { sendOTPAgain(); };
+    } else {
+      cnt.textContent = '(' + secs + 's)';
+    }
+  }, 1000);
+}
+
+async function sendOTPAgain() {
+  try {
+    const SB_URL = 'https://iiocxlvcuoqafzlisqwd.supabase.co';
+    const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+    const fullPhone = STATE.fullPhone || ((STATE.countryCode || '+221') + STATE.phone);
+    await fetch(SB_URL + '/functions/v1/send-whatsapp-otp', {
+      method: 'POST',
+      headers: { 'apikey': SB_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone })
+    });
+    toast('Nouveau code envoyé sur WhatsApp !', 'ok');
+  } catch(e) { toast('Erreur renvoi', 'err'); }
+  startResendTimer();
+  STATE.otp = ['','','','','',''];
+  for (let i = 0; i < 6; i++) {
+    const el = document.getElementById('otp' + i);
+    el.value = '';
+    el.classList.remove('filled');
+  }
+  document.getElementById('otp0').focus();
+}
+
+// ════════════════════════════════════════
+// SAVE & LAUNCH
+// ════════════════════════════════════════
+async function saveAndLaunch() {
+  const SB_URL  = 'https://iiocxlvcuoqafzlisqwd.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+  const fullPhone = STATE.fullPhone || ((STATE.countryCode||'+221') + STATE.phone);
+  try {
+    if (!STATE.token) throw new Error('Session expirée — refais la vérification OTP.');
+    // Création/màj du compte CÔTÉ SERVEUR, liée au téléphone vérifié (claim du JWT)
+    const r = await fetch(`${SB_URL}/functions/v1/register-merchant`, {
+      method: 'POST',
+      headers: { 'apikey': SB_ANON, 'Authorization': 'Bearer ' + STATE.token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: STATE.shopName,
+        type: STATE.shopType || 'autre',
+        threshold: STATE.rewardNum || 10,
+        reward_desc: STATE.rewardDesc || 'Récompense',
+        pts_amount_mode: !!STATE.amountMode,
+        pts_fcfa_per_point: STATE.fcfaPerPoint || 1000,
+        // Pays, monnaie et langue viennent de ce qui a été choisi à l'écran.
+        // Le serveur ne retombe sur l'indicatif du numéro que si rien n'arrive.
+        country_code: STATE.countryCode || '+221',
+        currency: (typeof obDevise === 'function' ? obDevise() : 'XOF'),
+        language: (function(){ try{ var l=STATE.language||(window.msI18nLanding&&msI18nLanding.langue)||localStorage.getItem('ms_lang')||'fr'; return ['fr','en','es'].indexOf(l)>=0?l:'fr'; }catch(e){ return 'fr'; } })(),
+      })
+    });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Erreur création compte');
+    const merchant = d.merchant;
+    if (!merchant?.id) throw new Error('Compte non créé. Réessaie.');
+
+    // Session locale avec le VRAI jeton (compatible RLS)
+    localStorage.setItem('lc_merchant', JSON.stringify(merchant));
+    localStorage.setItem('lc_session', JSON.stringify({
+      access_token: STATE.token,
+      user: { id: merchant.user_id || merchant.id, phone: fullPhone },
+    }));
+
+    // Écran succès
+    document.getElementById('success-name').textContent = STATE.shopName;
+    document.getElementById('c-shop').textContent       = STATE.shopName;
+    document.getElementById('c-type').textContent       = TYPE_LABELS[STATE.shopType] || STATE.shopType;
+    document.getElementById('c-reward').textContent     = STATE.amountMode
+      ? ('1 pt = ' + obFmt(STATE.fcfaPerPoint) + ' · ' + STATE.rewardNum + ' pts → ' + (STATE.rewardDesc || 'Récompense'))
+      : (STATE.rewardNum + ' achats → ' + (STATE.rewardDesc || 'Récompense'));
+    document.getElementById('c-phone').textContent      = fullPhone;
+    const pw = document.getElementById('progress-wrap');
+    if (pw) pw.style.display = 'none';
+    goTo(5);
+  } catch(err) {
+    console.error('saveAndLaunch error:', err);
+    toast(err.message || 'Erreur inscription. Réessaie.', 'err');
+  }
+}
+
+function launchApp() {
+  window.location.href = '/merchant/';
+}
+
+function goToDashboard() {
+  window.location.href = '/merchant/';
+}
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+function setLoading(btn, on) {
+  if (!btn) return;
+  btn.classList.toggle('loading', on);
+  btn.disabled = on;
+}
+
+function toast(msg, type = 'ok') {
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.innerHTML = (type === 'ok' ? '✓ ' : '✗ ') + msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+updateProgress(1);
+
+// Auto-focus shop name on load
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('shop-name')?.focus(), 400);
+});
+
+// ── Pays, devise et paliers ────────────────────────────────────────────
+// Le pays est demandé à l'étape du téléphone, alors que les paliers sont
+// proposés avant. On part donc d'une estimation à partir du fuseau horaire du
+// navigateur, et on corrige dès que l'indicatif est réellement choisi.
+const OB_FUSEAUX = {
+  'Africa/Dakar':'+221','Africa/Abidjan':'+225','Africa/Bamako':'+223','Africa/Ouagadougou':'+226',
+  'Africa/Porto-Novo':'+229','Africa/Lome':'+228','Africa/Niamey':'+227','Africa/Bissau':'+245',
+  'Africa/Conakry':'+224','Africa/Banjul':'+220','Africa/Nouakchott':'+222',
+  'Africa/Lagos':'+234','Africa/Accra':'+233','Africa/Nairobi':'+254','Africa/Dar_es_Salaam':'+255',
+  'Africa/Kigali':'+250','Africa/Kampala':'+256','Africa/Addis_Ababa':'+251','Africa/Lusaka':'+260',
+  'Africa/Johannesburg':'+27','Africa/Douala':'+237','Africa/Libreville':'+241',
+  'Africa/Brazzaville':'+242','Africa/Kinshasa':'+243','Africa/Casablanca':'+212',
+  'Africa/Algiers':'+213','Africa/Tunis':'+216',
+  'Europe/Paris':'+33','Europe/Brussels':'+32','Europe/Zurich':'+41','Europe/Rome':'+39',
+  'Europe/Madrid':'+34','Europe/Lisbon':'+351','Europe/Berlin':'+49','Europe/London':'+44',
+  'Europe/Dublin':'+44',
+  'America/New_York':'+1','America/Chicago':'+1','America/Denver':'+1','America/Los_Angeles':'+1',
+  'America/Toronto':'+1','America/Vancouver':'+1','America/Sao_Paulo':'+55',
+};
+function obDevinerPays(){
+  try{
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    if (OB_FUSEAUX[tz]) return OB_FUSEAUX[tz];
+    if (tz.indexOf('America/') === 0) return '+1';
+  }catch(e){}
+  return '+221';
+}
+
+// La géolocalisation ne sert plus qu'à présélectionner : la personne voit son
+// pays écrit devant elle et peut le corriger d'un geste. Un commerçant ivoirien
+// de passage à New York ne se retrouve plus avec des dollars.
+function obChangerPays(code){
+  STATE.countryCode = code || '+221';
+  const tel = document.getElementById('country-code');
+  if (tel && [...tel.options].some(o => o.value === STATE.countryCode)) tel.value = STATE.countryCode;
+  try{ obPeindrePaliers(); }catch(e){}
+}
+
+function obChangerLangue(l){
+  if (['fr','en','es'].indexOf(l) < 0) return;
+  STATE.language = l;
+  try{ localStorage.setItem('ms_lang', l); }catch(e){}
+  // La landing traduit par remplacement de texte au chargement : on recharge
+  // en gardant l'étape et ce qui a déjà été saisi.
+  try{
+    const u = new URL(location.href);
+    u.searchParams.set('lang', l);
+    location.replace(u.toString());
+  }catch(e){ location.reload(); }
+}
+
+function obLangueCourante(){
+  try{ const q = new URLSearchParams(location.search).get('lang');
+       if(['fr','en','es'].indexOf(q) >= 0) return q; }catch(e){}
+  try{ const m = localStorage.getItem('ms_lang');
+       if(['fr','en','es'].indexOf(m) >= 0) return m; }catch(e){}
+  try{ if(window.msI18nLanding && msI18nLanding.langue) return msI18nLanding.langue; }catch(e){}
+  return 'fr';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  const devine = obDevinerPays();
+
+  // Le menu des pays : chaque ligne dit la monnaie, pour qu'on la voie avant
+  // de valider et non trois écrans plus loin.
+  const pays = document.getElementById('ob-pays');
+  if (pays) {
+    pays.innerHTML = OB_LISTE.map(function(p){
+      const sym = (OB_DEVISES[p[1]] || OB_DEVISES.XOF)[0];
+      return '<option value="' + p[0] + '">' + p[3] + '  ' + p[2] + ' · ' + sym + '</option>';
+    }).join('');
+    pays.value = OB_PAYS[devine] ? devine : '+221';
+  }
+
+  const lang = document.getElementById('ob-langue');
+  if (lang) lang.value = obLangueCourante();
+  STATE.language = obLangueCourante();
+
+  const sel = document.getElementById('country-code');
+  if (sel && [...sel.options].some(o => o.value === devine)) sel.value = devine;
+  STATE.countryCode = (pays && pays.value) || devine;
+
+  try{ obPeindrePaliers(); }catch(e){}
+
+  // L'indicatif de l'étape téléphone reste modifiable et reste synchrone.
+  if (sel) sel.addEventListener('change', function(){
+    STATE.countryCode = sel.value || '+221';
+    if (pays && [...pays.options].some(o => o.value === STATE.countryCode)) pays.value = STATE.countryCode;
+    try{ obPeindrePaliers(); }catch(e){}
+  });
+});
+</script>
+</body>
+</html>

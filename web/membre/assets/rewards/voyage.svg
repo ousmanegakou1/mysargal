@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Voyage">
+  <defs>
+    <style>
+      .bg{fill:#f3ede0}
+      .marine{fill:#1e3a5f}
+      .orange{fill:#c85a3e}
+      .txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;fill:#1e3a5f;letter-spacing:6px;font-size:22px}
+      .sub{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:600;fill:#c85a3e;letter-spacing:8px;font-size:11px}
+    </style>
+  </defs>
+  <rect class="bg" width="400" height="300"/>
+  <!-- horizon line -->
+  <rect x="0" y="200" width="400" height="100" fill="#1e3a5f" opacity="0.9"/>
+  <!-- mountains -->
+  <polygon class="marine" points="0,200 90,120 180,200"/>
+  <polygon class="orange" points="140,200 230,90 320,200"/>
+  <polygon class="marine" points="280,200 360,140 400,200"/>
+  <!-- sun -->
+  <circle cx="320" cy="100" r="18" fill="#c85a3e" opacity="0.9"/>
+  <text class="sub" x="200" y="245" text-anchor="middle" fill="#f3ede0">VOYAGE ATELIER</text>
+  <text class="txt" x="200" y="278" text-anchor="middle" fill="#f3ede0">MARAZ</text>
+</svg>

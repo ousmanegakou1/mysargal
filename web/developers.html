@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="canonical" href="https://mysargal.com/developers.html"/><meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="Développeurs — Connecte ta boutique en ligne à MySargal"/><meta property="og:description" content="Shopify, WooCommerce ou site custom : crédite automatiquement les points fidélité à chaque commande. Sans plugin, en 5 minutes."/><meta property="og:url" content="https://mysargal.com/developers.html"/><meta property="og:image" content="https://mysargal.com/og-image.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Développeurs — Intégration e-commerce | MySargal</title>
+<meta name="description" content="Connecte Shopify, WooCommerce ou ton site custom à MySargal : points fidélité automatiques à chaque commande, carte Apple/Google Wallet mise à jour en temps réel."/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbfbfa;--card:#ffffff;--s2:#f6f7f6;--bd:#ececed;--bd2:#e2e5e2;--tx:#0b0d0c;--tx2:#5c6360;--tx3:#9aa19d;--grn:#16a34a;--tint:#eefaf1;--r:16px;--ease:cubic-bezier(.22,1,.36,1)}
+html[data-theme="dark"]{--bg:#0a0d0a;--card:#0f150f;--s2:#131b13;--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.14);--tx:#f0f7f0;--tx2:#93a893;--tx3:#5b6f5b;--grn:#22c55e;--tint:rgba(34,197,94,.1)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html{transition:background .25s ease}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',-apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:56px 20px;line-height:1.6;letter-spacing:-.011em}
+.wrap{max-width:760px;width:100%}
+.brand{font-weight:700;font-size:1.2rem;margin-bottom:8px;letter-spacing:-.03em}.brand i{font-style:normal;color:var(--grn)}
+.sub{font-size:1rem;color:var(--tx2);margin-bottom:32px;line-height:1.6;max-width:60ch}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:22px;padding:28px;margin-bottom:16px;box-shadow:0 1px 2px rgba(11,13,12,.03),0 12px 30px -22px rgba(11,13,12,.12)}
+h1{font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:12px;letter-spacing:-.035em;font-weight:700;line-height:1.1}
+h2{font-size:1.2rem;margin-bottom:14px;letter-spacing:-.025em;font-weight:600}
+h3{font-size:.9rem;margin:18px 0 6px;color:var(--tx);font-weight:600}
+p,li{font-size:.94rem;line-height:1.7;color:var(--tx2)}
+ol,ul{padding-left:20px;margin:10px 0}
+code,pre{font-family:'DM Mono',monospace;font-size:.8rem}
+code.inline{background:var(--tint);color:var(--grn);border-radius:6px;padding:2px 7px}
+pre{background:#0b100b;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;overflow-x:auto;color:#c9e5c4;line-height:1.65;margin:12px 0}
+html[data-theme="light"] pre{background:#0b100b;color:#c9e5c4}
+.badge{display:inline-block;background:var(--tint);color:var(--grn);border-radius:100px;padding:5px 13px;font-size:.7rem;font-weight:600;margin-bottom:16px}
+a{color:var(--grn);font-weight:500}
+.steps li{margin-bottom:9px}
+b{color:var(--tx);font-weight:600}
+.foot{font-size:.8rem;color:var(--tx3);text-align:center;margin:22px 0}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;background:var(--card);border:1px solid var(--bd2);border-radius:100px;padding:6px 13px;margin:0 5px 8px 0;color:var(--tx2)}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n-console.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 10-13h-7z"/></symbol>
+<symbol id="ic-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11z"/><path d="M8.5 8V6.5a3.5 3.5 0 017 0V8"/></symbol>
+<symbol id="ic-dot" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></symbol>
+<symbol id="ic-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></symbol>
+<symbol id="ic-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h12v16H6a2 2 0 00-2 2z"/><path d="M6 3v16"/></symbol>
+<symbol id="ic-fire" viewBox="0 0 24 24"><path d="M12 3s5 3.6 5 9a5 5 0 01-10 0c0-2 .8-3.2 1.8-4.2 0 1 .6 2 1.7 2 .6-3-1.3-4.8 1.5-6.8z"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+</defs></svg>
+<div class="wrap">
+  <div class="brand">My<i>Sargal</i> <span style="font-size:.8rem;font-weight:600;color:var(--tx3)">/ Développeurs</span></div>
+  <div class="sub">Connecte ta boutique en ligne à MySargal : à chaque commande payée, ton client gagne ses points automatiquement, et sa carte Apple/Google Wallet se met à jour en temps réel. <b style="color:var(--tx)">Sans plugin — juste une URL à coller.</b></div>
+
+  <div class="card">
+    <div class="badge"><svg viewBox="0 0 24 24" style="width:.85em;height:.85em;vertical-align:-.12em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-bolt"></use></svg> DÉMARRAGE — 5 MINUTES</div>
+    <h2>1. Récupère ta clé API</h2>
+    <p>Ta clé est fournie par MySargal (elle est liée à ta boutique). Demande-la sur <a href="https://wa.me/221777608983" target="_blank">WhatsApp</a> ou par mail à <a href="mailto:support@mysargal.com">support@mysargal.com</a>. Elle ressemble à :</p>
+    <pre>msk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</pre>
+    <p>Ton <b>URL webhook</b> personnelle est :</p>
+    <pre>https://iiocxlvcuoqafzlisqwd.supabase.co/functions/v1/api-order?key=TA_CLE</pre>
+  </div>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-bag"></use></svg> Shopify</h2>
+    <ol class="steps">
+      <li>Admin Shopify → <b>Paramètres</b> → <b>Notifications</b> → onglet <b>Webhooks</b></li>
+      <li><b>Créer un webhook</b> : Événement = <code class="inline">Paiement de commande</code> (Order payment), Format = <code class="inline">JSON</code></li>
+      <li>URL = ton URL webhook ci-dessus → <b>Enregistrer</b></li>
+    </ol>
+    <p>C'est tout. À chaque commande payée : si le client a un numéro de téléphone, sa carte est trouvée (ou créée + envoyée par WhatsApp) et ses points sont crédités selon ta règle « 1 point = X FCFA ».</p>
+  </div>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-dot"></use></svg> WooCommerce (WordPress)</h2>
+    <ol class="steps">
+      <li>Admin WordPress → <b>WooCommerce</b> → <b>Réglages</b> → <b>Avancé</b> → <b>Webhooks</b></li>
+      <li><b>Ajouter un webhook</b> : Sujet = <code class="inline">Commande mise à jour</code> (ou « Commande créée »), Statut = Actif</li>
+      <li>URL de livraison = ton URL webhook → <b>Enregistrer</b></li>
+    </ol>
+    <p>Les commandes en statut <code class="inline">pending / cancelled / refunded / failed</code> sont ignorées automatiquement — pas de points sur les commandes annulées.</p>
+  </div>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-cog"></use></svg> Site custom (n'importe quel langage)</h2>
+    <p>Appelle l'endpoint après chaque paiement confirmé :</p>
+    <pre>curl -X POST \
+  "https://iiocxlvcuoqafzlisqwd.supabase.co/functions/v1/api-order" \
+  -H "x-api-key: TA_CLE" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "phone": "+221771234567",
+    "name": "Awa Ndiaye",
+    "amount": 15000,
+    "order_id": "CMD-2024-001"
+  }'</pre>
+    <p>Réponse :</p>
+    <pre>{
+  "success": true,
+  "card_code": "LC-A1B2C3",
+  "card_url": "https://mysargal.com/c/?code=LC-A1B2C3",
+  "new_client": true,
+  "points_added": 15,
+  "total_points": 15
+}</pre>
+    <h3>Champs</h3>
+    <ul>
+      <li><code class="inline">phone</code> <b>(requis)</b> — numéro du client, avec indicatif</li>
+      <li><code class="inline">amount</code> — montant FCFA (points calculés selon la règle de ta boutique). Sans montant : 1 commande = 1 point</li>
+      <li><code class="inline">points</code> — pour forcer un nombre de points précis (ignore le calcul)</li>
+      <li><code class="inline">order_id</code> — fortement conseillé : empêche tout double crédit si le webhook est rejoué</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-book"></use></svg> Les autres endpoints</h2>
+    <p>Même authentification (<code class="inline">x-api-key</code>) :</p>
+    <h3>Consulter un solde</h3>
+    <pre>POST /functions/v1/api-balance   { "card_code": "LC-A1B2C3" }</pre>
+    <h3>Créditer des points (scan caisse / POS)</h3>
+    <pre>POST /functions/v1/api-scan      { "card_code": "LC-A1B2C3", "points": 5 }</pre>
+    <h3>Utiliser une récompense (déduction en caisse)</h3>
+    <pre>POST /functions/v1/api-redeem    { "card_code": "LC-A1B2C3" }
+→ { "success": true, "reward": "Café offert", "points_used": 50, "points_remaining": 10 }
+→ 402 si pas assez de points (avec points_disponibles / points_requis)</pre>
+    <p>Flux POS complet : <code class="inline">api-balance</code> renvoie <code class="inline">reward_ready: true</code> et la liste <code class="inline">rewards_available</code> dès que le client a atteint sa récompense → l'écran de caisse l'affiche → <code class="inline">api-redeem</code> déduit les points au moment de l'achat. La carte Wallet du client se met à jour aussitôt.</p>
+    <h3>Bon à savoir</h3>
+    <ul>
+      <li>Tout passe en HTTPS ; les clés sont révocables à tout moment</li>
+      <li>Les jours « <svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-fire"></use></svg> points x2 » de la boutique s'appliquent aussi aux commandes en ligne</li>
+      <li>Un nouveau client reçoit sa carte par WhatsApp automatiquement</li>
+      <li>La carte Apple/Google Wallet du client se met à jour en quelques secondes</li>
+    </ul>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <h2 style="margin-bottom:6px">Besoin d'aide pour l'intégration ?</h2>
+    <p style="margin-bottom:14px">On la fait avec toi, gratuitement.</p>
+    <a href="https://wa.me/221777608983?text=Bonjour%20!%20Je%20veux%20connecter%20ma%20boutique%20en%20ligne%20%C3%A0%20MySargal." target="_blank" style="display:inline-block;background:var(--grn);color:#fff;text-decoration:none;border-radius:30px;padding:13px 26px;font-weight:700;font-size:.9rem;font-family:'Montserrat',sans-serif"><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg> Parler à l'équipe sur WhatsApp</a>
+  </div>
+
+  <div class="foot"><a href="https://mysargal.com/">← Retour à mysargal.com</a> · <a href="conditions.html">Conditions</a> · <a href="privacy-policy.html">Confidentialité</a></div>
+</div>
+</body>
+</html>

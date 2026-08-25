@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MySargal — Assistant WhatsApp</title>
+<style>
+:root{--green:#0f7a4d;--greend:#0b5c3a;--greent:#eaf6f0;--greenl:#cdeadd;--ink:#152019;--mut:#6a7871;--line:#e7e9e7;--soft:#f6f7f6;--bg:#eef0ef;--gold:#c9a24a;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding:24px 16px 60px}
+.wrap{max-width:960px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.brand{font-weight:800;font-size:20px}.brand span{color:var(--green)}
+.sub{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:18px;box-shadow:0 4px 14px rgba(15,61,46,.05)}
+.login{max-width:360px;margin:60px auto}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 6px}
+.inp,textarea{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:12px 13px;font-size:14px;font-family:inherit;background:#fafbfa}
+textarea{min-height:70px;resize:vertical;line-height:1.5}
+.inp:focus,textarea:focus{outline:none;border-color:var(--green);background:#fff}
+.btn{background:var(--green);color:#fff;font-weight:800;font-size:15px;padding:13px 18px;border:none;border-radius:11px;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.6}.btn.sm{padding:8px 13px;font-size:13px;border-radius:9px}
+.btn.ghost{background:#fff;border:1.5px solid var(--green);color:var(--green)}
+.msg{font-size:13px;min-height:18px;margin:8px 0}.msg.err{color:var(--err)}.msg.ok{color:var(--green)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.h2{font-size:16px;font-weight:800}.h2s{font-size:13px;color:var(--mut);margin-top:2px}
+.sw{position:relative;width:48px;height:28px;flex:0 0 48px}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:#cdd6d0;border-radius:20px;transition:.2s;cursor:pointer}
+.sl:before{content:"";position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+.sl{background:var(--green)}.sw input:checked+.sl:before{transform:translateX(20px)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
+.kpi{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.kpi .v{font-size:24px;font-weight:800;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:var(--greent);border:1px solid var(--greenl);border-radius:20px;padding:5px 11px;font-size:12px;color:var(--greend);font-weight:600}
+.ho{border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.ho .p{font-weight:700;font-size:13.5px}.ho .m{font-size:12.5px;color:var(--mut)}
+.conv{border-bottom:1px solid var(--line);padding:9px 0;font-size:13px}
+.conv .meta{font-size:11px;color:var(--mut);font-family:'DM Mono',monospace}
+.conv .in{color:var(--ink)}.conv .out{color:var(--green);margin-top:2px}
+.hide{display:none}.small{font-size:12px;color:var(--mut)}
+.note{font-size:12px;color:var(--mut);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">My<span>Sargal</span> · Assistant WhatsApp</div><div class="sub" id="whoami"></div></div>
+
+  <div id="login" class="card login hide">
+    <div class="h2">Connexion admin</div><div class="h2s">Réservé à l'équipe MySargal.</div>
+    <label>Téléphone (optionnel)</label><input class="inp" id="l-phone" inputmode="numeric" placeholder="77 123 45 67"/>
+    <label>Mot de passe</label><input class="inp" id="l-pass" type="password" placeholder="••••••••"/>
+    <div class="msg" id="l-msg"></div>
+    <button class="btn" id="l-btn" onclick="doLogin()" style="width:100%;margin-top:8px">Se connecter</button>
+  </div>
+
+  <div id="dash" class="hide">
+    <div class="card">
+      <div class="row"><div><div class="h2">Assistant automatique</div><div class="h2s">Répond aux clients sur WhatsApp avec leurs vraies données (points, cartes cadeaux).</div></div>
+        <label class="sw" style="margin:0"><input type="checkbox" id="c-enabled"><span class="sl"></span></label></div>
+    </div>
+
+    <div class="card">
+      <div class="kpis">
+        <div class="kpi"><div class="l">Messages aujourd'hui</div><div class="v" id="k-today">0</div></div>
+        <div class="kpi"><div class="l">30 derniers jours</div><div class="v" id="k-30">0</div></div>
+        <div class="kpi"><div class="l">Transferts ouverts</div><div class="v" id="k-hand">0</div></div>
+      </div>
+      <div class="chips" id="intents"></div>
+    </div>
+
+    <div class="card">
+      <div class="h2">Messages de l'assistant</div><div class="h2s">Personnalise ce que le bot répond. Réservé au super admin.</div>
+      <label>Accueil / menu</label><textarea id="c-greeting"></textarea>
+      <label>Comment ça marche</label><textarea id="c-howto"></textarea>
+      <label>Message de transfert (« conseiller »)</label><textarea id="c-handoff"></textarea>
+      <label>Réponse par défaut (non compris)</label><textarea id="c-fallback"></textarea>
+      <label>Numéro de l'équipe (alertes transfert)</label><input class="inp" id="c-team" placeholder="221771234567"/>
+      <div class="row" style="margin-top:16px"><div><div style="font-weight:700;font-size:14px">Compréhension en langage naturel (IA bridée)</div><div class="note" id="llm-note">Répond aux questions libres, uniquement à partir des données. Nécessite une clé API.</div></div>
+        <label class="sw" style="margin:0"><input type="checkbox" id="c-llm"><span class="sl"></span></label></div>
+      <div class="msg" id="c-msg"></div>
+      <button class="btn" id="c-save" onclick="saveConfig()" style="margin-top:6px">Enregistrer</button>
+    </div>
+
+    <div class="card">
+      <div class="h2">Transferts à traiter</div><div class="h2s">Clients qui ont demandé un conseiller.</div>
+      <div id="handoffs" style="margin-top:12px"><div class="small">Chargement…</div></div>
+    </div>
+
+    <div class="card">
+      <div class="h2">Conversations récentes</div>
+      <div id="recent" style="margin-top:10px"><div class="small">Chargement…</div></div>
+    </div>
+    <div style="text-align:right"><button class="btn ghost sm" onclick="logout()">Se déconnecter</button></div>
+  </div>
+</div>
+
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+function tok(){try{return localStorage.getItem('adm_jwt')||'';}catch(e){return '';}}
+function role(){try{var p=JSON.parse(atob(tok().split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return p.adm_role||'super';}catch(e){return 'super';}}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function show(id,on){document.getElementById(id).classList.toggle('hide',!on);}
+async function api(action,body){
+  const r=await fetch(SB+'/functions/v1/admin-assistant',{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action},body||{}))});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401){logout();throw new Error('Session expirée');}
+  if(!r.ok)throw new Error(d.error||'Erreur');
+  return d;
+}
+async function doLogin(){
+  const m=document.getElementById('l-msg');m.className='msg';m.textContent='';
+  const p=document.getElementById('l-pass').value,ph=document.getElementById('l-phone').value.replace(/\D/g,'');
+  if(!p){m.className='msg err';m.textContent='Mot de passe requis';return;}
+  const b=document.getElementById('l-btn');b.disabled=true;
+  try{
+    const r=await fetch(SB+'/functions/v1/admin-login',{method:'POST',headers:{'apikey':SA,'Content-Type':'application/json'},body:JSON.stringify({password:p,phone:ph||undefined})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.token)throw new Error(d.error||'Identifiants incorrects');
+    localStorage.setItem('adm_jwt',d.token);localStorage.setItem('adm_role',d.role||'super');boot();
+  }catch(e){m.className='msg err';m.textContent=e.message;}
+  b.disabled=false;
+}
+function logout(){try{localStorage.removeItem('adm_jwt');}catch(e){}boot();}
+
+async function loadConfig(){
+  const d=await api('config');const c=d.config||{};
+  document.getElementById('c-enabled').checked=c.enabled!==false;
+  document.getElementById('c-greeting').value=c.greeting||'';
+  document.getElementById('c-howto').value=c.howto||'';
+  document.getElementById('c-handoff').value=c.handoff_notice||'';
+  document.getElementById('c-fallback').value=c.fallback||'';
+  document.getElementById('c-team').value=c.team_phone||'';
+  document.getElementById('c-llm').checked=c.llm_enabled===true;
+  document.getElementById('llm-note').textContent=d.llm_key_present?'Clé API détectée. Active pour laisser l\'IA répondre aux questions libres (bridée sur tes données).':'Aucune clé API configurée. Ajoute ANTHROPIC_API_KEY côté serveur pour activer cette option.';
+  const sup=role()==='super';
+  ['c-greeting','c-howto','c-handoff','c-fallback','c-team','c-enabled','c-llm'].forEach(id=>document.getElementById(id).disabled=!sup);
+  document.getElementById('c-save').style.display=sup?'':'none';
+  // auto-save on enabled toggle
+  document.getElementById('c-enabled').onchange=function(){if(sup)saveConfig(true);};
+}
+async function saveConfig(silent){
+  const m=document.getElementById('c-msg');m.className='msg';
+  const config={enabled:document.getElementById('c-enabled').checked,greeting:document.getElementById('c-greeting').value,howto:document.getElementById('c-howto').value,handoff_notice:document.getElementById('c-handoff').value,fallback:document.getElementById('c-fallback').value,team_phone:document.getElementById('c-team').value.replace(/\D/g,''),llm_enabled:document.getElementById('c-llm').checked};
+  try{await api('save_config',{config});m.className='msg ok';m.textContent='Enregistré.';setTimeout(()=>{m.textContent='';},1500);}
+  catch(e){m.className='msg err';m.textContent=e.message;}
+}
+async function loadStats(){
+  const d=await api('stats');
+  document.getElementById('k-today').textContent=d.today||0;
+  document.getElementById('k-30').textContent=d.total_30d||0;
+  document.getElementById('k-hand').textContent=d.open_handoffs||0;
+  const bi=d.by_intent||{};const labels={points:'Points',giftcard:'Carte cadeau',giftcard_ask:'Demande cadeau',menu:'Menu',howto:'Aide',human:'Conseiller',fallback:'Non compris',llm:'IA',stop:'Désinscription',start:'Réinscription'};
+  const chips=Object.keys(bi).sort((a,b)=>bi[b]-bi[a]).map(k=>'<span class="chip">'+esc(labels[k]||k)+' · '+bi[k]+'</span>').join('');
+  document.getElementById('intents').innerHTML=chips||'<span class="small">Aucune conversation pour l\'instant.</span>';
+}
+async function loadHandoffs(){
+  const d=await api('handoffs');const box=document.getElementById('handoffs');
+  if(!d.rows.length){box.innerHTML='<div class="small">Aucun transfert en attente.</div>';return;}
+  box.innerHTML=d.rows.map(h=>'<div class="ho"><div><div class="p">'+esc(h.phone)+'</div><div class="m">'+esc(h.msg||'')+'</div></div><button class="btn sm" onclick="resolveH(\''+h.id+'\')">Traité</button></div>').join('');
+}
+async function resolveH(id){try{await api('resolve_handoff',{id});loadHandoffs();loadStats();}catch(e){alert(e.message);}}
+async function loadRecent(){
+  const d=await api('recent');const box=document.getElementById('recent');
+  if(!d.rows.length){box.innerHTML='<div class="small">Aucune conversation.</div>';return;}
+  box.innerHTML=d.rows.map(r=>{
+    var t=new Date(r.created_at).toLocaleString('fr-FR');
+    return '<div class="conv"><div class="meta">'+esc(r.phone)+' · '+esc(r.intent||'')+' · '+t+'</div><div class="in">« '+esc(r.msg_in||'')+' »</div>'+(r.reply_out?'<div class="out">→ '+esc(r.reply_out)+'</div>':'')+'</div>';
+  }).join('');
+}
+function boot(){
+  if(!tok()){show('login',true);show('dash',false);document.getElementById('whoami').textContent='';return;}
+  show('login',false);show('dash',true);
+  document.getElementById('whoami').textContent=role()==='super'?'Super admin':'Admin';
+  loadConfig().catch(()=>{});loadStats().catch(()=>{});loadHandoffs().catch(()=>{});loadRecent().catch(()=>{});
+}
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="canonical" href="https://mysargal.com/giftcard.html"/><meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="Une carte cadeau pour toi 🎁 — MySargal"/><meta property="og:description" content="Quelqu'un t'a offert une carte cadeau. Touche le lien pour l'ouvrir !"/><meta property="og:url" content="https://mysargal.com/giftcard.html"/><meta property="og:image" content="https://mysargal.com/og-gift.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="Une carte cadeau pour toi 🎁 — MySargal"/><meta name="twitter:image" content="https://mysargal.com/og-gift.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#061206"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>MySargal — Carte cadeau</title>
+<script>
+/* Thème clair/sombre — suit le système, mémorise (clé partagée ms-theme) */
+(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';var b=document.getElementById('theme-fab');if(b)b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#061206');}
+function toggleTheme(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+document.addEventListener('DOMContentLoaded',msThemeUI);
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* Devise de la boutique — le symbole et le nombre de décimales suivent le pays. */
+var MS_DEVISES={XOF:{s:'FCFA',d:0},XAF:{s:'FCFA',d:0},NGN:{s:'₦',d:2},KES:{s:'KSh',d:2},
+  TZS:{s:'TSh',d:0},RWF:{s:'FRw',d:0},UGX:{s:'USh',d:0},GHS:{s:'GH₵',d:2},
+  ZAR:{s:'R',d:2},MAD:{s:'DH',d:2},DZD:{s:'DA',d:2},TND:{s:'DT',d:3},
+  EUR:{s:'€',d:2},USD:{s:'US$',d:2},GBP:{s:'£',d:2},CAD:{s:'CA$',d:2},BRL:{s:'R$',d:2},
+  // Huit monnaies manquaient : une carte lue depuis Banjul, Nouakchott,
+  // Praia, Conakry, Bujumbura, Addis-Abeba, Lusaka ou Geneve retombait
+  // silencieusement sur le franc CFA, et le client voyait un montant
+  // libelle dans une monnaie qui n'a pas cours chez lui.
+  GMD:{s:'D',d:2},MRU:{s:'UM',d:2},CVE:{s:'$',d:0},GNF:{s:'FG',d:0},
+  BIF:{s:'FBu',d:0},ETB:{s:'Br',d:2},ZMW:{s:'ZK',d:2},CHF:{s:'CHF',d:2}};
+var MS_DEVISE_AVANT={NGN:1,KES:1,TZS:1,RWF:1,UGX:1,GHS:1,ZAR:1,USD:1,GBP:1,CAD:1,BRL:1};
+var MS_CUR='XOF';
+function msFmtMontant(n,code){
+  var c=code||MS_CUR||'XOF', d=MS_DEVISES[c]||MS_DEVISES.XOF;
+  var v=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:d.d,maximumFractionDigits:d.d}).format(Number(n)||0);
+  return MS_DEVISE_AVANT[c]?(d.s+' '+v):(v+' '+d.s);
+}
+function isIOS(){return/iPad|iPhone|iPod/.test(navigator.userAgent)}
+function isAndroid(){return/Android/i.test(navigator.userAgent)}
+function initGCWallet(code, balance, merchantName, googleLink){
+  var passUrl='https://iiocxlvcuoqafzlisqwd.supabase.co/functions/v1/get-apple-pass?code='+code;
+  var cardUrl='https://mysargal.com/giftcard.html?code='+code;
+  var wb=document.getElementById('gc-wa-btn');
+  var ab=document.getElementById('gc-wallet-btn');
+  var gb=document.getElementById('gc-google-btn');
+  if(ab){
+    ab.style.display='flex';
+    ab.href=passUrl;
+  }
+  if(gb){
+    gb.style.display='flex';
+    gb.href=googleLink||('https://iiocxlvcuoqafzlisqwd.supabase.co/functions/v1/get-google-pass?code='+code);
+  }
+  if(wb){
+    var bal=balance?msFmtMontant(balance):'';
+    var msg='🎁 *Carte Cadeau MySargal*\n\n🏪 Boutique : *'+(merchantName||'MySargal')+'*\n💰 Solde : *'+bal+'*\n🎫 Code : '+code+'\n\n📲 Utiliser la carte :\n'+cardUrl+'\n\n💳 Vérifier le solde :\nhttps://mysargal.com/solde?c='+code;
+    if(googleLink) msg += '\n\n📲 Ajouter à Google Wallet :\n'+googleLink;
+    msg += '\n\n🍎 Ajouter à Apple Wallet :\n'+passUrl;
+    wb.href='https://wa.me/?text='+encodeURIComponent(msg);
+    wb.target='_blank';
+  }
+}
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#061206;--s1:#0a1a0a;--s2:#0f240f;--s3:#152e15;--s4:#1a3a1a;--b1:rgba(34,197,94,.08);--b2:rgba(34,197,94,.16);--b3:rgba(34,197,94,.3);--tx:#ecf5ec;--tx2:#7aaa7a;--tx3:#3a5e3a;--green:#16a34a;--green2:#22c55e;--green3:#4ade80;--red:#ef4444;--wave:#00c4a3;--r:14px;--r2:20px;--r3:28px;--logo-box:#f3faf3;--logo-ink:#0a2810;--card-sh:none;--glow:rgba(22,163,74,.10);color-scheme:dark;}
+html[data-theme="light"]{--bg:#eef3ef;--s1:#ffffff;--s2:#ffffff;--s3:#f1f6f1;--s4:#e6eee7;--b1:rgba(22,163,74,.10);--b2:rgba(22,163,74,.16);--b3:rgba(22,163,74,.30);--tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;--green2:#16a34a;--green3:#15803d;--logo-box:#0a0f0b;--logo-ink:#ffffff;--card-sh:0 6px 20px rgba(20,45,28,.08);--glow:rgba(22,163,74,.07);color-scheme:light;}
+html,body{min-height:100svh;background:var(--bg)}
+body{font-family:'Inter',sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .25s ease,color .25s ease}
+.balance-card,.merchant-bar,.hi,.modal{box-shadow:var(--card-sh)}
+.gc-logo-svg{height:30px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.35))}
+.theme-fab{width:34px;height:34px;border-radius:10px;background:var(--s2);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:.92rem;cursor:pointer;color:var(--tx2);flex-shrink:0;box-shadow:var(--card-sh);transition:transform .15s}
+.theme-fab:active{transform:scale(.92)}
+/* ===== Déballage cadeau ===== */
+.gr{position:fixed;inset:0;z-index:1500;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:radial-gradient(circle at 50% 32%, #0f3d22, #061206 70%);overflow:hidden;animation:grFade .4s ease}
+.gr.show{display:flex}
+.gr.done{opacity:0;transition:opacity .55s ease;pointer-events:none}
+.gr-eyebrow{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:#7fe0a0;margin-bottom:30px;animation:grUp .5s .05s both}
+.gr-box{position:relative;width:170px;height:158px;cursor:pointer;margin-bottom:6px;animation:grFloat 2.6s ease-in-out infinite;perspective:760px}
+.gr-glow{position:absolute;left:50%;top:46%;width:120px;height:120px;transform:translate(-50%,-50%) scale(0);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9),rgba(34,197,94,.4) 45%,transparent 70%);opacity:0;pointer-events:none;z-index:1}
+.gr.open .gr-glow{animation:grGlow .7s ease .12s forwards}
+@keyframes grGlow{0%{transform:translate(-50%,-50%) scale(0);opacity:0}40%{opacity:1}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+.gr-body{position:absolute;bottom:0;left:9px;width:152px;height:108px;border-radius:11px;background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 18px 44px rgba(0,0,0,.55)}
+.gr-ribbon-v{position:absolute;left:50%;top:0;transform:translateX(-50%);width:24px;height:100%;background:rgba(255,255,255,.9)}
+.gr-lid{position:absolute;top:34px;left:0;width:170px;height:36px;border-radius:9px;background:linear-gradient(135deg,#15803d,#16a34a);z-index:3;transform-origin:50% 0%;transition:transform .65s cubic-bezier(.34,1.56,.64,1),opacity .6s ease}
+.gr-bow{position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:58px;height:32px;z-index:3}
+.gr-bow::before,.gr-bow::after{content:'';position:absolute;top:0;width:28px;height:32px;border:7px solid rgba(255,255,255,.92);border-radius:60% 60% 40% 40%}
+.gr-bow::before{left:0;transform:rotate(-20deg)}
+.gr-bow::after{right:0;transform:rotate(20deg)}
+.gr.open .gr-lid{transform:translateY(-28px) rotateX(-118deg);opacity:0}
+.gr.open .gr-box{animation:grPop .65s ease forwards}
+.gr-msg{color:#eaf6ea;font-size:.96rem;line-height:1.55;margin:20px 0 26px;max-width:300px;animation:grUp .5s .18s both}
+.gr-msg b{color:#fff;font-weight:800}
+.gr-btn{background:#22c55e;color:#fff;border:none;border-radius:30px;padding:15px 32px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 10px 28px rgba(34,197,94,.45);animation:grUp .5s .28s both}
+.gr-btn:active{transform:scale(.96)}
+.gr.open .gr-btn,.gr.open .gr-eyebrow,.gr.open .gr-msg{opacity:0;transition:opacity .25s}
+.gr-conf{position:absolute;top:-24px;width:10px;height:15px;border-radius:2px;pointer-events:none;animation:grFall linear forwards}
+@keyframes grFloat{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
+@keyframes grPop{0%{transform:scale(1)}38%{transform:scale(1.14)}100%{transform:scale(.85);opacity:0}}
+@keyframes grUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes grFade{from{opacity:0}to{opacity:1}}
+@keyframes grFall{to{transform:translateY(112vh) rotate(560deg);opacity:.15}}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg::before{content:'';position:absolute;top:-10vh;left:50%;transform:translateX(-50%);width:120vw;height:120vw;background:radial-gradient(circle,var(--glow) 0%,transparent 60%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;min-height:100svh;display:flex;flex-direction:column;padding-bottom:40px}
+.header{padding:max(env(safe-area-inset-top),20px) 24px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:900}
+.logo em{color:var(--green2);font-style:normal}
+.logo-sub{font-size:.62rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.loading{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-spin{width:36px;height:36px;border:2.5px solid var(--b2);border-top-color:var(--green2);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading-txt{font-size:.8rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.main{flex:1;display:none;flex-direction:column;padding:0 20px;gap:16px}
+.error-wrap{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:40px 24px;text-align:center}
+.error-icon{font-size:3rem;margin-bottom:4px}
+.error-title{font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:900}
+.error-sub{font-size:.82rem;color:var(--tx3);line-height:1.6;max-width:280px}
+.error-hint{margin-top:8px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:10px 14px;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--green2);word-break:break-all}
+/* CARD 3D */
+.card-scene{width:100%;perspective:1200px}
+.gc-float{animation:gcLevit 6s ease-in-out infinite;will-change:transform}
+@keyframes gcLevit{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-9px) rotate(.6deg)}}
+.gc-tilt{transition:transform .18s cubic-bezier(.22,1,.36,1);transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.card-3d{width:100%;aspect-ratio:1.586;border-radius:20px;position:relative;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1);cursor:pointer}
+.card-3d.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;border-radius:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.shimmer{position:absolute;inset:0;background:linear-gradient(105deg,transparent 34%,rgba(255,255,255,.26) 50%,transparent 66%);animation:shim 4.6s ease-in-out infinite;pointer-events:none;z-index:2}
+@keyframes shim{0%{transform:translateX(-130%) skewX(-14deg)}55%,100%{transform:translateX(230%) skewX(-14deg)}}
+.gc-violet{background:linear-gradient(135deg,#4c1d95,#7c3aed,#a855f7)}
+.gc-gold{background:linear-gradient(135deg,#78350f,#d97706,#fbbf24)}
+.gc-teal{background:linear-gradient(135deg,#134e4a,#0d9488,#2dd4bf)}
+.gc-rose{background:linear-gradient(135deg,#881337,#db2777,#f472b6)}
+.gc-blue{background:linear-gradient(135deg,#1e3a8a,#2563eb,#60a5fa)}
+.gc-noir{background:linear-gradient(135deg,#09090b,#1e1e2e,#3f3f5f)}
+.gc-nuit{background:linear-gradient(135deg,#0c1445,#1e3a5f,#2563eb)}
+.gc-foret{background:linear-gradient(135deg,#052e16,#14532d,#166534)}
+.cf{display:flex;flex-direction:column;justify-content:space-between;padding:18px 20px}
+.cf-top{display:flex;align-items:center;gap:10px}
+.cf-merchant-logo{border-radius:9px;overflow:hidden;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;color:#fff;flex-shrink:0}
+.cf-merchant-logo img{width:100%;height:100%;object-fit:cover}
+.cf-merchant-name{font-family:'Montserrat',sans-serif;font-size:.92rem;font-weight:900;color:#fff;line-height:1.2}
+.cf-merchant-type{font-size:.52rem;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+.cf-logo{font-family:'Montserrat',sans-serif;font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28)}
+.cf-logo em{color:rgba(255,255,255,.18);font-style:normal}
+.cf-merchant{font-size:.64rem;color:rgba(255,255,255,.5);margin-top:2px}
+.cf-msg{font-size:.7rem;color:rgba(255,255,255,.7);font-style:italic;margin-bottom:5px;line-height:1.4}
+.cf-amount{font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:900;color:#fff;line-height:1;margin-bottom:3px}
+.cf-for{font-size:.7rem;color:rgba(255,255,255,.65);margin-bottom:8px}
+.cf-prog{display:none}
+.cf-prog-fill{height:100%;border-radius:20px;background:rgba(255,255,255,.65)}
+.cf-code{font-family:'DM Mono',monospace;font-size:.58rem;color:rgba(255,255,255,.35)}
+.cb{transform:rotateY(180deg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px}
+.cb-qr{background:rgba(255,255,255,.92);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:center}
+.cb-code{font-family:'DM Mono',monospace;font-size:.66rem;color:rgba(255,255,255,.5)}
+.cb-label{font-size:.62rem;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
+.flip-hint{text-align:center;font-size:.65rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.status-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;font-size:.72rem;font-weight:600;font-family:'DM Mono',monospace;align-self:center}
+.s-active{background:rgba(34,197,94,.12);color:var(--green2);border:1px solid var(--b2)}
+.s-used{background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.18)}
+.s-cancelled{background:rgba(100,100,100,.1);color:var(--tx3);border:1px solid var(--b1)}
+.balance-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);padding:18px}
+.bal-label{font-size:.65rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.bal-amount{font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;color:var(--green2);line-height:1;margin-bottom:2px}
+.bal-initial{font-size:.72rem;color:var(--tx3);margin-bottom:14px}
+.bal-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.bal-vlbl{font-size:.65rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.05em}
+.bal-vval{font-size:.76rem;color:var(--tx2);font-weight:600}
+.bal-prog{height:7px;background:var(--s4);border-radius:20px;overflow:hidden;margin-bottom:6px}
+.bal-prog-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--green),var(--green2))}
+.bal-ends{display:flex;justify-content:space-between}
+.bal-lbl{font-size:.6rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.merchant-bar{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:12px 16px;display:flex;align-items:center;gap:12px}
+.merch-av{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--green),var(--wave));display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0}
+.merch-name{font-size:.88rem;font-weight:700}
+.merch-sub{font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:2px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act-btn{padding:14px;border-radius:var(--r2);border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;transition:all .15s}
+.act-btn:active{transform:scale(.96)}
+.act-pay{background:var(--green);color:#fff;box-shadow:0 4px 16px rgba(22,163,74,.3);grid-column:1/-1}
+.act-offer{background:var(--s2);border:1.5px solid var(--b2)!important;color:var(--tx2)}
+.act-icon{font-size:1.3rem}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between}
+.sec-title{font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:700}
+.sec-sub{font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.hist-list{display:flex;flex-direction:column;gap:8px}
+.hi{display:flex;align-items:center;gap:11px;padding:11px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r)}
+.hi-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:rgba(34,197,94,.1)}
+.hi-ico.debit{background:rgba(239,68,68,.08)}
+.hi-info{flex:1;min-width:0}
+.hi-title{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-meta{font-size:.65rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:1px}
+.hi-amt{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.88rem;flex-shrink:0}
+.amt-p{color:var(--green3)}.amt-m{color:var(--red)}
+.empty{text-align:center;padding:28px;color:var(--tx3)}
+.empty-icon{font-size:1.8rem;opacity:.3;margin-bottom:8px}
+.empty-txt{font-size:.8rem}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r3) var(--r3) 0 0;width:100%;max-width:430px;padding:24px;animation:slideUp .3s ease;text-align:center}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:36px;height:4px;background:var(--s4);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:'Montserrat',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:4px}
+.modal-sub{font-size:.78rem;color:var(--tx3);margin-bottom:20px}
+.modal-qr{background:#fff;border-radius:12px;padding:12px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px}
+.modal-code{font-family:'DM Mono',monospace;font-size:1rem;font-weight:700;color:var(--green2);letter-spacing:.06em;margin-bottom:16px}
+.btn-close{width:100%;padding:13px;border-radius:var(--r);border:1px solid var(--b2);background:var(--s3);color:var(--tx2);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer}
+.toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+.toast{background:var(--s4);border:1px solid var(--b2);border-radius:var(--r);padding:9px 16px;font-size:.78rem;font-weight:500;animation:tIn .3s ease;white-space:nowrap;display:flex;align-items:center;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.toast.ok{border-left:3px solid var(--green2);color:var(--green3)}
+.toast.err{border-left:3px solid var(--red);color:#f87171}
+@keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.btn-wallet-gc{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#000;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;margin-top:10px;-webkit-tap-highlight-color:transparent}.btn-google-gc{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#fff;color:#000;border:1px solid #dadce0;border-radius:12px;padding:14px 20px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;margin-top:8px;-webkit-tap-highlight-color:transparent}.btn-wa-gc{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:14px 20px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;margin-top:8px}.wallet-toast-gc{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:100px;font-size:14px;transition:transform .3s;z-index:9999;pointer-events:none}.wallet-toast-gc.show{transform:translateX(-50%) translateY(0)}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol>
+<symbol id="ic-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9.5h18M6 15h4"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+<symbol id="ic-clipboard" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="4" rx="1.2"/><path d="M9 11h6M9 15h5"/></symbol>
+<symbol id="ic-coins" viewBox="0 0 24 24"><circle cx="9" cy="9" r="5.5"/><path d="M14.5 4.2a5.5 5.5 0 010 9.6M9 6.5v5M6.7 9h4.6"/></symbol>
+<symbol id="ic-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l-1 12h-11z"/><path d="M8.5 8V6.5a3.5 3.5 0 017 0V8"/></symbol>
+<symbol id="ic-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 10-2 6"/><path d="M20 5v6h-6"/></symbol>
+</defs></svg>
+<div class="bg"></div>
+<div class="app">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10px"><svg class="gc-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg><div class="logo-sub">Carte cadeau</div></div>
+    <div style="display:flex;align-items:center;gap:10px"><div style="font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace" id="hdr-code"></div><div class="theme-fab" id="theme-fab" onclick="toggleTheme()" title="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></div></div>
+  </div>
+  <div class="loading" id="loading">
+    <div class="loading-spin"></div>
+    <div class="loading-txt">Chargement de ta carte...</div>
+  </div>
+  <div class="main" id="main"></div>
+  <!-- Déballage cadeau -->
+  <div class="gr" id="gift-reveal">
+    <div id="gr-confetti"></div>
+    <div class="gr-eyebrow"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px;margin-right:5px"><use href="#ic-gift"></use></svg>Tu as reçu une carte cadeau</div>
+    <div class="gr-box" id="gr-box" onclick="msOpenGift()">
+      <div class="gr-glow"></div>
+      <div class="gr-body"><div class="gr-ribbon-v"></div></div>
+      <div class="gr-lid"><div class="gr-bow"></div></div>
+    </div>
+    <div class="gr-msg" id="gr-msg"></div>
+    <button class="gr-btn" onclick="msOpenGift()">Ouvrir mon cadeau</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="pay-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Payer en caisse</div>
+    <div class="modal-sub">Montre ce QR au commerçant</div>
+    <div class="modal-qr"><div id="modal-qr-el"></div></div>
+    <div class="modal-code" id="modal-code-txt"></div>
+    <button class="btn-close" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+const SB_URL='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const H={'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON};
+let CARD=null,MERCHANT=null,TXNS=[];
+const LABELS={violet:'Violet Mystère',gold:'Or Précieux',teal:'Turquoise',rose:'Rose Ardent',blue:'Bleu Profond',noir:'Noir Élégant',nuit:'Nuit Étoilée',foret:'Forêt Verte'};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmtFCFA=n=>msFmtMontant(MS_DEVISES[MS_CUR]&&MS_DEVISES[MS_CUR].d?n:Math.round(n||0));
+function fmtDT(iso){if(!iso)return'—';const d=new Date(iso),now=new Date(),diff=Math.floor((now-d)/86400000);if(diff===0){const dm=Math.floor((now-d)/60000);if(dm<2)return"À l'instant";if(dm<60)return'Il y a '+dm+' min';return"Auj. "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}if(diff===1)return'Hier';if(diff<7)return'Il y a '+diff+' j';return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}
+function toast(msg,t='ok'){const w=document.getElementById('toasts'),el=document.createElement('div');el.className='toast '+t;el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),3200);}
+function getCode(){const p=new URLSearchParams(location.search);return(p.get('code')||p.get('c')||'').toUpperCase()||null;}
+
+// Applique la couleur de marque (montant, bouton Payer, accents, barre système)
+let GIFT_BRAND=null;
+function applyGiftBrand(b){
+  try{
+    if(!b||!b.bg2)return;
+    GIFT_BRAND=b;
+    const root=document.documentElement;
+    root.style.setProperty('--green', b.bg2);
+    root.style.setProperty('--green2', b.bg2);
+    root.style.setProperty('--green3', b.accent||b.bg2);
+    // Ambiance de fond + bordures teintées à la couleur de marque
+    const hx=String(b.bg2).replace('#','');
+    if(hx.length===6){
+      const r=parseInt(hx.slice(0,2),16),g=parseInt(hx.slice(2,4),16),bl=parseInt(hx.slice(4,6),16);
+      root.style.setProperty('--glow', `rgba(${r},${g},${bl},.14)`);
+      root.style.setProperty('--b1', `rgba(${r},${g},${bl},.10)`);
+      root.style.setProperty('--b2', `rgba(${r},${g},${bl},.18)`);
+      root.style.setProperty('--b3', `rgba(${r},${g},${bl},.30)`);
+    }
+    const m=document.querySelector('meta[name=theme-color]');
+    if(m && root.getAttribute('data-theme')!=='light' && b.bg1){ m.setAttribute('content', b.bg1); }
+  }catch(e){}
+}
+
+function showError(title,sub,hint=''){
+  document.getElementById('loading').style.display='none';
+  const m=document.getElementById('main');m.style.display='flex';
+  m.innerHTML=`<div class="error-wrap"><div class="error-icon" style="display:flex;justify-content:center"><svg viewBox="0 0 24 24" style="width:52px;height:52px;stroke:var(--tx3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div><div class="error-title">${esc(title)}</div><div class="error-sub">${esc(sub)}</div>${hint?`<div class="error-hint">${esc(hint)}</div>`:''}</div>`;
+}
+
+async function load(){
+  const code=getCode();
+  if(!code){showError('Lien invalide',"Aucun code dans l'URL.",'Format : giftcard.html?code=GC-XXXXXX');return;}
+  document.getElementById('hdr-code').textContent=code;
+  try{
+    // Lecture sécurisée via RPC public (les tables ne sont plus exposées en direct)
+    const r=await fetch(`${SB_URL}/rest/v1/rpc/get_gift_public`,{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({p_code:code})});
+    const gc=await r.json();
+    if(!r.ok){
+      showError('Erreur Supabase',gc?.message||'Erreur inconnue',`HTTP ${r.status}`);
+      return;
+    }
+    if(!gc||!gc.code){
+      showError('Carte introuvable',`Code "${code}" non trouvé.`,'Vérifie le lien reçu ou contacte la boutique.');
+      return;
+    }
+    CARD=gc;
+    MERCHANT=gc.merchant||null;
+    MS_CUR=(gc.currency)||(MERCHANT&&MERCHANT.currency)||'XOF';
+    if(!MS_DEVISES[MS_CUR]) MS_CUR='XOF';
+    TXNS=Array.isArray(gc.transactions)?gc.transactions:[];
+    // Couleur de marque : depuis le RPC si présente, sinon get_gift_brand, sinon vert MySargal
+    try{
+      let brand=(MERCHANT&&MERCHANT.brand&&MERCHANT.brand.bg1)?MERCHANT.brand:null;
+      if(!brand){
+        const bj=await fetch(`${SB_URL}/rest/v1/rpc/get_gift_brand`,{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({p_code:code})}).then(r=>r.json());
+        if(bj&&typeof bj==='object'&&bj.bg1) brand=bj;
+      }
+      if(brand) applyGiftBrand(brand);
+    }catch(e){}
+    render();
+  }catch(e){showError('Erreur réseau',e.message||String(e),'Vérifie ta connexion et réessaie.');}
+}
+
+function render(){
+  document.getElementById('loading').style.display='none';
+  const main=document.getElementById('main');main.style.display='flex';
+  const d=CARD.design||'violet';
+  const init=CARD.initial_amount||0;
+  const bal=CARD.balance||0;
+  const pct=init>0?Math.min(100,Math.round((bal/init)*100)):0;
+  const active=CARD.status==='active'&&bal>0;
+  const cancelled=CARD.status==='cancelled';
+  const validity=CARD.expires_at?new Date(CARD.expires_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'Sans expiration';
+  const sKey=active?'active':cancelled?'cancelled':'used';
+  const sLabel=active?'● Carte active':cancelled?'✕ Annulée':'✓ Soldée';
+  const faceBg = CARD.design_url
+    ? `background-image:url(${CARD.design_url});background-size:cover;background-position:center`
+    : ((GIFT_BRAND&&GIFT_BRAND.bg1) ? `background:linear-gradient(135deg,${GIFT_BRAND.bg1},${GIFT_BRAND.bg2})` : '');
+  main.innerHTML=`
+    <div class="card-scene"><div class="gc-float"><div class="gc-tilt" id="gc-tilt"><div class="card-3d" id="card3d" onclick="flipCard()">
+      <div class="card-face gc-${esc(d)} cf" style="${faceBg}">
+        <div class="shimmer"></div>
+        ${!CARD.hide_overlay?`
+        <div class="cf-top">
+          ${(()=>{
+            const logo=MERCHANT?.logo_url||MERCHANT?.logo_base64;
+            return `<div style="max-height:40px;max-width:130px;border-radius:${logo?'0':'8px'};overflow:hidden;background:${logo?'transparent':'rgba(255,255,255,.15)'};display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;color:#fff;font-size:1rem;flex-shrink:0">${logo?`<img src="${logo}" style="height:40px;max-width:130px;width:auto;object-fit:contain;display:block"/>`:(MERCHANT?.name||'M')[0].toUpperCase()}</div>`;
+          })()}
+        </div>
+        <div>
+          ${CARD.message?`<div class="cf-msg">${esc(CARD.message)}</div>`:''}
+          <div class="cf-amount">${fmtFCFA(bal)}</div>
+          <div class="cf-for">${CARD.recipient_name?'Pour '+esc(CARD.recipient_name):LABELS[d]||''}</div>
+          <div class="cf-prog"><div class="cf-prog-fill" style="width:${pct}%"></div></div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between">
+            <div class="cf-code">${esc(CARD.code)}</div>
+            <div class="cf-logo">My<em>Sargal</em></div>
+          </div>
+        </div>`:''}
+      </div>
+      <div class="card-face gc-${esc(d)} cb" style="${faceBg}">
+        <div class="shimmer"></div>
+        ${!CARD.hide_overlay?`<div class="cb-label">Scanner pour payer</div>`:''}
+        <div class="cb-qr"><div id="back-qr"></div></div>
+        <div class="cb-code" style="margin-top:6px">${esc(CARD.code)}</div>
+      </div>
+    </div></div></div></div>
+    <div class="flip-hint"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px;margin-right:4px"><use href="#ic-refresh"></use></svg>Touche la carte pour voir le QR</div>
+    ${sKey!=='active'?`<div class="status-chip s-${sKey}">${sLabel}</div>`:''}
+    <div class="balance-card">
+      <div class="bal-label">Solde disponible</div>
+      <div class="bal-amount">${fmtFCFA(bal)}</div>
+      <div class="bal-initial">sur ${fmtFCFA(init)} initial</div>
+      <div class="bal-row"><div class="bal-vlbl">Validité</div><div class="bal-vval">${validity}</div></div>
+      <div class="bal-prog"><div class="bal-prog-fill" style="width:${pct}%"></div></div>
+      <div class="bal-ends"><span class="bal-lbl">0</span><span class="bal-lbl">${fmtFCFA(init)}</span></div>
+      <a href="/solde?c=${esc(CARD.code)}" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;padding:11px;border-radius:12px;background:var(--s3,rgba(255,255,255,.04));border:1px solid var(--b2);color:var(--tx2,#9fb6a3);text-decoration:none;font-size:.82rem;font-weight:600"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-card"></use></svg>Vérifier mon solde à tout moment</a>
+    </div>
+    ${MERCHANT?`<div class="merchant-bar"><div class="merch-av">${(MERCHANT.name||'?')[0]}</div><div><div class="merch-name">${esc(MERCHANT.name)}</div><div class="merch-sub">Valable chez ce commerçant</div></div></div>`:''}
+    <div class="actions">
+      <button class="act-btn act-pay" onclick="openPayModal()"><span class="act-icon" style="display:flex"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-card"></use></svg></span><span>Payer en caisse</span></button>
+      <a id="gc-wallet-btn" class="btn-wallet-gc" href="#" style="display:none"><svg width="20" height="20" viewBox="0 0 22 22" fill="none"><path d="M16.5 11.55c-.02-2.1 1.71-3.1 1.79-3.16-.98-1.43-2.5-1.63-3.04-1.65-1.3-.13-2.54.76-3.2.76-.66 0-1.68-.74-2.77-.72-1.42.02-2.74.83-3.47 2.1-1.49 2.57-.38 6.38 1.06 8.47.71 1.02 1.55 2.16 2.65 2.12 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.65.69 2.78.67 1.14-.02 1.87-1.03 2.57-2.06.81-1.17 1.14-2.31 1.16-2.37-.03-.01-2.28-.87-2.3-3.47z" fill="white"/><path d="M14.32 5.13c.59-.71.98-1.7.87-2.69-.84.03-1.86.56-2.47 1.26-.54.62-1.01 1.62-.88 2.58.93.07 1.88-.47 2.48-1.15z" fill="white"/></svg> Ajouter à Apple Wallet</a>
+      <a id="gc-google-btn" class="btn-google-gc" href="#" style="display:none" target="_blank"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.32z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Ajouter à Google Wallet</a>
+      <a id="gc-wa-btn" class="btn-wa-gc" href="#"><svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Partager par WhatsApp</a>
+      <div class="wallet-toast-gc" id="gc-toast"></div>
+      <button class="act-btn act-offer" onclick="offerCard()"><span class="act-icon" style="display:flex"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg></span><span>Offrir via WhatsApp</span></button>
+    </div>
+    <div class="sec-hdr"><div class="sec-title">Historique</div><div class="sec-sub">${TXNS.length} transaction${TXNS.length!==1?'s':''}</div></div>
+    <div class="hist-list" id="hist-list"></div>`;
+  initGCWallet(CARD.code, CARD.balance, CARD.merchant?.name || CARD.merchant_name || 'MySargal', CARD.google_wallet_link);
+  try{var _tl=document.getElementById('gc-tilt');if(_tl){_tl.addEventListener('pointermove',function(ev){var r=_tl.getBoundingClientRect();var px=(ev.clientX-r.left)/r.width-0.5,py=(ev.clientY-r.top)/r.height-0.5;_tl.style.transform='rotateY('+(px*9).toFixed(2)+'deg) rotateX('+(-py*9).toFixed(2)+'deg)';});_tl.addEventListener('pointerleave',function(){_tl.style.transform='';});}}catch(e){}
+  setTimeout(()=>{const el=document.getElementById('back-qr');if(el){try{new QRCode(el,{text:CARD.code,width:100,height:100,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});}catch(e){el.innerHTML='<div style="width:100px;height:100px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;color:#333;padding:6px;text-align:center;word-break:break-all">'+CARD.code+'</div>';}}},100);
+  renderHistory();
+  try{ msMaybeReveal(); }catch(e){}
+}
+
+function msMaybeReveal(){
+  if(!CARD) return;
+  var isGift = CARD.recipient_name || CARD.message;
+  if(!isGift) return;
+  try{ if(localStorage.getItem('ms_gift_opened_'+CARD.code)==='1') return; }catch(e){}
+  var ov=document.getElementById('gift-reveal'); if(!ov) return;
+  var parts=[];
+  if(CARD.recipient_name) parts.push('Pour <b>'+esc(CARD.recipient_name)+'</b>');
+  if(CARD.message) parts.push('«&nbsp;'+esc(CARD.message)+'&nbsp;»');
+  var msg=document.getElementById('gr-msg'); if(msg) msg.innerHTML=parts.join('<br>');
+  ov.classList.add('show');
+}
+function msGiftConfetti(){
+  var box=document.getElementById('gr-confetti'); if(!box) return;
+  var cs=['#22c55e','#16a34a','#f5c842','#ffffff','#4ade80','#a78bfa'];
+  for(var i=0;i<42;i++){ (function(k){
+    var d=document.createElement('div'); d.className='gr-conf';
+    d.style.left=(Math.random()*100)+'vw'; d.style.background=cs[k%cs.length];
+    d.style.animationDuration=(1+Math.random()*1.1)+'s'; d.style.animationDelay=(Math.random()*0.3)+'s';
+    d.style.transform='rotate('+(Math.random()*360)+'deg)';
+    box.appendChild(d); setTimeout(function(){d.remove();},2500);
+  })(i); }
+}
+function msOpenGift(){
+  var ov=document.getElementById('gift-reveal'); if(!ov||ov.classList.contains('open')) return;
+  ov.classList.add('open'); msGiftConfetti();
+  try{ if(navigator.vibrate) navigator.vibrate([20,40,30]); }catch(e){}
+  try{ if(CARD) localStorage.setItem('ms_gift_opened_'+CARD.code,'1'); }catch(e){}
+  setTimeout(function(){ ov.classList.add('done'); setTimeout(function(){ ov.classList.remove('show','open','done'); }, 600); }, 1150);
+}
+
+function renderHistory(){
+  const el=document.getElementById('hist-list');if(!el)return;
+  if(!TXNS.length){el.innerHTML='<div class="empty"><div class="empty-icon" style="display:flex;justify-content:center"><svg viewBox="0 0 24 24" style="width:32px;height:32px;stroke:var(--tx3);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-clipboard"></use></svg></div><div class="empty-txt">Aucune transaction</div></div>';return;}
+  el.innerHTML=TXNS.map(t=>{const credit=t.type==='credit'||t.amount>0;return`<div class="hi"><div class="hi-ico ${credit?'credit':'debit'}"><svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:${credit?'var(--green2)':'var(--red)'};fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#${credit?'ic-coins':'ic-bag'}"></use></svg></div><div class="hi-info"><div class="hi-title">${esc(t.note||t.type||'Transaction')}</div><div class="hi-meta">${fmtDT(t.created_at)}</div></div><div class="hi-amt ${credit?'amt-p':'amt-m'}">${credit?'+':''}${fmtFCFA(Math.abs(t.amount))}</div></div>`;}).join('');
+}
+
+function flipCard(){document.getElementById('card3d')?.classList.toggle('flipped');}
+
+function openPayModal(){
+  if(!CARD)return;
+  document.getElementById('pay-modal').classList.add('open');
+  document.getElementById('modal-code-txt').textContent=CARD.code;
+  const el=document.getElementById('modal-qr-el');el.innerHTML='';
+  setTimeout(()=>{try{new QRCode(el,{text:CARD.code,width:180,height:180,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.M});}catch(e){el.innerHTML='<div style="width:180px;height:180px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;color:#333;padding:10px;text-align:center;word-break:break-all">'+CARD.code+'</div>';}},50);
+}
+
+function closeModal(){document.getElementById('pay-modal').classList.remove('open');}
+function offerCard(){
+  if(!CARD)return;
+  const url='https://mysargal.com/giftcard.html?code='+CARD.code;
+  const who=CARD.recipient_name?(' '+CARD.recipient_name):'';
+  const m=(CARD.merchant&&CARD.merchant.name)||CARD.merchant_name||'';
+  let msg='🎁 Surprise'+who+' !\n\nTu as reçu une carte cadeau de *'+fmtFCFA(CARD.balance)+'*'+(m?' chez *'+m+'*':'')+'.';
+  if(CARD.message) msg+='\n\n« '+CARD.message+' »';
+  msg+='\n\n👉 Ouvre ton cadeau ici :\n'+url+'\n\n— MySargal';
+  window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(msg),'_blank');
+}
+document.getElementById('pay-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+load();
+</script>
+</body>
+</html>

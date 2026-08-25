@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-label="MARAZ Summit Club">
+  <defs>
+    <style>
+      .m-band{fill:#f3ede0}
+      .m-word{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:800;letter-spacing:18px;fill:#1e3a5f;font-size:32px}
+      .m-sub{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:600;letter-spacing:9px;fill:#1e3a5f;font-size:9px}
+      .m-tri{fill:#c85a3e}
+      .m-rule{stroke:#1e3a5f;stroke-width:1.5;fill:none}
+      .m-rule-orange{stroke:#c85a3e;stroke-width:1.5;fill:none}
+    </style>
+  </defs>
+  <rect width="320" height="96" fill="none"/>
+  <!-- top hairline -->
+  <line class="m-rule" x1="30" y1="14" x2="290" y2="14"/>
+  <!-- small orange triangle above the A (approx letter A position within "M A R A Z") -->
+  <polygon class="m-tri" points="147,20 155,32 139,32"/>
+  <!-- Wordmark -->
+  <text class="m-word" x="160" y="60" text-anchor="middle">M A R A Z</text>
+  <!-- Creme band with subline -->
+  <rect class="m-band" x="60" y="70" width="200" height="18" rx="1"/>
+  <text class="m-sub" x="160" y="83" text-anchor="middle">SUMMIT CLUB</text>
+  <!-- bottom hairline -->
+  <line class="m-rule-orange" x1="30" y1="94" x2="290" y2="94"/>
+</svg>

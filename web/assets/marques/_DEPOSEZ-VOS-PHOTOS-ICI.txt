@@ -1,0 +1,11 @@
+Déposez ici vos 5 photos de produits (packshots), idéalement PNG à fond transparent,
+carré ou portrait, ~1000px. Nommez exactement :
+
+  chips.png
+  eau.png
+  lait.png
+  couches.png
+  jus.png
+
+Dès qu'un fichier est présent, il remplace automatiquement le cadre "Photo à déposer"
+sur la page /marques. Vous pouvez changer les noms/nombre dans marques.html (tableau P).

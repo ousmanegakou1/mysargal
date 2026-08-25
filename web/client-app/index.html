@@ -1,0 +1,780 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="canonical" href="https://mysargal.com/client-app/"/><meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="MySargal — Mes cartes"/><meta property="og:description" content="Retrouve toutes tes cartes de fidélité et tes cartes cadeaux au même endroit."/><meta property="og:url" content="https://mysargal.com/client-app/"/><meta property="og:image" content="https://mysargal.com/og-image.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="MySargal — Mes cartes"/><meta name="twitter:image" content="https://mysargal.com/og-image.png"/><link rel="manifest" href="/manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MySargal"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#0a0f08"><meta name="apple-mobile-web-app-capable" content="yes"><title>MySargal — Mes cartes</title><script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';var b=document.getElementById('theme-fab');if(b)b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#0a0f08');}function toggleTheme(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}document.addEventListener('DOMContentLoaded',msThemeUI);</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"><script src="/assets/mysargal-common.js"></script><script>window.MS=window.MS||{};MS.esc=MS.esc||function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};MS.escAttr=MS.escAttr||function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};MS.safeImgSrc=MS.safeImgSrc||function(u){var v=String(u||'').trim();return (/^data:image\/(png|jpe?g|gif|webp|svg\+xml);/i.test(v)||/^https:\/\//i.test(v))?v:'';};</script><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+function isIOS(){return/iPad|iPhone|iPod/.test(navigator.userAgent)}
+function showWalletButtons(card){
+  var s=document.getElementById('wallet-section');
+  if(!s)return;
+  s.style.display='flex';
+  s.style.flexDirection='column';
+  var ab=document.getElementById('btn-apple-wallet');
+  var wb=document.getElementById('btn-whatsapp-share');
+  var code=card.code;
+  var type=card.type||'loyalty';
+  var passUrl='https://iiocxlvcuoqafzlisqwd.supabase.co/functions/v1/get-apple-pass?code='+code;
+  var cardUrl='https://mysargal.com/c/?code='+code;
+  if(ab){
+    ab.style.display='flex';
+    ab.href=passUrl;;
+  }
+  if(wb){
+    var msg='';
+    if(type==='giftcard'){
+      var bal=(card.balance||0).toLocaleString('fr-FR')+' CFA';
+      msg='🎁 *Ma carte cadeau MySargal*\n\n🏪 Boutique : *'+(card.merchant_name||'MySargal')+'*\n💰 Solde : *'+bal+'*\n🎫 Code : '+code+'\n\n📲 Utiliser ma carte :\n'+cardUrl+(isIOS()? '\n\n🍎 Apple Wallet :\n'+passUrl:'');
+    }else{
+      var pts=card.pts||0;var thr=card.threshold||100;
+      msg='🏆 *Ma carte fidélité MySargal*\n\n🏪 Boutique : *'+(card.merchant_name||'MySargal')+'*\n⭐ Points : *'+pts+'/'+thr+'*\n👤 '+(card.client_name||'')+'\n🎫 Code : '+code+'\n\n📲 Voir ma carte :\n'+cardUrl+(isIOS()?'\n\n🍎 Apple Wallet :\n'+passUrl:'');
+    }
+    wb.href='https://wa.me/?text='+encodeURIComponent(msg);
+    wb.target='_blank';
+  }
+}
+function showWalletToast(msg){
+  var t=document.getElementById('wallet-toast');
+  if(!t)return;
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show')},3000);
+}
+
+</script><style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0a0f08;--s1:#0f160d;--s2:#141e12;--s3:#1a2818;--s4:#203020;--b1:rgba(74,222,128,.07);--b2:rgba(74,222,128,.14);--b3:rgba(74,222,128,.25);--tx:#f0ede8;--tx2:#8aab82;--tx3:#435040;--green:#16a34a;--green2:#22c55e;--green3:#4ade80;--gold:#f5c842;--gold2:#fde68a;--red:#ef4444;--wave:#00c4a3;--r:14px;--r2:20px;--r3:28px;--logo-box:#f3faf3;--logo-ink:#0a2810;--card-sh:none;--glow:rgba(22,163,74,.10);color-scheme:dark}
+html[data-theme="light"]{--bg:#eef3ef;--s1:#ffffff;--s2:#ffffff;--s3:#f1f6f1;--s4:#e6eee7;--b1:rgba(22,163,74,.10);--b2:rgba(22,163,74,.16);--b3:rgba(22,163,74,.30);--tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;--green2:#16a34a;--green3:#15803d;--gold:#c98a04;--gold2:#8f5e07;--wave:#0a8f78;--logo-box:#0a0f0b;--logo-ink:#ffffff;--card-sh:0 6px 20px rgba(20,45,28,.08);--glow:rgba(22,163,74,.07);color-scheme:light}
+html,body{min-height:100svh;background:var(--bg)}
+body{font-family:'Inter',sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .25s ease,color .25s ease}
+.login-card,.total-banner,.lc,.pstat{box-shadow:var(--card-sh)}
+.login-logo-svg{height:120px;width:auto;display:block;margin:0 auto 14px;filter:drop-shadow(0 8px 26px rgba(0,0,0,.45))}
+.theme-fab{width:38px;height:38px;border-radius:50%;background:var(--s2);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;color:var(--tx2);flex-shrink:0;box-shadow:var(--card-sh);transition:transform .15s}
+.theme-fab:active{transform:scale(.92)}
+#page-login.active ~ .bottom-nav{display:none!important}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg::before{content:'';position:absolute;top:-20vh;left:50%;transform:translateX(-50%);width:100vw;height:100vw;background:radial-gradient(circle,var(--glow) 0%,transparent 65%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;min-height:100svh;display:flex;flex-direction:column}
+.page{display:none;flex-direction:column;flex:1;animation:fadeUp .3s ease}
+.page.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.login-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center}
+.login-logo{font-family:'Montserrat',sans-serif;font-size:2.5rem;font-weight:900;margin-bottom:6px}
+.login-logo em{color:var(--green2);font-style:normal}
+.login-sub{font-size:.9rem;color:var(--tx2);margin-bottom:36px;line-height:1.6}
+.login-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r3);padding:26px;width:100%;max-width:360px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.68rem;font-weight:600;color:var(--tx3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.phone-row{display:flex;gap:8px}
+.country-badge{background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);padding:0 12px;display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--tx2);white-space:nowrap;flex-shrink:0}
+.inp{width:100%;padding:13px 16px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.95rem;color:var(--tx);outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--green2)}
+.inp::placeholder{color:var(--tx3)}
+.otp-row{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.otp-d{width:58px;height:64px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);font-family:'Montserrat',sans-serif;font-size:1.7rem;font-weight:700;color:var(--tx);text-align:center;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.otp-d:focus{border-color:var(--green2);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.otp-d.filled{border-color:var(--green);background:rgba(22,163,74,.06)}
+.home-header{padding:max(env(safe-area-inset-top),16px) 20px 0}
+.home-top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 20px}
+.greeting{font-size:.75rem;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.5px}
+.client-name{font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:900;color:var(--tx);margin-top:2px}
+.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--wave));display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0;cursor:pointer}
+.total-banner{margin:0 20px 20px;background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--b2);border-radius:var(--r3);padding:20px 22px;position:relative;overflow:hidden}
+.total-banner::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(34,197,94,.05)}
+.total-label{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.total-val{font-family:'Montserrat',sans-serif;font-size:3rem;font-weight:900;color:var(--tx);line-height:1;margin-bottom:4px}
+.total-sub{font-size:.78rem;color:var(--tx2)}
+.total-actions{margin-top:14px;display:flex;gap:8px}
+.tb-btn{padding:9px 16px;border-radius:var(--r);border:none;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.tb-primary{background:var(--green);color:#fff}
+.tb-ghost{background:var(--b1);color:var(--green3);border:1px solid var(--b2)}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:12px}
+.sec-title{font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:700}
+.cards-scroll{display:flex;gap:14px;padding:0 20px 4px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cards-scroll::-webkit-scrollbar{display:none}
+.lc{min-width:280px;border-radius:20px;padding:18px 20px;position:relative;overflow:hidden;flex-shrink:0;scroll-snap-align:start;aspect-ratio:1.62;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.lc:hover{transform:translateY(-3px)}
+.lc-top{display:flex;align-items:center;gap:9px;position:relative;z-index:1}
+.lc-logo{border-radius:9px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.lc-merchant-name{font-family:'Montserrat',sans-serif;font-size:.82rem;font-weight:900;color:#fff;line-height:1.2}
+.lc-merchant-sub{font-size:.5rem;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.lc-mysargal{font-family:'Montserrat',sans-serif;font-size:.52rem;font-weight:700;color:rgba(255,255,255,.25);position:absolute;bottom:14px;right:16px;z-index:2}
+.lc-mysargal em{font-style:normal;color:rgba(255,255,255,.18)}
+.lc-mid{position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0}
+.lc-pts{font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;color:#fff;line-height:1}
+.lc-qr{background:#fff;border-radius:8px;padding:4px;box-shadow:0 2px 10px rgba(0,0,0,.4);flex-shrink:0}
+.lc-bottom{position:relative;z-index:1}
+.lc-prog{display:none}
+.lc-code{font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(255,255,255,.25);letter-spacing:.08em}
+.hist-list{padding:0 20px;display:flex;flex-direction:column;gap:2px}
+.hi{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b1)}
+.hi:last-child{border-bottom:none}
+.hi-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.hi-ico.earn{background:rgba(34,197,94,.1)}.hi-ico.reward{background:rgba(245,200,66,.1)}
+.hi-info{flex:1;min-width:0}
+.hi-title{font-size:.82rem;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hi-meta{font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.hi-pts{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.9rem;flex-shrink:0}
+.pts-p{color:var(--green3)}.pts-m{color:var(--red)}
+.card-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 20px 16px}
+.card-tabs::-webkit-scrollbar{display:none}
+.card-tab{padding:7px 14px;border-radius:20px;border:1.5px solid var(--b1);background:var(--s2);cursor:pointer;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:600;color:var(--tx3);white-space:nowrap;transition:all .15s;flex-shrink:0}
+.card-tab.active{border-color:var(--green2);background:rgba(34,197,94,.1);color:var(--green2)}
+.qr-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.qr-big-wrap{background:#fff;border-radius:16px;padding:12px;display:inline-block;box-shadow:0 4px 24px rgba(0,0,0,.4);margin-bottom:12px}
+input[type=range]{width:100%;max-width:240px;accent-color:var(--green2);height:4px;cursor:pointer;margin-bottom:16px}
+.rewards-list{padding:0 20px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:100px}
+.ri{background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r2);padding:16px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.ri.avail{border-color:var(--b3)}
+.ri.avail::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green2)}
+.ri-icon{width:48px;height:48px;border-radius:14px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.ri-info{flex:1;min-width:0}
+.ri-name{font-size:.88rem;font-weight:700;margin-bottom:3px}
+.ri-prog{height:3px;background:var(--s3);border-radius:10px;overflow:hidden;margin-top:6px}
+.ri-prog-fill{height:100%;background:var(--green);border-radius:10px}
+.ri-use{background:var(--green);color:#fff;border:none;border-radius:var(--r);padding:8px 14px;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;flex-shrink:0}
+.profile-header{padding:max(env(safe-area-inset-top),20px) 20px 20px;text-align:center}
+.prof-av{width:76px;height:76px;border-radius:50%;margin:0 auto 12px;background:linear-gradient(135deg,var(--green),var(--wave));display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:900;color:#fff;border:3px solid var(--s3)}
+.prof-name{font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:900;margin-bottom:2px}
+.prof-phone{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--tx3)}
+.prof-stats{display:flex;gap:1px;background:var(--b1);border-radius:var(--r2);overflow:hidden;margin:16px 20px;border:1px solid var(--b1)}
+.pstat{flex:1;background:var(--s2);padding:14px 10px;text-align:center}
+.pstat-val{font-family:'Montserrat',sans-serif;font-size:1.4rem;font-weight:700;color:var(--green2)}
+.pstat-lbl{font-size:.62rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.profile-section{padding:0 20px;margin-bottom:20px}
+.profile-section-title{font-size:.68rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-family:'DM Mono',monospace;margin-bottom:10px}
+.profile-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--b1);cursor:pointer}
+.profile-item:last-child{border-bottom:none}
+.pi-icon{width:36px;height:36px;border-radius:10px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--s1);border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-around;padding:10px 8px max(env(safe-area-inset-bottom),10px);z-index:100;backdrop-filter:blur(20px)}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 16px;border-radius:var(--r);cursor:pointer;background:none;border:none;min-width:64px;transition:all .15s}
+.nav-btn.active{background:var(--b1)}
+.nav-icon{font-size:1.2rem;line-height:1}
+.nav-label{font-size:.62rem;font-weight:600;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.3px;transition:color .15s}
+.nav-btn.active .nav-label{color:var(--green2)}
+.btn-wallet{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:280px;background:#000;color:#fff;border:none;border-radius:10px;padding:13px 20px;font-size:15px;font-weight:600;cursor:pointer;margin:8px auto;text-decoration:none;-webkit-tap-highlight-color:transparent}.btn-whatsapp{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:280px;background:#25D366;color:#fff;border:none;border-radius:10px;padding:13px 20px;font-size:15px;font-weight:600;cursor:pointer;margin:8px auto;text-decoration:none}.wallet-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:100px;font-size:14px;transition:transform .3s;z-index:9999;pointer-events:none}.wallet-toast.show{transform:translateX(-50%) translateY(0)}.wallet-section{display:flex;flex-direction:column;align-items:center;gap:8px;margin:16px 0;padding:16px;background:rgba(0,190,92,.08);border:1px solid rgba(0,190,92,.2);border-radius:16px}.wallet-title{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin:0 0 4px}.qr-fab{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green2));display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 16px rgba(22,163,74,.4);border:none;margin-top:-24px;flex-shrink:0;transition:all .2s}
+.qr-fab:active{transform:scale(.95)}
+.rw-badge{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;font-size:.5rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--s1)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--r);border:none;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--green);color:#fff}
+.btn-ghost{background:var(--s2);color:var(--tx2);border:1px solid var(--b1)}
+.btn-sm{padding:9px 16px;font-size:.78rem;width:auto}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toasts{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none;display:flex;flex-direction:column;gap:7px;align-items:center}
+.toast{background:var(--s4);border:1px solid var(--b2);border-radius:var(--r);padding:10px 18px;font-size:.8rem;font-weight:500;animation:tIn .3s ease;white-space:nowrap;display:flex;align-items:center;gap:7px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.toast.ok{border-left:3px solid var(--green2);color:var(--green3)}
+.toast.info{border-left:3px solid var(--gold);color:var(--gold2)}
+.toast.err{border-left:3px solid var(--red);color:#f87171}
+@keyframes tIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.empty{text-align:center;padding:40px 24px;color:var(--tx3)}
+.empty-icon{font-size:2.5rem;margin-bottom:10px;opacity:.3}
+.empty-title{font-family:'Montserrat',sans-serif;font-size:.95rem;font-weight:700;color:var(--tx2);margin-bottom:6px}
+.scroll-content{overflow-y:auto;flex:1;padding-bottom:90px}
+/* Gift cards client */
+.gc-card-item{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden;transition:all .15s}
+.gc-card-item:active{transform:scale(.98)}
+.gc-card-banner{width:100%;height:80px;display:flex;align-items:flex-end;padding:10px 14px;position:relative;overflow:hidden}
+.gc-card-banner-shimmer{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%);animation:gcshim 3s ease-in-out infinite}
+@keyframes gcshim{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.gc-card-body{padding:12px 14px}
+.gc-client-badge{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:.56rem;font-weight:700;font-family:'DM Mono',monospace}
+.gc-client-badge.active{background:rgba(34,197,94,.12);color:var(--green2)}
+.gc-client-badge.used{background:rgba(239,68,68,.08);color:#f87171}
+.gc-client-badge.cancelled{background:rgba(100,100,100,.1);color:var(--tx3)}
+.gc-client-prog{display:none}
+.gc-client-prog-fill{height:100%;border-radius:20px}
+</style><script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol><symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol><symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol><symbol id="ic-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9.5h18M6 15h4"/></symbol><symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol><symbol id="ic-clipboard" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="4" rx="1.2"/><path d="M9 11h6M9 15h5"/></symbol><symbol id="ic-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/></symbol><symbol id="ic-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-5.4 6.5-5.4S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M17 14.6c2.6.2 4.5 1.7 4.5 4.4"/></symbol><symbol id="ic-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-4 3.4-6 7.5-6s7.5 2 7.5 6"/></symbol><symbol id="ic-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7M17 21h4M17 17h.01"/></symbol><symbol id="ic-phone" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 5.5h3M11 18.5h2"/></symbol><symbol id="ic-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></symbol><symbol id="ic-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.6-9.2-9C1.3 8 2.6 4.5 6 4.5c2 0 3.2 1.2 4 2.4.8-1.2 2-2.4 4-2.4 3.4 0 4.7 3.5 3.2 6.5C19 15.4 12 20 12 20z"/></symbol><symbol id="ic-logout" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3"/><path d="M10 12H3M6 8l-3 4 3 4"/></symbol><symbol id="ic-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M6 7l1 13a1 1 0 001 1h8a1 1 0 001-1l1-13M10 11v6M14 11v6"/></symbol><symbol id="ic-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0012 3z"/></symbol><symbol id="ic-star" viewBox="0 0 24 24"><polygon points="12,3 14.6,9 21,9.4 16,13.6 17.8,20 12,16.3 6.2,20 8,13.6 3,9.4 9.4,9"/></symbol></defs></svg><div class="bg"></div><div class="app" id="app"><div class="page active" id="page-login"><div class="login-wrap"><div class="login-logo"><svg class="login-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg></div><div class="login-sub">Toutes tes cartes de fidélité<br>en un seul endroit</div><div class="login-card"><div id="ls-phone"><div class="field"><label>Ton numéro de téléphone</label><div class="phone-row"><select id="l-country" style="background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);padding:0 8px;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--tx2);outline:none;cursor:pointer;height:48px;max-width:110px" onchange="loginCountry=this.value"><option value="+221">🇸🇳 +221</option><option value="+225">🇨🇮 +225</option><option value="+223">🇲🇱 +223</option><option value="+226">🇧🇫 +226</option><option value="+229">🇧🇯 +229</option><option value="+228">🇹🇬 +228</option><option value="+227">🇳🇪 +227</option><option value="+245">🇬🇼 +245</option><option value="+224">🇬🇳 +224</option><option value="+220">🇬🇲 +220</option><option value="+222">🇲🇷 +222</option><option value="+238">🇨🇻 +238</option><option value="+234">🇳🇬 +234</option><option value="+233">🇬🇭 +233</option><option value="+254">🇰🇪 +254</option><option value="+255">🇹🇿 +255</option><option value="+250">🇷🇼 +250</option><option value="+256">🇺🇬 +256</option><option value="+257">🇧🇮 +257</option><option value="+251">🇪🇹 +251</option><option value="+260">🇿🇲 +260</option><option value="+27">🇿🇦 +27</option><option value="+237">🇨🇲 +237</option><option value="+241">🇬🇦 +241</option><option value="+242">🇨🇬 +242</option><option value="+243">🇨🇩 +243</option><option value="+212">🇲🇦 +212</option><option value="+213">🇩🇿 +213</option><option value="+216">🇹🇳 +216</option><option value="+33">🇫🇷 +33</option><option value="+32">🇧🇪 +32</option><option value="+41">🇨🇭 +41</option><option value="+39">🇮🇹 +39</option><option value="+34">🇪🇸 +34</option><option value="+351">🇵🇹 +351</option><option value="+44">🇬🇧 +44</option><option value="+49">🇩🇪 +49</option><option value="+1">🇺🇸 +1</option><option value="+55">🇧🇷 +55</option></select><input class="inp" id="l-phone" type="tel" inputmode="tel" placeholder="Numéro" oninput="fmtPhone(this)" onkeydown="if(event.key==='Enter')sendOTP()"></div></div><button class="btn btn-primary" id="l-send-btn" onclick="sendOTP()" disabled><span id="l-send-lbl"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:3px"><use href="#ic-phone"></use></svg>Recevoir le code par WhatsApp</span><span class="spin" id="l-send-spin" style="display:none"></span></button><div style="text-align:center;margin-top:12px;font-size:.72rem;color:var(--tx3)">Ta carte est créée par ton commerçant</div></div><div id="ls-otp" style="display:none"><div style="font-size:.82rem;color:var(--tx2);text-align:center;margin-bottom:20px">Code envoyé au <strong id="l-phone-disp" style="color:var(--tx)"></strong></div><div class="otp-row"><input class="otp-d" id="o0" type="tel" inputmode="numeric" maxlength="1" onkeyup="oKey(this,0)" oninput="oInp(this,0)"><input class="otp-d" id="o1" type="tel" inputmode="numeric" maxlength="1" onkeyup="oKey(this,1)" oninput="oInp(this,1)"><input class="otp-d" id="o2" type="tel" inputmode="numeric" maxlength="1" onkeyup="oKey(this,2)" oninput="oInp(this,2)"><input class="otp-d" id="o3" type="tel" inputmode="numeric" maxlength="1" onkeyup="oKey(this,3)" oninput="oInp(this,3)"><input class="otp-d" id="o4" type="tel" inputmode="numeric" maxlength="1" onkeyup="oKey(this,4)" oninput="oInp(this,4)"><input class="otp-d" id="o5" type="tel" inputmode="numeric" maxlength="1" onkeyup="oKey(this,5)" oninput="oInp(this,5)"></div><button class="btn btn-primary" id="l-verify-btn" onclick="verifyOTP()" disabled><span id="l-verify-lbl">Vérifier</span><span class="spin" id="l-verify-spin" style="display:none"></span></button><div style="text-align:center;margin-top:10px"><button style="background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--tx3)" onclick="document.getElementById('ls-otp').style.display='none';document.getElementById('ls-phone').style.display='block'">← Changer de numéro</button></div><div style="text-align:center;margin-top:8px;font-size:.72rem;color:var(--tx3)"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px;margin-right:3px"><use href="#ic-phone"></use></svg>Vérifie ton WhatsApp pour le code</div></div></div></div></div><div class="page" id="page-home"><div class="home-header"><div class="home-top"><div><div class="greeting">Bonjour</div><div class="client-name" id="client-name-display">—</div></div><div style="display:flex;align-items:center;gap:10px"><div class="theme-fab" id="theme-fab" onclick="toggleTheme()" title="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></div><div class="avatar" id="home-avatar" onclick="showPage('profile')">?</div></div></div></div><div class="total-banner"><div class="total-label">Total mes points</div><div class="total-val" id="total-pts">0</div><div class="total-sub">sur <span id="total-cards">0</span> cartes actives</div><div class="total-actions"><button class="tb-btn tb-primary" onclick="showQR()"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-qr"></use></svg> Mon QR</button><button class="tb-btn tb-ghost" onclick="showPage('rewards')"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg> Récompenses</button></div></div><div class="scroll-content"><div id="push-banner" style="padding:0 20px;margin-bottom:2px"></div><div class="sec-hdr"><div class="sec-title">Mes cartes</div></div><div class="cards-scroll" id="cards-scroll"></div><div class="sec-hdr" style="margin-top:24px"><div class="sec-title">D&#233;couvrir</div></div><div id="discover-feed" style="padding:0 20px;display:flex;flex-direction:column;gap:10px"></div><div class="sec-hdr" style="margin-top:24px"><div class="sec-title">Activité récente</div></div><div class="hist-list" id="home-hist"></div><div style="margin:20px;background:rgba(0,196,163,.06);border:1px solid rgba(0,196,163,.15);border-radius:var(--r2);padding:16px;display:flex;align-items:center;gap:14px"><div style="display:flex"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:var(--wave);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-heart"></use></svg></div><div><div style="font-size:.8rem;font-weight:600;color:var(--wave);margin-bottom:3px">Payer par Wave</div><div style="font-size:.7rem;color:var(--tx3);line-height:1.5">Points crédités automatiquement après chaque paiement Wave.</div></div></div></div></div><div class="page" id="page-qr"><div style="padding:max(env(safe-area-inset-top),16px) 20px 0;display:flex;align-items:center;gap:12px"><button onclick="showPage('home')" style="background:var(--s2);border:1px solid var(--b1);border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);font-size:1rem">←</button><div style="font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:700">Mon QR Code</div></div><div class="card-tabs" id="qr-tabs"></div><div class="qr-wrap"><div style="font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px" id="qr-merchant-lbl"></div><div style="font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:900;margin-bottom:16px" id="qr-client-lbl"></div><div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Luminosité</div><input type="range" min="10" max="100" value="100" oninput="setBrightness(this.value)"><div class="qr-big-wrap" id="qr-big"></div><div style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--tx2);margin-bottom:6px" id="qr-code-txt"></div><div style="font-size:.75rem;color:var(--tx3);max-width:280px;margin:0 auto 20px;line-height:1.6">Montre ce QR code au commerçant</div><div class="wallet-section" id="wallet-section" style="display:none"><p class="wallet-title"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px;margin-right:3px"><use href="#ic-phone"></use></svg>Ajouter à ton téléphone</p><a id="btn-apple-wallet" class="btn-wallet" href="#" style="display:none"><svg width="20" height="20" viewbox="0 0 22 22" fill="none"><path d="M16.5 11.55c-.02-2.1 1.71-3.1 1.79-3.16-.98-1.43-2.5-1.63-3.04-1.65-1.3-.13-2.54.76-3.2.76-.66 0-1.68-.74-2.77-.72-1.42.02-2.74.83-3.47 2.1-1.49 2.57-.38 6.38 1.06 8.47.71 1.02 1.55 2.16 2.65 2.12 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.65.69 2.78.67 1.14-.02 1.87-1.03 2.57-2.06.81-1.17 1.14-2.31 1.16-2.37-.03-.01-2.28-.87-2.3-3.47z" fill="white"/><path d="M14.32 5.13c.59-.71.98-1.7.87-2.69-.84.03-1.86.56-2.47 1.26-.54.62-1.01 1.62-.88 2.58.93.07 1.88-.47 2.48-1.15z" fill="white"/></svg><span>Ajouter à Apple Wallet</span></a><a id="btn-whatsapp-share" class="btn-whatsapp" href="#"><svg width="18" height="18" fill="white" viewbox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span>Envoyer par WhatsApp</span></a></div><div class="wallet-toast" id="wallet-toast"></div><button class="btn btn-ghost btn-sm" onclick="shareQR()" style="width:auto"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-share"></use></svg> Partager</button><button id="nfc-share-btn" onclick="shareNFC()" style="display:none;align-items:center;gap:6px;padding:9px 16px;background:rgba(34,197,94,.08);border:1px solid var(--b2);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;color:var(--green2);cursor:pointer;transition:all .15s"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-phone"></use></svg> NFC</button></div></div><div class="page" id="page-rewards"><div style="padding:max(env(safe-area-inset-top),20px) 20px 0"><div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.5px;text-transform:uppercase">Disponibles</div><div style="font-family:'Montserrat',sans-serif;font-size:1.7rem;font-weight:900;margin-top:4px;margin-bottom:4px">Mes récompenses</div><div style="font-size:.82rem;color:var(--tx2);margin-bottom:20px" id="rewards-sub"></div></div><div class="rewards-list" id="rewards-list"></div></div><div class="page" id="page-history"><div style="padding:max(env(safe-area-inset-top),20px) 20px 16px"><div style="font-family:'Montserrat',sans-serif;font-size:1.7rem;font-weight:900;margin-top:8px">Historique</div><div style="font-size:.8rem;color:var(--tx2);margin-top:4px" id="hist-count"></div></div><div class="scroll-content"><div class="hist-list" id="full-hist"></div></div></div><div class="page" id="page-profile"><div class="scroll-content"><div class="profile-header"><div class="prof-av" id="prof-av">?</div><div class="prof-name" id="prof-name"></div><div class="prof-phone" id="prof-phone"></div></div><div class="prof-stats"><div class="pstat"><div class="pstat-val" id="ps-total">0</div><div class="pstat-lbl">Points</div></div><div class="pstat"><div class="pstat-val" id="ps-cards">0</div><div class="pstat-lbl">Cartes</div></div><div class="pstat"><div class="pstat-val" id="ps-txs">0</div><div class="pstat-lbl">Scans</div></div></div><div class="profile-section"><div class="profile-section-title">Mes cartes</div><div id="profile-cards"></div></div><div class="profile-section"><div class="profile-section-title">Notifications</div><div class="profile-item" id="push-row" onclick="msPushToggle()"><div class="pi-icon"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--green2);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg></div><div style="flex:1"><div style="font-size:.85rem;font-weight:500">Offres de mes boutiques</div><div style="font-size:.7rem;color:var(--tx3)" id="push-state">…</div></div></div></div><div class="profile-section"><div class="profile-section-title">Compte</div><div class="profile-item" onclick="logout()"><div class="pi-icon"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-logout"></use></svg></div><div style="font-size:.85rem;font-weight:500;color:var(--red);flex:1">Se déconnecter</div></div><div class="profile-item" onclick="deleteAccount()"><div class="pi-icon"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-trash"></use></svg></div><div style="font-size:.85rem;font-weight:500;color:var(--red);flex:1">Supprimer mon compte</div></div></div></div></div><div class="page" id="page-giftcards"><div style="padding:max(env(safe-area-inset-top),20px) 20px 0;flex-shrink:0"><div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.5px;text-transform:uppercase">Mes cadeaux</div><div style="font-family:'Montserrat',sans-serif;font-size:1.7rem;font-weight:900;margin-top:4px;margin-bottom:4px">Cartes cadeaux</div><div style="font-size:.82rem;color:var(--tx2);margin-bottom:20px" id="gc-client-sub">Chargement...</div></div><div style="flex:1;overflow-y:auto;padding:0 20px 90px"><div style="font-size:.92rem;font-weight:800;margin:0 0 10px">Offrir une carte cadeau</div><div id="gc-shop" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"><div style="grid-column:1/-1;font-size:.76rem;color:var(--tx3)">Chargement des enseignes...</div></div><a href="/cartes-cadeaux" style="display:block;text-align:center;font-size:.78rem;color:var(--green2,#22c55e);text-decoration:none;margin:12px 0 22px;font-weight:600">Voir toutes les enseignes &#8594;</a><div style="font-size:.92rem;font-weight:800;margin:0 0 10px">Mes cartes re&#231;ues</div><div style="display:flex;flex-direction:column;gap:12px" id="gc-client-list"></div></div></div><nav class="bottom-nav"><button class="nav-btn active" id="nav-home" onclick="showPage('home')"><span class="nav-icon" style="display:flex"><svg viewBox="0 0 24 24" style="width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-home"></use></svg></span><span class="nav-label">Accueil</span></button><button class="nav-btn" id="nav-history" onclick="showPage('history')"><span class="nav-icon" style="display:flex"><svg viewBox="0 0 24 24" style="width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-clipboard"></use></svg></span><span class="nav-label">Historique</span></button><button class="qr-fab" onclick="showQR()"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-qr"></use></svg></button><button class="nav-btn" id="nav-giftcards" onclick="showPage('giftcards')"><div style="position:relative;display:inline-flex"><span class="nav-icon" style="display:flex"><svg viewBox="0 0 24 24" style="width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></span><span class="rw-badge" id="gc-badge" style="display:none"></span></div><span class="nav-label">Cartes cadeaux</span></button><button class="nav-btn" id="nav-profile" onclick="showPage('profile')"><span class="nav-icon" style="display:flex"><svg viewBox="0 0 24 24" style="width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-user"></use></svg></span><span class="nav-label">Profil</span></button></nav></div><div class="toasts" id="toasts"></div><script>
+const SB_URL='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+let CLIENT_TOKEN=null;try{CLIENT_TOKEN=localStorage.getItem('lc_token')||null;}catch(e){}
+const H={'apikey':SB_ANON,get Authorization(){return 'Bearer '+(CLIENT_TOKEN||SB_ANON);}};
+let CLIENT=null,CARDS=[],TXS=[],REWARDS_CAT=[],loginPhone='',loginCountry='+221';
+const otpArr=['','','','','',''];
+
+function fmtPhone(input){
+  let v=input.value.replace(/\D/g,'');
+  input.value=v;loginPhone=v;document.getElementById('l-send-btn').disabled=v.length<6;
+}
+
+async function sendOTP(){
+  const fullPhone=(loginCountry||'+221')+(document.getElementById('l-phone')?.value||'').replace(/\s/g,'');
+  if(fullPhone==='+10000000000'){
+    document.getElementById('ls-phone').style.display='none';
+    document.getElementById('ls-otp').style.display='block';
+    document.getElementById('l-phone-disp').textContent=fullPhone;
+    setTimeout(()=>document.getElementById('o0').focus(),200);
+    toast('Code démo: 123456','ok');
+    return;
+  }
+  const btn=document.getElementById('l-send-btn'),lbl=document.getElementById('l-send-lbl'),spin=document.getElementById('l-send-spin');
+  btn.disabled=true;lbl.style.display='none';spin.style.display='inline-block';
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/send-whatsapp-otp',{
+      method:'POST',
+      headers:{...H,'Content-Type':'application/json'},
+      body:JSON.stringify({phone:loginCountry+loginPhone})
+    });
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Erreur envoi WhatsApp');
+    document.getElementById('l-phone-disp').textContent=(loginCountry)+' '+document.getElementById('l-phone').value;
+    document.getElementById('ls-phone').style.display='none';
+    document.getElementById('ls-otp').style.display='block';
+    setTimeout(()=>document.getElementById('o0').focus(),200);
+    toast('📱 Code envoyé par WhatsApp !','info');
+  }catch(e){toast(e.message||'Erreur','err');}
+  finally{btn.disabled=false;lbl.style.display='inline';spin.style.display='none';}
+}
+
+function oInp(el,idx){
+  const v=el.value.replace(/\D/g,'').slice(-1);el.value=v;otpArr[idx]=v;el.classList.toggle('filled',!!v);
+  if(v&&idx<5)document.getElementById('o'+(idx+1)).focus();
+  const full=otpArr.join('');document.getElementById('l-verify-btn').disabled=full.length<6;
+  if(full.length===6)setTimeout(verifyOTP,200);
+}
+function oKey(el,idx){if(event.key==='Backspace'&&!el.value&&idx>0){const p=document.getElementById('o'+(idx-1));p.value='';p.classList.remove('filled');otpArr[idx-1]='';p.focus();}}
+
+async function verifyOTP(){
+  const code=otpArr.join('');
+  const btn=document.getElementById('l-verify-btn'),lbl=document.getElementById('l-verify-lbl'),spin=document.getElementById('l-verify-spin');
+  btn.disabled=true;lbl.style.display='none';spin.style.display='inline-block';
+  const fullPhone=loginCountry+loginPhone;
+  
+  // Mode démo pour Apple Review
+  if((fullPhone==='+10000000000'||fullPhone==='+1 000 000 0000') && code==='123456'){
+    CLIENT={name:'Demo User',phone:'+10000000000',initial:'D'};
+    localStorage.setItem('lc_client',JSON.stringify({...CLIENT,raw:'0000000000'}));
+    CARDS=[{id:'demo-card',code:'LC-DEMO01',pts:25,merchant_id:'demo-merchant',merchant:{name:'Demo Store',emoji:'🏪'},active:true,client_name:'Demo User',client_phone:'+10000000000'}];
+    TXS=[];
+    showPage('home');toast('Bienvenue Demo User ! 👋','ok');
+    btn.disabled=false;lbl.style.display='inline';spin.style.display='none';
+    return;
+  }
+  
+  try{
+    // Vérifier le code WhatsApp OTP
+    const vr=await fetch(SB_URL+'/functions/v1/verify-whatsapp-otp',{
+      method:'POST',
+      headers:{...H,'Content-Type':'application/json'},
+      body:JSON.stringify({phone:fullPhone,code})
+    });
+    const vd=await vr.json();
+    if(!vr.ok)throw new Error(vd.error||'Code incorrect');
+    if(vd.token){CLIENT_TOKEN=vd.token;try{localStorage.setItem('lc_token',vd.token);}catch(e){}}
+
+    // Chercher les cartes fidélité
+    const cards=await fetch(SB_URL+'/rest/v1/loyalty_cards?client_phone=eq.'+encodeURIComponent(fullPhone)+'&active=eq.true',{headers:H}).then(r=>r.json()).catch(()=>[]);
+    if(!cards||!cards.length)throw new Error('Aucune carte pour ce numéro. Demande une carte à ton commerçant.');
+    CLIENT={name:cards[0].client_name,phone:fullPhone,initial:cards[0].client_name[0].toUpperCase()};
+    localStorage.setItem('lc_client',JSON.stringify({...CLIENT,raw:loginPhone}));
+    await loadData(fullPhone);
+    showPage('home');toast('Bienvenue '+CLIENT.name.split(' ')[0]+' ! 👋','ok');
+  }catch(e){
+    toast(e.message||'Erreur','err');
+    otpArr.fill('');for(let i=0;i<6;i++){const el=document.getElementById('o'+i);el.value='';el.classList.remove('filled');}
+    document.getElementById('o0').focus();
+  }finally{btn.disabled=false;lbl.style.display='inline';spin.style.display='none';}
+}
+
+async function loadData(phone){
+  const cards=await fetch(SB_URL+'/rest/v1/loyalty_cards?client_phone=eq.'+encodeURIComponent(phone)+'&active=eq.true',{headers:H}).then(r=>r.json()).catch(()=>[]);
+  const mids=[...new Set((cards||[]).map(c=>c.merchant_id))];
+  const merchants=mids.length?await fetch(SB_URL+'/rest/v1/merchant_directory?id=in.('+mids.join(',')+')',{headers:H}).then(r=>r.json()).catch(()=>[]):[];
+  const mMap={};(merchants||[]).forEach(m=>{mMap[m.id]=m;MS_CUR_BOUTIQUE[m.id]=m.currency||'XOF';});
+  CARDS=(cards||[]).map(c=>{
+    const m=mMap[c.merchant_id]||{};
+    return {id:c.id,code:c.code,name:c.client_name,pts:c.pts||0,lifetime:c.lifetime_pts||0,created:c.created_at,design_url:c.design_url||null,hide_overlay:c.hide_overlay||false,
+      merchant:{
+        name:m.name||'Commerçant',emoji:m.emoji||'🏪',
+        threshold:m.threshold||10,reward_desc:m.reward_desc||'Récompense',
+        id:m.id,logo:m.logo_url||m.logo_base64||null,
+        brand:m.brand||{bg1:'#1a1a2e',bg2:'#0f3460',accent:'#e94560'}
+      }
+    };
+  });
+  if(CARDS.length){
+    const ids=CARDS.map(c=>c.id);
+    const txs=await fetch(SB_URL+'/rest/v1/transactions?card_id=in.('+ids.join(',')+')'+'&order=created_at.desc&limit=20',{headers:H}).then(r=>r.json()).catch(()=>[]);
+    TXS=(txs||[]).map(t=>({id:t.id,cid:t.card_id,pts:t.pts,type:t.type,note:t.note,at:t.created_at}));
+  }
+  // ── Fix perf N+1 : une seule requête `merchant_id=in.(…)` au lieu
+  // d'un fetch par carte (avant : 10 cartes = 10 round-trips séquentiels).
+  REWARDS_CAT=[];
+  const mIds=[...new Set(CARDS.map(c=>c.merchant?.id).filter(Boolean))];
+  if(mIds.length){
+    const rws=await fetch(SB_URL+'/rest/v1/rewards?merchant_id=in.('+mIds.join(',')+')&active=eq.true',{headers:H}).then(r=>r.json()).catch(()=>[]);
+    const byMerchant={};
+    (rws||[]).forEach(r=>{ (byMerchant[r.merchant_id]=byMerchant[r.merchant_id]||[]).push(r); });
+    CARDS.forEach(card=>{
+      const list=byMerchant[card.merchant?.id]||[];
+      list.forEach(r=>REWARDS_CAT.push({...r,card}));
+    });
+  }
+}
+
+async function deleteAccount(){
+  if(!confirm('Supprimer définitivement ton compte et toutes tes données ? Cette action est irréversible.')) return;
+  if(!CLIENT) return;
+  try {
+    // ⚠️ Plus de DELETE direct vers /rest/v1/loyalty_cards depuis le
+    // navigateur : c'était trivialement exploitable (suppression des
+    // cartes de n'importe quel numéro). On passe par une Edge Function
+    // qui re-vérifie l'OTP / la session côté serveur avant d'anonymiser
+    // les cartes du client.
+    await MS.sb.edge('delete-my-account', { phone: CLIENT.phone });
+    toast('Compte supprimé', 'ok');
+    setTimeout(() => logout(), 1500);
+  } catch(e) {
+    toast(e?.message || 'Erreur lors de la suppression', 'err');
+  }
+}
+
+function logout(){CLIENT=null;CARDS=[];TXS=[];REWARDS_CAT=[];localStorage.removeItem('lc_client');try{localStorage.removeItem('lc_token');}catch(e){}CLIENT_TOKEN=null;showPage('login');toast('Déconnecté','info');}
+
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function fmtDT(iso){if(!iso)return'—';const d=new Date(iso),now=new Date(),diff=Math.floor((now-d)/86400000);if(diff===0){const dm=Math.floor((now-d)/60000);if(dm<2)return'À l\'instant';if(dm<60)return'Il y a '+dm+' min';return'Aujourd\'hui '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}if(diff===1)return'Hier';if(diff<7)return'Il y a '+diff+' jours';return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}
+function getTier(pts){if(pts>=500)return{n:'Platinum',icon:'💎'};if(pts>=200)return{n:'Gold',icon:'🥇'};if(pts>=50)return{n:'Silver',icon:'🥈'};return{n:'Bronze',icon:'🥉'};}
+function qrSvg(text,size=54){
+  try{
+    const tmp=document.createElement('div');
+    tmp.style.position='fixed';
+    tmp.style.left='-9999px';
+    tmp.style.top='-9999px';
+    document.body.appendChild(tmp);
+    new QRCode(tmp,{text,width:size,height:size,colorDark:'#0a0f08',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    const img=tmp.querySelector('img');
+    const canvas=tmp.querySelector('canvas');
+    let src='';
+    if(img&&img.src)src=img.src;
+    else if(canvas&&typeof canvas.toDataURL==='function')src=canvas.toDataURL('image/png');
+    tmp.remove();
+    if(src)return `<img src="${src}" width="${size}" height="${size}" style="display:block;width:${size}px;height:${size}px"/>`;
+  }catch(e){}
+  return `<div style="width:${size}px;height:${size}px;background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-size:9px;font-family:monospace">${esc(text)}</div>`;
+}
+
+function renderHome(){
+  if(!CLIENT)return;
+  try{ if(window.msPushRefreshUI) msPushRefreshUI(); }catch(e){}
+  document.getElementById('client-name-display').textContent=CLIENT.name.split(' ')[0];
+  document.getElementById('home-avatar').textContent=CLIENT.initial;
+  const total=CARDS.reduce((s,c)=>s+(c.pts||0),0);
+  document.getElementById('total-pts').textContent=total;document.getElementById('total-cards').textContent=CARDS.length;
+  document.getElementById('cards-scroll').innerHTML=CARDS.map(c=>cardHtml(c)).join('')+'<div onclick="toast(\'Scanne un QR chez un commerçant\',\'info\')" style="min-width:110px;border-radius:20px;border:2px dashed var(--b2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:20px;flex-shrink:0;aspect-ratio:1.62"><div style="font-size:1.8rem;opacity:.4">+</div><div style="font-size:.72rem;color:var(--tx3);font-weight:500;text-align:center">Nouvelle<br>carte</div></div>';
+  const recent=[...TXS].slice(0,4);
+  document.getElementById('home-hist').innerHTML=recent.length?recent.map(t=>histHtml(t)).join(''):'<div class="empty"><div class="empty-icon" style="display:flex;justify-content:center"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:var(--tx3);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-clipboard"></use></svg></div><div class="empty-title">Aucune activité</div></div>';
+  const avail=REWARDS_CAT.filter(r=>(r.card?.pts||0)>=(r.pts_cost||10)).length;
+  const badge=document.getElementById('rw-badge');if(badge){badge.style.display=avail>0?'flex':'none';badge.textContent=avail;}
+}
+
+function cardHtml(card){
+  const b=card.merchant?.brand||{bg1:'#1a1a2e',bg2:'#0f3460',accent:'#e94560'},m=card.merchant||{},tier=getTier(card.lifetime||0);
+  const thresh=m.threshold||10,pct=Math.min(100,Math.round(((card.pts||0)/thresh)*100)),rem=Math.max(0,thresh-(card.pts||0)),hasRwd=(card.pts||0)>=thresh;
+  const pid='p'+Math.random().toString(36).slice(2,6);
+  const cardBgStyle=card.design_url?`background-image:url(${card.design_url});background-size:cover;background-position:center`:`background:linear-gradient(135deg,${b.bg1},${b.bg2})`;
+  // Full bleed: image contains all info, hide MySargal overlay
+  if(card.design_url && card.hide_overlay){
+    return `<div class="lc" style="${cardBgStyle}" onclick="openCard('${card.id}')"></div>`;
+  }
+  return `<div class="lc" style="${cardBgStyle}" onclick="openCard('${card.id}')">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="${pid}" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1.5" fill="${b.accent}" opacity=".07"/></pattern></defs><rect width="100%" height="100%" fill="url(#${pid})"/></svg>
+    <div class="lc-top">
+      <div class="lc-logo" style="max-height:36px;max-width:90px;min-width:36px;min-height:36px;background:${MS.safeImgSrc(m.logo)?'transparent':'rgba(255,255,255,.12)'}">${MS.safeImgSrc(m.logo)?`<img src="${MS.escAttr(MS.safeImgSrc(m.logo))}" style="max-height:36px;max-width:90px;width:auto;height:auto;object-fit:contain;display:block"/>`:MS.esc(m.emoji||'🏪')}</div>
+    </div>
+    <div class="lc-mysargal">My<em>Sargal</em></div>
+    <div class="lc-mid">
+      <div><div style="font-size:.54rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">points fidélité</div><div class="lc-pts">${card.pts||0}</div><div style="font-size:.58rem;margin-top:3px;color:${hasRwd?b.accent:'rgba(255,255,255,.35)'}">${hasRwd?'<svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px;margin-right:2px"><use href="#ic-gift"></use></svg>Récompense dispo !':'encore '+rem+' pts → '+esc(m.reward_desc||'')}</div></div>
+      <div class="lc-qr">${qrSvg(card.code,54)}</div>
+    </div>
+    <div class="lc-bottom"><div class="lc-prog"><div style="height:100%;width:${pct}%;background:${b.accent};border-radius:10px;transition:width .5s ease"></div></div><div class="lc-code">${card.code}</div></div>
+  </div>`;
+}
+
+function histHtml(t){const card=CARDS.find(c=>c.id===t.cid),m=card?.merchant;return `<div class="hi"><div class="hi-ico ${t.type}"><svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:${t.type==='earn'?'var(--green2)':'var(--gold)'};fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#${t.type==='earn'?'ic-star':'ic-gift'}"></use></svg></div><div class="hi-info"><div class="hi-title">${esc(m?.name||'—')} — ${esc(t.note||'Transaction')}</div><div class="hi-meta">${fmtDT(t.at)}</div></div><div class="hi-pts ${t.pts>0?'pts-p':'pts-m'}">${t.pts>0?'+':''}${t.pts}</div></div>`;}
+
+let currentQRCard=null;
+function showQR(id){currentQRCard=id||(CARDS[0]?.id);renderQRPage(currentQRCard);showPage('qr');}
+function openCard(id){showQR(id);}
+function renderQRPage(cardId){
+  const card=CARDS.find(c=>c.id===cardId)||CARDS[0];if(!card)return;
+  const m=card.merchant||{};
+  document.getElementById('qr-merchant-lbl').textContent=m.name||'';
+  document.getElementById('qr-client-lbl').textContent=CLIENT?.name||'';
+  document.getElementById('qr-code-txt').textContent=card.code;
+  showWalletButtons({code:card.code,type:'loyalty',client_name:card.client_name,pts:card.pts||0,threshold:card.merchant?.reward_threshold||100,merchant_name:card.merchant?.name||'MySargal'});
+  document.getElementById('qr-tabs').innerHTML=CARDS.map(c=>{const mc=c.merchant||{},active=c.id===cardId;return `<button class="card-tab${active?' active':''}" onclick="renderQRPage('${c.id}')">${mc.emoji||'💳'} ${esc(mc.name||'Carte')}</button>`;}).join('');
+  const wrap=document.getElementById('qr-big');wrap.innerHTML='<div id="qb"></div>';
+  setTimeout(()=>{try{new QRCode(document.getElementById('qb'),{text:card.code,width:200,height:200,colorDark:'#0a0f08',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}catch(e){document.getElementById('qb').innerHTML=qrSvg(card.code,200);}},50);
+}
+function setBrightness(v){const w=document.getElementById('qr-big');if(w)w.style.filter='brightness('+v/100+')';}
+function shareQR(){
+  const card=CARDS.find(c=>c.id===currentQRCard)||CARDS[0];
+  if(!card)return;
+  const url='https://mysargal.com/c/?code='+card.code;
+  if(navigator.share)navigator.share({title:'Ma carte MySargal',url}).catch(()=>{});
+  else{navigator.clipboard?.writeText(url);toast('Lien copié !','ok');}
+}
+
+// ── NFC SHARE (client partage sa carte par NFC) ──
+let nfcShareActive=false;
+
+async function shareNFC(){
+  if(!('NDEFWriter' in window||'NDEFReader' in window)){
+    toast('NFC non supporté — utilise le QR code','err');
+    return;
+  }
+  const card=CARDS.find(c=>c.id===currentQRCard)||CARDS[0];
+  if(!card){toast('Sélectionne une carte','err');return;}
+
+  const url='https://mysargal.com/c/?code='+card.code;
+  const btn=document.getElementById('nfc-share-btn');
+
+  try{
+    // Web NFC write (Android Chrome)
+    const writer=new NDEFReader();
+    await writer.write({
+      records:[
+        {recordType:'url',data:url},
+        {recordType:'text',data:card.code,lang:'fr'}
+      ]
+    });
+    if(btn){btn.textContent='✓ NFC partagé !';btn.style.background='var(--green)';setTimeout(()=>{btn.innerHTML='<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-phone"></use></svg> NFC';btn.style.background='';},2500);}
+    toast('Carte partagée par NFC ✓','ok');
+  }catch(e){
+    if(e.name==='NotAllowedError'){toast('Permission NFC refusée','err');}
+    else if(e.name==='NotSupportedError'){
+      // Fallback: just show the code for manual entry
+      toast('NFC non disponible — montre le QR code','info');
+    }else{toast('Erreur NFC: '+e.message,'err');}
+  }
+}
+
+function renderRewards(){
+  const avail=REWARDS_CAT.filter(r=>(r.card?.pts||0)>=(r.pts_cost||10)).length;
+  document.getElementById('rewards-sub').textContent=avail>0?avail+' récompense'+(avail>1?'s':'')+' disponible'+(avail>1?'s':''):'Continue à accumuler des points !';
+  const list=document.getElementById('rewards-list');
+  if(!REWARDS_CAT.length){list.innerHTML='<div class="empty"><div class="empty-icon" style="display:flex;justify-content:center"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:var(--tx3);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div><div class="empty-title">Aucune récompense</div></div>';return;}
+  list.innerHTML=REWARDS_CAT.map(r=>{
+    const card=r.card,m=card?.merchant||{},can=(card?.pts||0)>=(r.pts_cost||10),pct=Math.min(100,Math.round(((card?.pts||0)/(r.pts_cost||10))*100));
+    return `<div class="ri${can?' avail':''}">
+      <div class="ri-icon">${r.emoji||'🎁'}</div>
+      <div class="ri-info"><div style="font-size:.65rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-bottom:3px">${esc(m.name||'')}</div><div class="ri-name">${esc(r.name)}</div><div style="font-size:.72rem;color:var(--tx3)"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px;margin-right:2px"><use href="#ic-star"></use></svg>${r.pts_cost||10} pts${!can?' · encore '+((r.pts_cost||10)-(card?.pts||0))+' pts':''}</div>${!can?`<div class="ri-prog"><div class="ri-prog-fill" style="width:${pct}%"></div></div>`:''}</div>
+      ${can?`<button class="ri-use" onclick="useReward('${r.id}','${card?.id}')">Utiliser</button>`:`<div style="font-size:.68rem;color:var(--tx3);text-align:center;flex-shrink:0;max-width:60px;line-height:1.4">${(r.pts_cost||10)-(card?.pts||0)}<br>pts</div>`}
+    </div>`;
+  }).join('');
+}
+
+async function useReward(rid,cid){
+  const card=CARDS.find(c=>c.id===cid),reward=REWARDS_CAT.find(r=>r.id===rid);if(!card||!reward)return;
+  try{
+    await fetch(SB_URL+'/functions/v1/redeem-reward',{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify({card_code:card.code,merchant_id:card.merchant?.id,reward_id:rid})});
+    card.pts-=(reward.pts_cost||10);TXS.unshift({id:'t'+Date.now(),cid,pts:-(reward.pts_cost||10),type:'reward',note:reward.name,at:new Date().toISOString()});
+    toast('Récompense utilisée : '+reward.name+' 🎉','ok');renderRewards();renderHome();
+  }catch(e){toast(e.message||'Erreur','err');}
+}
+
+function renderHistory(){document.getElementById('hist-count').textContent=TXS.length+' transactions';document.getElementById('full-hist').innerHTML=TXS.length?TXS.map(t=>histHtml(t)).join(''):'<div class="empty"><div class="empty-icon" style="display:flex;justify-content:center"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:var(--tx3);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-clipboard"></use></svg></div><div class="empty-title">Aucune transaction</div></div>';}
+function renderProfile(){if(!CLIENT)return;document.getElementById('prof-av').textContent=CLIENT.initial;document.getElementById('prof-name').textContent=CLIENT.name;document.getElementById('prof-phone').textContent=CLIENT.phone;const total=CARDS.reduce((s,c)=>s+(c.pts||0),0);document.getElementById('ps-total').textContent=total;document.getElementById('ps-cards').textContent=CARDS.length;document.getElementById('ps-txs').textContent=TXS.length;document.getElementById('profile-cards').innerHTML=CARDS.map(c=>{const m=c.merchant||{};return `<div class="profile-item" onclick="openCard('${c.id}')"><div class="pi-icon">${m.emoji||'💳'}</div><div style="font-size:.85rem;font-weight:500;flex:1">${esc(m.name||'Carte')}</div><div style="font-size:.78rem;color:var(--green2)">${c.pts} pts</div></div>`;}).join('');}
+
+var _discoverLoaded=false;
+function loadDiscover(){
+  var box=document.getElementById('discover-feed'); if(!box||_discoverLoaded) return;
+  fetch(SB_URL+'/rest/v1/public_offers?select=id,name,emoji,logo_url,logo_base64,city,reward_desc,boost_until,boost_x,created_at&order=created_at.desc&limit=30',{headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON}}).then(function(r){return r.json();}).then(function(rows){
+    if(!Array.isArray(rows)||!rows.length){box.innerHTML='<div style="padding:0 4px;font-size:.72rem;color:var(--tx3)">Bientôt : découvre les commerces près de toi.</div>';return;}
+    var now=Date.now();
+    rows.forEach(function(m){ m._boost=m.boost_until&&(new Date(m.boost_until).getTime()>now); });
+    rows.sort(function(a,b){ return (b._boost?1:0)-(a._boost?1:0); });
+    box.innerHTML=rows.slice(0,12).map(function(m){
+      var logo=MS.safeImgSrc(m.logo_url||m.logo_base64||'');
+      var ini=MS.esc((String(m.name||'?').trim()[0]||'?').toUpperCase());
+      var av=logo?'<img src="'+logo+'" style="width:44px;height:44px;border-radius:12px;object-fit:cover"/>':'<div style="width:44px;height:44px;border-radius:12px;background:var(--s3);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-family:\'Montserrat\',sans-serif;font-weight:800;color:var(--tx2)">'+ini+'</div>';
+      var badge=m._boost?'<span style="background:#f5c842;color:#3a2c08;font-size:.6rem;font-weight:800;border-radius:20px;padding:2px 8px">Points x'+(m.boost_x||2)+' aujourd\'hui</span>':(m.reward_desc?'<span style="color:var(--tx3);font-size:.68rem">'+MS.esc(String(m.reward_desc).slice(0,42))+'</span>':'<span style="color:var(--tx3);font-size:.68rem">Programme de fidélité</span>');
+      return '<a href="/join.html?merchant='+encodeURIComponent(m.id)+'&n='+encodeURIComponent(m.name||'')+'" style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:12px;background:var(--s2);border:1px solid var(--b1);border-radius:16px;padding:11px 13px">'+av+'<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+MS.esc(m.name||'Boutique')+'</div><div style="margin-top:3px">'+badge+'</div></div><span style="color:var(--tx3)">&#8594;</span></a>';
+    }).join('');
+    _discoverLoaded=true;
+  }).catch(function(){});
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id)?.classList.add('active');
+  document.getElementById('nav-'+id)?.classList.add('active');
+  if(id==='home'){renderHome();loadDiscover();}if(id==='rewards')renderRewards();if(id==='history')renderHistory();if(id==='profile')renderProfile();
+  if(id==='qr'){const nfcBtn=document.getElementById('nfc-share-btn');if(nfcBtn)nfcBtn.style.display=('NDEFReader' in window)?'inline-flex':'none';}
+  window.scrollTo(0,0);
+}
+
+function toast(msg,type='ok'){const w=document.getElementById('toasts'),el=document.createElement('div');el.className='toast '+type;el.innerHTML={ok:'✓',err:'✗',info:'<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px"><use href="#ic-bulb"></use></svg>'}[type]+' '+msg;w.appendChild(el);setTimeout(()=>el.remove(),3200);}
+
+let GIFT_CARDS_CLIENT=[];
+const GC_GRADS={violet:'linear-gradient(135deg,#4c1d95,#7c3aed,#a855f7)',gold:'linear-gradient(135deg,#78350f,#d97706,#fbbf24)',teal:'linear-gradient(135deg,#134e4a,#0d9488,#2dd4bf)',rose:'linear-gradient(135deg,#881337,#db2777,#f472b6)',blue:'linear-gradient(135deg,#1e3a8a,#2563eb,#60a5fa)',noir:'linear-gradient(135deg,#09090b,#1e1e2e,#3f3f5f)',nuit:'linear-gradient(135deg,#0c1445,#1e3a5f,#2563eb)',foret:'linear-gradient(135deg,#052e16,#14532d,#166534)',onyx:'linear-gradient(135deg,#0b0b0d,#1c1c22,#2c2c36,#0e0e12)',platine:'linear-gradient(135deg,#20262e,#4b5563,#79828f,#2b3038)',prestige:'linear-gradient(135deg,#4a3208,#9a7318,#e6c76a,#6b4e12)',emeraude:'linear-gradient(135deg,#03251b,#0a5c3c,#12946a,#063a2a)',bordeaux:'linear-gradient(135deg,#340810,#7a1226,#a81e3c,#4a0c18)',cuivre:'linear-gradient(135deg,#3f1f0d,#a15c2c,#d98f52,#5e2f14)',saphir:'linear-gradient(135deg,#0a184a,#1e3a8a,#3455c8,#0d1f56)',oct_rose:'linear-gradient(135deg,#7a1247,#c81e73,#f472b6,#a8195c)',noel:'linear-gradient(135deg,#0b3d24,#0f5c34,#8a1220,#c99a3a)',ramadan:'linear-gradient(135deg,#04231a,#0b5c3a,#0f7a4d,#c9a24a)',tabaski:'linear-gradient(135deg,#3f2a08,#8a6d1f,#0b5c3a,#063a2a)',valentin:'linear-gradient(135deg,#5a0f1c,#c81e4a,#f472b6,#7a1230)',independance:'linear-gradient(135deg,#0a7a3c,#e8c33a,#c0392b)',nouvelan:'linear-gradient(135deg,#0a1024,#25406e,#3455c8,#e6c76a)',magal:'linear-gradient(135deg,#0a2810,#0f5c34,#1a7a4a,#d4b25a)'};
+/* Devise — un client peut avoir des cartes de plusieurs pays, donc une devise par boutique. */
+const MS_DEVISES={XOF:{s:'FCFA',d:0},XAF:{s:'FCFA',d:0},NGN:{s:'₦',d:2},KES:{s:'KSh',d:2},
+  TZS:{s:'TSh',d:0},RWF:{s:'FRw',d:0},UGX:{s:'USh',d:0},GHS:{s:'GH₵',d:2},
+  ZAR:{s:'R',d:2},MAD:{s:'DH',d:2},DZD:{s:'DA',d:2},TND:{s:'DT',d:3},
+  EUR:{s:'€',d:2},USD:{s:'US$',d:2},GBP:{s:'£',d:2},CAD:{s:'CA$',d:2},BRL:{s:'R$',d:2},
+  // Huit monnaies manquaient : une carte lue depuis Banjul, Nouakchott,
+  // Praia, Conakry, Bujumbura, Addis-Abeba, Lusaka ou Geneve retombait
+  // silencieusement sur le franc CFA, et le client voyait un montant
+  // libelle dans une monnaie qui n'a pas cours chez lui.
+  GMD:{s:'D',d:2},MRU:{s:'UM',d:2},CVE:{s:'$',d:0},GNF:{s:'FG',d:0},
+  BIF:{s:'FBu',d:0},ETB:{s:'Br',d:2},ZMW:{s:'ZK',d:2},CHF:{s:'CHF',d:2}};
+const MS_DEVISE_AVANT=new Set(['NGN','KES','TZS','RWF','UGX','GHS','ZAR','USD','GBP','CAD','BRL','CVE','ZMW','ETB','CHF']);
+const MS_CUR_BOUTIQUE={};
+function msDeviseDe(merchantId){ const c=MS_CUR_BOUTIQUE[merchantId]; return (c&&MS_DEVISES[c])?c:'XOF'; }
+function fmtFCFA(n,merchantId){
+  const c=msDeviseDe(merchantId), d=MS_DEVISES[c];
+  const v=new Intl.NumberFormat('fr-FR',{minimumFractionDigits:d.d,maximumFractionDigits:d.d}).format(Number(n)||0);
+  return MS_DEVISE_AVANT.has(c)?(d.s+' '+v):(v+' '+d.s);
+}
+
+async function loadGiftCards(phone){
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/gift_cards?recipient_phone=eq.'+encodeURIComponent(phone)+'&order=created_at.desc',{headers:H});
+    if(!r.ok)return;
+    const gcs=await r.json();
+    GIFT_CARDS_CLIENT=gcs||[];
+    // On récupère la devise des boutiques concernées, une seule fois.
+    const inconnus=[...new Set(GIFT_CARDS_CLIENT.map(g=>g.merchant_id).filter(id=>id&&!(id in MS_CUR_BOUTIQUE)))];
+    if(inconnus.length){
+      const ms=await fetch(SB_URL+'/rest/v1/merchant_directory?id=in.('+inconnus.join(',')+')&select=id,currency',{headers:H}).then(r=>r.json()).catch(()=>[]);
+      (ms||[]).forEach(m=>{MS_CUR_BOUTIQUE[m.id]=m.currency||'XOF';});
+    }
+  }catch(e){GIFT_CARDS_CLIENT=[];}
+}
+
+let GIFT_SHOP_DONE=false;
+function gcGrad(key){var G=['linear-gradient(135deg,#4c1d95,#7c3aed)','linear-gradient(135deg,#78350f,#d97706)','linear-gradient(135deg,#134e4a,#0d9488)','linear-gradient(135deg,#881337,#db2777)','linear-gradient(135deg,#1e3a8a,#2563eb)','linear-gradient(135deg,#052e16,#166534)'];var h=0,s=String(key||'');for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return G[h%G.length];}
+async function loadGiftShop(){
+  var box=document.getElementById('gc-shop'); if(!box) return;
+  if(GIFT_SHOP_DONE && box.getAttribute('data-done')==='1') return;
+  try{
+    var r=await fetch(SB_URL+'/rest/v1/marketplace_directory?order=name.asc',{headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON}});
+    var rows=await r.json();
+    if(!Array.isArray(rows)||!rows.length){box.innerHTML='<div style="grid-column:1/-1;font-size:.78rem;color:var(--tx3)">Bient&#244;t : offrez des cartes de vos enseignes pr&#233;f&#233;r&#233;es.</div>';box.setAttribute('data-done','1');return;}
+    box.innerHTML=rows.map(function(m){
+      var name=MS.esc(m.name||'Boutique');
+      var logo=MS.safeImgSrc(m.logo_url||m.logo_base64||'');
+      var grad=gcGrad(m.id||name);
+      var logoBox=logo?'<img src="'+logo+'" style="width:28px;height:28px;border-radius:7px;object-fit:cover" onerror="this.style.display=&#39;none&#39;"/>':'';
+      return '<a href="/buy-giftcard.html?merchant='+encodeURIComponent(m.id)+'" style="text-decoration:none;color:#fff;border-radius:14px;padding:14px;background:'+grad+';box-shadow:0 6px 16px rgba(0,0,0,.2);min-height:98px;display:flex;flex-direction:column;justify-content:space-between">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="font-family:\'DM Mono\',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.82)">Carte cadeau</span>'+logoBox+'</div>'
+        +'<div style="font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:.95rem;line-height:1.15">'+name+'</div></a>';
+    }).join('');
+    box.setAttribute('data-done','1');GIFT_SHOP_DONE=true;
+  }catch(e){box.innerHTML='<div style="grid-column:1/-1;font-size:.78rem;color:var(--tx3)">Impossible de charger les enseignes.</div>';}
+}
+function renderGiftCards(){
+  const list=document.getElementById('gc-client-list');
+  const sub=document.getElementById('gc-client-sub');
+  const active=GIFT_CARDS_CLIENT.filter(g=>g.status==='active');
+  sub.textContent=active.length>0?active.length+' carte'+(active.length>1?'s':'')+' active'+(active.length>1?'s':''):'Aucune carte cadeau reçue';
+  const badge=document.getElementById('gc-badge');
+  if(badge){badge.style.display=active.length>0?'flex':'none';badge.textContent=active.length;}
+  if(!GIFT_CARDS_CLIENT.length){
+    list.innerHTML=`<div class="empty"><div class="empty-icon" style="display:flex;justify-content:center"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:var(--tx3);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div><div class="empty-title">Aucune carte cadeau</div><div style="font-size:.78rem;color:var(--tx3)">Tes cartes cadeaux offertes apparaîtront ici</div></div>`;
+    return;
+  }
+  list.innerHTML=GIFT_CARDS_CLIENT.map(gc=>{
+    const pct=Math.round((gc.balance/gc.initial_amount)*100);
+    const grad=GC_GRADS[gc.design]||GC_GRADS.violet;
+    const url='https://mysargal.com/giftcard.html?code='+gc.code;
+    return`<div class="gc-card-item">
+      <div class="gc-card-banner" style="background:${grad}">
+        <div class="gc-card-banner-shimmer"></div>
+        <div style="position:relative;z-index:1;width:100%;display:flex;align-items:flex-end;justify-content:space-between">
+          <div>
+            <div style="font-family:'Montserrat',sans-serif;font-size:1.4rem;font-weight:900;color:#fff;line-height:1">${fmtFCFA(gc.balance,gc.merchant_id)}</div>
+            <div style="font-size:.62rem;color:rgba(255,255,255,.55);font-family:'DM Mono',monospace;margin-top:2px">${esc(gc.code)}</div>
+          </div>
+          <span class="gc-client-badge ${gc.status}">${gc.status==='active'?'Actif':gc.status==='used'?'Utilisé':'Annulé'}</span>
+        </div>
+      </div>
+      <div class="gc-card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:.82rem;font-weight:700">${esc(gc.recipient_name||'Carte cadeau')}</div>
+          <div style="font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace">${fmtFCFA(gc.initial_amount,gc.merchant_id)} initial</div>
+        </div>
+        ${gc.message?`<div style="font-size:.75rem;color:var(--tx2);font-style:italic;margin-bottom:8px">"${esc(gc.message)}"</div>`:''}
+        <div class="gc-client-prog"><div class="gc-client-prog-fill" style="width:${pct}%;background:${grad}"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:.64rem;color:var(--tx3);font-family:'DM Mono',monospace">${pct}% restant</span>
+          <span style="font-size:.64rem;color:var(--tx3);font-family:'DM Mono',monospace">${gc.expires_at?'Exp. '+new Date(gc.expires_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'Sans expiration'}</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <a href="${url}" style="flex:1;padding:10px;background:var(--green);color:#fff;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-card"></use></svg> Voir ma carte</a>
+          <button onclick="window.open('https://api.whatsapp.com/send?text='+encodeURIComponent('🎁 MySargal Gift Card\\nSolde : ${fmtFCFA(gc.balance,gc.merchant_id)}\\n${url}'),'_blank')" style="padding:10px 14px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);color:var(--tx2);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+const _origLoadData=loadData;
+loadData=async function(phone){
+  await _origLoadData(phone);
+  await loadGiftCards(phone);
+  renderGiftCards();
+};
+
+const _origShowPage=showPage;
+showPage=function(id){
+  _origShowPage(id);
+  if(id==='giftcards'){renderGiftCards();loadGiftShop();}
+};
+
+const cached=localStorage.getItem('lc_client');
+if(cached&&CLIENT_TOKEN){const c=JSON.parse(cached);CLIENT=c;loadData(c.phone).then(()=>showPage('home')).catch(()=>showPage('login'));}
+else showPage('login');
+</script><script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+/* ═══ Notifications de mes boutiques (Web Push) ═══ */
+(function(){
+  const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+  const KEY='ms_push_asked';
+
+  function u8(base64){
+    const pad='='.repeat((4-base64.length%4)%4);
+    const b=(base64+pad).replace(/-/g,'+').replace(/_/g,'/');
+    const raw=atob(b); const out=new Uint8Array(raw.length);
+    for(let i=0;i<raw.length;i++) out[i]=raw.charCodeAt(i);
+    return out;
+  }
+
+  window.msPushSupported=function(){
+    return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+  };
+
+  window.msPushEnable=async function(cardCode, cards){
+    if(!msPushSupported()){ return {ok:false,error:'non supporté'}; }
+    try{
+      const perm=await Notification.requestPermission();
+      if(perm!=='granted') return {ok:false,error:'refusé'};
+
+      const reg=await navigator.serviceWorker.ready;
+      let sub=await reg.pushManager.getSubscription();
+      if(!sub){
+        const kr=await fetch(SB+'/functions/v1/push-subscribe');
+        const kd=await kr.json();
+        if(!kd||!kd.public_key) return {ok:false,error:'clé indisponible'};
+        sub=await reg.pushManager.subscribe({
+          userVisibleOnly:true,
+          applicationServerKey:u8(kd.public_key),
+        });
+      }
+      const j=sub.toJSON();
+      const rs=await fetch(SB+'/functions/v1/push-subscribe',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({endpoint:j.endpoint,keys:j.keys,card_code:cardCode||null,cards:Array.isArray(cards)?cards:[]}),
+      });
+      const rj=await rs.json().catch(()=>({}));
+      if(!rs.ok||!rj.success){
+        // Jamais d'échec silencieux : on annule l'abonnement local pour que
+        // l'appareil ne se croie pas abonné alors que le serveur l'ignore.
+        try{ await sub.unsubscribe(); }catch(_){}
+        localStorage.removeItem(KEY);
+        return {ok:false,error:rj.error||('erreur '+rs.status)};
+      }
+      localStorage.setItem(KEY,'1');
+      return {ok:true};
+    }catch(e){ return {ok:false,error:e.message}; }
+  };
+
+  window.msPushDisable=async function(){
+    try{
+      const reg=await navigator.serviceWorker.ready;
+      const sub=await reg.pushManager.getSubscription();
+      if(sub){
+        await fetch(SB+'/functions/v1/push-subscribe?remove=1',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({endpoint:sub.endpoint}),
+        });
+        await sub.unsubscribe();
+      }
+      localStorage.removeItem(KEY);
+      return {ok:true};
+    }catch(e){ return {ok:false,error:e.message}; }
+  };
+
+  window.msPushStatus=async function(){
+    if(!msPushSupported()) return 'unsupported';
+    if(Notification.permission==='denied') return 'denied';
+    try{
+      const reg=await navigator.serviceWorker.ready;
+      const sub=await reg.pushManager.getSubscription();
+      if(sub) msPushResync(sub);
+      return sub?'on':'off';
+    }catch(e){ return 'off'; }
+  };
+
+  // Renvoie l'abonnement existant au serveur (idempotent) : répare tout
+  // appareil abonné localement mais absent de la base.
+  window.msPushResync=async function(sub){
+    try{
+      const j=sub.toJSON();
+      await fetch(SB+'/functions/v1/push-subscribe',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({endpoint:j.endpoint,keys:j.keys,cards:myCards()}),
+      });
+    }catch(e){}
+  };
+
+  /* iPhone : le push n'existe que si l'app est installée sur l'écran d'accueil */
+  function isIOS(){ return /iPhone|iPad|iPod/.test(navigator.userAgent); }
+  function isStandalone(){
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+  }
+  function myCards(){
+    /* CARDS est déclaré en `let` dans le script précédent : accessible ici. */
+    try{ return (typeof CARDS!=='undefined'&&Array.isArray(CARDS)) ? CARDS.map(c=>c.code).filter(Boolean) : []; }
+    catch(e){ return []; }
+  }
+
+  window.msPushToggle=async function(){
+    const st=await msPushStatus();
+    if(st==='on'){
+      if(!confirm('Ne plus recevoir les offres de vos boutiques ?')) return;
+      await msPushDisable();
+    }else if(st==='denied'){
+      alert("Les notifications sont bloquées pour ce site. Autorisez-les dans les réglages de votre navigateur.");
+    }else if(st==='unsupported'){
+      alert("Votre navigateur ne gère pas les notifications.");
+    }else{
+      if(isIOS() && !isStandalone()){
+        alert("Sur iPhone : appuyez sur Partager puis « Sur l'écran d'accueil », ouvrez MySargal depuis l'icône, et réessayez.");
+        return;
+      }
+      const r=await msPushEnable(null, myCards());
+      if(!r.ok && r.error!=='refusé') alert("Activation impossible : "+(r.error||''));
+    }
+    msPushRefreshUI();
+  };
+
+  window.msPushRefreshUI=async function(){
+    const st=await msPushStatus();
+    const row=document.getElementById('push-state');
+    if(row){
+      row.textContent = st==='on' ? 'Activées'
+        : st==='denied' ? 'Bloquées dans le navigateur'
+        : st==='unsupported' ? 'Non disponibles sur cet appareil'
+        : 'Désactivées — appuyez pour activer';
+    }
+    const ban=document.getElementById('push-banner');
+    if(ban){
+      if(st==='off' && localStorage.getItem('ms_push_hide')!=='1'){
+        ban.innerHTML='<div style="background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.22);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:11px">'
+          +'<svg viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;stroke:var(--green2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg>'
+          +'<div style="flex:1;min-width:0"><div style="font-size:.8rem;font-weight:700">Offres de mes boutiques</div>'
+          +'<div style="font-size:.68rem;color:var(--tx3)">Soyez prévenu des points x2 et promos.</div></div>'
+          +'<button onclick="msPushToggle()" style="background:var(--green2,#22c55e);color:#fff;border:none;border-radius:9px;padding:8px 13px;font-size:.74rem;font-weight:700;cursor:pointer;font-family:inherit">Activer</button>'
+          +'<button onclick="localStorage.setItem(\'ms_push_hide\',\'1\');msPushRefreshUI()" style="background:none;border:none;color:var(--tx3);font-size:1.1rem;cursor:pointer;padding:0 2px">×</button>'
+          +'</div>';
+      }else{ ban.innerHTML=''; }
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{ setTimeout(msPushRefreshUI,1200); });
+})();
+</script></body></html>

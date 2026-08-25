@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Evenement">
+  <defs>
+    <style>
+      .bg{fill:#1e3a5f}
+      .creme{fill:#f3ede0}
+      .orange{fill:#c85a3e}
+      .txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;fill:#f3ede0;letter-spacing:6px;font-size:22px}
+      .sub{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:600;fill:#c85a3e;letter-spacing:8px;font-size:11px}
+    </style>
+  </defs>
+  <rect class="bg" width="400" height="300"/>
+  <g opacity="0.5">
+    <polygon fill="#c85a3e" points="60,60 80,100 40,100"/>
+    <polygon fill="#c85a3e" points="340,60 360,100 320,100"/>
+    <polygon fill="#c85a3e" points="60,220 80,180 40,180"/>
+    <polygon fill="#c85a3e" points="340,220 360,180 320,180"/>
+  </g>
+  <rect x="140" y="110" width="120" height="80" fill="none" stroke="#f3ede0" stroke-width="2"/>
+  <polygon class="orange" points="200,130 215,158 185,158"/>
+  <text class="sub" x="200" y="230" text-anchor="middle">EVENEMENT</text>
+  <text class="txt" x="200" y="260" text-anchor="middle">EXCLUSIF</text>
+</svg>

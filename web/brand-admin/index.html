@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#060d06"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>MySargal Brands — Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+:root{
+  --bg:#fbfbfa;--surface:#ffffff;--s2:#f6f7f6;--s3:#f0f2f0;
+  --b1:#ececed;--b2:#e0e3e0;--tx:#0b0d0c;--tx2:#5c6360;--tx3:#9aa19d;
+  --grn:#16a34a;--grn2:#15803d;--gold:#b7791f;--red:#dc2626;
+  --navbg:rgba(251,251,250,.82);--tint:#eefaf1;--r:14px;--ease:cubic-bezier(.22,1,.36,1)
+}
+html[data-theme="dark"]{
+  --bg:#0a0d0a;--surface:#0f150f;--s2:#131b13;--s3:#182218;
+  --b1:rgba(255,255,255,.08);--b2:rgba(255,255,255,.15);--tx:#f0f7f0;--tx2:#93a893;--tx3:#5b6f5b;
+  --grn:#22c55e;--grn2:#16a34a;--gold:#f5c842;--red:#f87171;--navbg:rgba(10,13,10,.82);--tint:rgba(34,197,94,.1)
+}
+html{transition:background .25s ease}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',-apple-system,Helvetica,Arial,sans-serif;min-height:100vh;line-height:1.6;letter-spacing:-.011em}
+.thbtn{width:38px;height:38px;border-radius:11px;background:var(--surface);border:1px solid var(--b1);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx2);transition:.18s var(--ease)}
+.thbtn:hover{border-color:var(--b2);transform:translateY(-1px)}
+.top{display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:var(--navbg);backdrop-filter:saturate(180%) blur(20px);z-index:10}
+.logo{font-family:'Inter',sans-serif;font-weight:800;font-size:1.12rem;display:inline-flex;align-items:center;letter-spacing:-.03em}
+.logo i{font-style:normal;color:var(--grn)}
+.logo .ms-ico{height:26px;width:auto;margin-right:9px}
+.logo .t{font-size:.72rem;font-weight:500;color:var(--tx3);margin-left:9px}
+.nav{display:flex;gap:2px;padding:14px 22px 0;max-width:1000px;margin:0 auto;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{background:none;border:none;color:var(--tx2);font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;padding:10px 16px;border-radius:100px;cursor:pointer;white-space:nowrap;transition:.18s var(--ease)}
+.nav button:hover{color:var(--tx);background:var(--surface)}
+.nav button.on{color:#fff;background:var(--tx)}
+html[data-theme="dark"] .nav button.on{color:var(--bg)}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 22px 90px}
+.card{background:var(--surface);border:1px solid var(--b1);border-radius:22px;padding:26px;margin-bottom:18px;box-shadow:0 1px 2px rgba(11,13,12,.03),0 10px 30px -20px rgba(11,13,12,.12)}
+h2{font-weight:700;font-size:1.18rem;margin-bottom:5px;letter-spacing:-.025em}
+.hint{font-size:.9rem;color:var(--tx2);margin-bottom:18px;line-height:1.55}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--tx2);margin:14px 0 7px}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:13px 14px;color:var(--tx);font-family:inherit;font-size:.94rem;outline:none;transition:.18s var(--ease)}
+input:focus,textarea:focus,select:focus{border-color:var(--grn);box-shadow:0 0 0 4px var(--tint)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{border:1px solid transparent;border-radius:100px;padding:12px 22px;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;background:var(--tx);color:var(--bg);transition:.2s var(--ease);display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(11,13,12,.4)}
+.btn:active{transform:translateY(0)}
+.btn.g{background:var(--surface);border-color:var(--b2);color:var(--tx);box-shadow:none}
+.btn.g:hover{border-color:var(--tx3)}
+.btn.d{background:var(--surface);border-color:color-mix(in srgb,var(--red) 40%,transparent);color:var(--red);box-shadow:none}
+.btn.d:hover{background:color-mix(in srgb,var(--red) 8%,transparent)}
+.btn.sm{padding:9px 15px;font-size:.82rem}
+.btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--b1);border-radius:18px;padding:20px;transition:.24s var(--ease)}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(11,13,12,.28);border-color:var(--b2)}
+.kpi .v{font-weight:700;font-size:2rem;line-height:1;letter-spacing:-.03em}
+.kpi .l{font-size:.7rem;color:var(--tx3);text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:9px;letter-spacing:.5px}
+.kpi .s{font-size:.76rem;color:var(--tx2);margin-top:4px}
+.camp{background:var(--surface);border:1px solid var(--b1);border-radius:18px;padding:20px;margin-bottom:14px;transition:.22s var(--ease)}
+.camp:hover{transform:translateY(-2px);box-shadow:0 16px 40px -26px rgba(11,13,12,.28);border-color:var(--b2)}
+.camp .hd{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.camp .ico{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Inter';font-weight:800;font-size:1.4rem;flex-shrink:0;overflow:hidden;background:var(--tint);color:var(--grn)}
+.camp .ico img{width:100%;height:100%;object-fit:contain;padding:6px}
+.camp .nm{font-weight:700;font-size:1.05rem;letter-spacing:-.02em}
+.badge{display:inline-flex;align-items:center;font-size:.64rem;font-weight:700;font-family:'DM Mono',monospace;padding:4px 10px;border-radius:100px;margin-left:8px;vertical-align:middle}
+.badge.on{background:var(--tint);color:var(--grn)}.badge.off{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--s2);border:1px solid var(--b1);border-radius:13px;padding:13px;text-align:center}
+.stat .v{font-weight:700;font-size:1.3rem;letter-spacing:-.02em}
+.stat .l{font-size:.56rem;color:var(--tx3);text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:4px;letter-spacing:.5px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sub{border-top:1px solid var(--b1);margin-top:16px;padding-top:16px}
+.sub .t{font-size:.72rem;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:9px;font-family:'DM Mono',monospace}
+.acct{display:flex;align-items:center;gap:9px;font-size:.85rem;color:var(--tx2);padding:8px 0;flex-wrap:wrap;border-bottom:1px solid var(--b1)}
+.acct code{font-family:'DM Mono',monospace;color:var(--grn);background:var(--tint);padding:2px 7px;border-radius:6px;font-size:.8rem}
+.acct .sp{margin-left:auto;display:flex;gap:6px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);border:none;border-radius:100px;padding:13px 22px;font-size:.86rem;font-weight:500;z-index:60;display:none;max-width:90vw;box-shadow:0 16px 40px rgba(11,13,12,.3)}
+.toast.show{display:block}
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.lcard{background:var(--surface);border:1px solid var(--b1);border-radius:26px;padding:38px 34px;max-width:390px;width:100%;text-align:center;box-shadow:0 30px 70px -30px rgba(11,13,12,.35)}
+.muted{font-size:.85rem;color:var(--tx2);line-height:1.6}
+.hide{display:none}#login.hide{display:none!important}
+.logo-prev{width:48px;height:48px;border-radius:12px;background:var(--s2);border:1px solid var(--b1);object-fit:contain;padding:5px;display:none}
+.flex{display:flex;gap:11px;align-items:center}
+.edit{border-top:1px solid var(--b1);margin-top:16px;padding-top:16px}
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem}
+.tbl th{text-align:left;color:var(--tx3);font-family:'DM Mono',monospace;font-size:.66rem;text-transform:uppercase;letter-spacing:.5px;padding:10px 8px;border-bottom:1px solid var(--b1)}
+.tbl td{padding:12px 8px;border-bottom:1px solid var(--b1);color:var(--tx2)}
+.tbl tr{transition:background .15s}.tbl tbody tr:hover,.tbl tr:hover{background:var(--s2)}
+.tbl td b{color:var(--tx);font-weight:600}
+.search{position:relative}
+.camp{position:relative;overflow:hidden}
+.camp-strip{position:absolute;top:0;left:0;right:0;height:5px;overflow:hidden}
+.camp-strip>i{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);transform:translateX(-100%);animation:campShine 4.5s ease-in-out infinite}
+@keyframes campShine{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+.camp .hd{padding-top:5px}
+@media(prefers-reduced-motion:reduce){.camp-strip>i{animation:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n-console.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+</defs></svg>
+<div id="login">
+  <form class="lcard" onsubmit="event.preventDefault();login();" style="position:relative">
+    <button type="button" class="thbtn" onclick="msToggle()" title="Thème" style="position:absolute;top:16px;right:16px"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+    <div class="logo" style="font-size:1.5rem;margin-bottom:6px;justify-content:center"><img class="ms-ico" src="/favicon.svg" style="height:32px"/>My<i>Sargal</i></div>
+    <div class="muted" style="margin-bottom:18px">Console Brands · Super-admin</div>
+    <input id="aph" type="tel" autocomplete="username" placeholder="Téléphone (vide = super admin)" style="margin-bottom:10px"/>
+    <input id="ap" type="password" autocomplete="current-password" placeholder="Mot de passe admin"/>
+    <button class="btn" type="submit" style="width:100%;margin-top:14px">Accéder →</button>
+    <div class="muted" id="lerr" style="color:#f87171;margin-top:10px"></div>
+  </form>
+</div>
+
+<div id="app" class="hide">
+  <div class="top">
+    <div class="logo"><img class="ms-ico" src="/favicon.svg"/>My<i>Sargal</i><span class="t">Brands</span></div>
+    <div style="display:flex;gap:8px;align-items:center"><button class="thbtn" onclick="msToggle()" title="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button><button class="btn g sm" onclick="logout()">Déconnexion</button></div>
+  </div>
+  <div class="nav">
+    <button id="t-ov" class="on" onclick="show('ov')">Vue d'ensemble</button>
+    <button id="t-cm" onclick="show('cm')">Campagnes</button>
+    <button id="t-ac" onclick="show('ac')">Accès marque</button>
+    <button id="t-cl" onclick="show('cl')">Clients</button>
+  </div>
+  <div class="wrap">
+
+    <!-- VUE D'ENSEMBLE -->
+    <section id="sec-ov">
+      <div class="kpis" id="ov-kpis"><div class="muted">Chargement…</div></div>
+      <div class="card" style="margin-top:16px">
+        <h2>Top campagnes</h2>
+        <div class="hint">Classées par nombre de scans.</div>
+        <div id="ov-top"></div>
+      </div>
+    </section>
+
+    <!-- CAMPAGNES -->
+    <section id="sec-cm" class="hide">
+      <div class="card">
+        <h2>Nouvelle campagne</h2>
+        <div class="hint">Crée une marque partenaire (ex : Kirène, Nestlé).</div>
+        <div class="row">
+          <div><label>Nom de la marque</label><input id="c-name" placeholder="Ex : Kirène"/></div>
+          <div><label>Couleur (hex)</label><input id="c-color" value="#0b6cd4"/></div>
+        </div>
+        <label>Logo (PNG / SVG, fond transparent idéal)</label>
+        <div class="flex"><input id="c-logo" type="file" accept="image/*" onchange="prev(this,'c-logo-prev')" style="padding:9px"/><img id="c-logo-prev" class="logo-prev"/></div>
+        <label>Slogan</label><input id="c-tag" placeholder="Bois. Gagne. Profite."/>
+        <div class="row">
+          <div><label>Points par scan</label><input id="c-pps" type="number" value="1"/></div>
+          <div><label>Seuil récompense</label><input id="c-thr" type="number" value="10"/></div>
+        </div>
+        <label>Récompense principale (au seuil)</label><input id="c-rwd" placeholder="Un pack d'eau offert"/>
+        <label>Catalogue (1 par ligne : nom | coût)</label>
+        <textarea id="c-cat" rows="3" placeholder="Pack d'eau (6 bouteilles) | 10&#10;Casquette | 25"></textarea>
+        <button class="btn" style="margin-top:16px" onclick="createCampaign()" id="btn-create">Créer la campagne</button>
+      </div>
+      <h2 style="margin:8px 4px 14px;font-family:'Montserrat';font-weight:800">Campagnes</h2>
+      <div id="camps"><div class="muted">Chargement…</div></div>
+    </section>
+
+    <!-- ACCÈS MARQUE -->
+    <section id="sec-ac" class="hide">
+      <div class="card">
+        <h2>Accès marque</h2>
+        <div class="hint">Chaque marque a un login pour voir son propre dashboard sur <b>/brand</b> (scopé à sa campagne uniquement).</div>
+      </div>
+      <div id="access"><div class="muted">Chargement…</div></div>
+    </section>
+
+    <!-- CLIENTS -->
+    <section id="sec-cl" class="hide">
+      <div class="card">
+        <h2>Recherche client</h2>
+        <div class="hint">Retrouve un consommateur par numéro de téléphone, toutes marques confondues.</div>
+        <div class="flex"><input id="cl-q" placeholder="Ex : 77 123 45 67" onkeydown="if(event.key==='Enter')searchClient()"/><button class="btn" onclick="searchClient()">Chercher</button></div>
+        <div id="cl-res" style="margin-top:14px"></div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+function tok(){try{return localStorage.getItem('brand_jwt')||'';}catch(e){return '';}}
+const H={'apikey':SA,get Authorization(){return 'Bearer '+(tok()||SA);},'Content-Type':'application/json'};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let CAMPS=[];
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+msThemeUI();
+function prev(inp,id){var f=inp.files&&inp.files[0];var p=document.getElementById(id);if(f){p.src=URL.createObjectURL(f);p.style.display='block';}else{p.style.display='none';}}
+function pct(a,b){return b?Math.round(a/b*100):0;}
+
+function login(){
+  const p=document.getElementById('ap').value;const ph=document.getElementById('aph')?.value?.trim()||'';
+  if(!p){document.getElementById('lerr').textContent='Entre ton mot de passe';return;}
+  document.getElementById('lerr').textContent='Connexion…';
+  const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),12000);
+  fetch(SB+'/functions/v1/admin-login',{method:'POST',headers:{'apikey':SA,'Content-Type':'application/json'},body:JSON.stringify({password:p,phone:ph||undefined}),signal:ctrl.signal})
+  .then(async r=>{clearTimeout(to);const d=await r.json().catch(()=>({}));if(r.status===401)throw new Error('Mot de passe incorrect');if(!r.ok||!d.token)throw new Error(d.error||('Erreur '+r.status));
+    localStorage.setItem('brand_jwt',d.token);document.getElementById('lerr').textContent='';enter();})
+  .catch(e=>document.getElementById('lerr').textContent=(e.name==='AbortError'?'Délai dépassé — réessaie':e.message));
+}
+function logout(){localStorage.removeItem('brand_jwt');location.reload();}
+function isAuth(){var t=tok();if(!t)return false;try{var pl=JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return pl.exp*1000>Date.now();}catch(e){return false;}}
+function enter(){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';document.getElementById('app').classList.remove('hide');loadAll();}
+
+function show(t){['ov','cm','ac','cl'].forEach(x=>{document.getElementById('sec-'+x).classList.toggle('hide',x!==t);document.getElementById('t-'+x).classList.toggle('on',x===t);});}
+
+async function sbGet(path){const r=await fetch(SB+'/rest/v1'+path,{headers:H});return r.ok?r.json():[];}
+async function rpc(fn,body){const r=await fetch(SB+'/rest/v1/rpc/'+fn,{method:'POST',headers:H,body:JSON.stringify(body||{})});return r.ok?r.json():null;}
+
+async function loadAll(){
+  const camps=await sbGet('/brand_campaigns?order=created_at.desc');
+  CAMPS=[];
+  for(const c of camps){const s=await rpc('brand_campaign_stats',{p_campaign:c.id})||{};const a=await sbGet('/brand_accounts?campaign_id=eq.'+c.id+'&select=id,login,active,last_login,role&order=created_at.asc');CAMPS.push({...c,stats:s,accts:a});}
+  renderOverview();renderCampaigns();renderAccess();
+}
+
+function renderOverview(){
+  const g=CAMPS.reduce((a,c)=>{a.codes+=c.stats.codes_total||0;a.scan+=c.stats.codes_scanned||0;a.cons+=c.stats.consumers||0;a.rwd+=c.stats.rewards_won||0;a.pend+=c.stats.rewards_pending||0;a.acc+=c.accts.length;return a;},{codes:0,scan:0,cons:0,rwd:0,pend:0,acc:0});
+  const active=CAMPS.filter(c=>c.active).length;
+  document.getElementById('ov-kpis').innerHTML=`
+    <div class="kpi"><div class="v">${CAMPS.length}</div><div class="l">Campagnes</div><div class="s">${active} active${active>1?'s':''}</div></div>
+    <div class="kpi"><div class="v">${g.codes}</div><div class="l">Codes émis</div></div>
+    <div class="kpi"><div class="v" style="color:var(--grn)">${g.scan}</div><div class="l">Scannés</div><div class="s">${pct(g.scan,g.codes)}% des codes</div></div>
+    <div class="kpi"><div class="v">${g.cons}</div><div class="l">Clients</div></div>
+    <div class="kpi"><div class="v" style="color:var(--gold)">${g.rwd}</div><div class="l">Récompenses</div><div class="s">${g.pend} à remettre</div></div>
+    <div class="kpi"><div class="v">${g.acc}</div><div class="l">Accès</div></div>`;
+  const top=[...CAMPS].sort((a,b)=>(b.stats.codes_scanned||0)-(a.stats.codes_scanned||0)).slice(0,6);
+  document.getElementById('ov-top').innerHTML=top.length?('<table class="tbl"><tr><th>Marque</th><th>Codes</th><th>Scannés</th><th>Clients</th><th>Récomp.</th></tr>'+top.map(c=>`<tr><td><b>${esc(c.brand_name)}</b></td><td>${c.stats.codes_total||0}</td><td style="color:var(--grn)">${c.stats.codes_scanned||0}</td><td>${c.stats.consumers||0}</td><td style="color:var(--gold)">${c.stats.rewards_won||0}</td></tr>`).join('')+'</table>'):'<div class="muted">Aucune campagne.</div>';
+}
+
+function campCard(c){
+  const col=esc(c.brand_color||'#0b6cd4');
+  const ico=c.logo_url?('<img src="'+esc(c.logo_url)+'"/>'):((c.brand_name||'M').trim()[0]||'M').toUpperCase();
+  const prefix=(c.brand_name||'CODE').replace(/[^A-Za-z]/g,'').substring(0,4).toUpperCase()||'CODE';
+  return `<div class="camp" id="camp-${c.id}">
+    <div class="camp-strip" style="background:linear-gradient(90deg,${col},color-mix(in srgb,${col} 58%,#000))"><i></i></div>
+    <div class="hd">
+      <div class="ico" style="background:${col}26;color:${col}">${ico}</div>
+      <div><div class="nm">${esc(c.brand_name)}</div>
+      <div class="muted">${esc(c.tagline||'')} · ${c.points_per_scan} pt/scan · seuil ${c.reward_threshold}${c.active?'':' · en pause'}</div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="v">${c.stats.codes_total||0}</div><div class="l">Codes</div></div>
+      <div class="stat"><div class="v" style="color:var(--grn)">${c.stats.codes_scanned||0}</div><div class="l">Scannés</div></div>
+      <div class="stat"><div class="v">${c.stats.consumers||0}</div><div class="l">Clients</div></div>
+      <div class="stat"><div class="v" style="color:var(--gold)">${c.stats.rewards_won||0}</div><div class="l">Récomp.</div></div>
+    </div>
+    <div class="acts">
+      <input id="gen-${c.id}" type="number" value="100" style="width:84px;padding:9px"/>
+      <button class="btn sm" onclick="genCodes('${c.id}','${prefix}')">Générer codes</button>
+      <button class="btn g sm" onclick="qrZip('${c.id}','${esc(c.brand_name)}','${col}','${esc(c.logo_url||'')}')">QR (PNG .zip)</button>
+      <button class="btn g sm" onclick="qrSheet('${c.id}','${esc(c.brand_name)}','${col}','${esc(c.logo_url||'')}')">Planche</button>
+      <button class="btn g sm" onclick="exportCsv('${c.id}','${esc(c.brand_name)}')">Exporter CSV</button>
+      <button class="btn g sm" onclick="impersonate('${c.id}','${esc(c.brand_name)}')">Ouvrir la marque</button>
+      <button class="btn g sm" onclick="toggleEdit('${c.id}')">Éditer</button>
+      <button class="btn g sm" onclick="toggleActive('${c.id}',${c.active})">${c.active?'Désactiver':'Activer'}</button>
+      <button class="btn d sm" onclick="delCampaign('${c.id}','${esc(c.brand_name)}')">Supprimer</button>
+    </div>
+    <div class="edit hide" id="edit-${c.id}">
+      <div class="row">
+        <div><label>Nom</label><input id="e-name-${c.id}" value="${esc(c.brand_name)}"/></div>
+        <div><label>Couleur</label><input id="e-color-${c.id}" value="${esc(c.brand_color||'#0b6cd4')}"/></div>
+      </div>
+      <label>Slogan</label><input id="e-tag-${c.id}" value="${esc(c.tagline||'')}"/>
+      <div class="row">
+        <div><label>Points/scan</label><input id="e-pps-${c.id}" type="number" value="${c.points_per_scan}"/></div>
+        <div><label>Seuil</label><input id="e-thr-${c.id}" type="number" value="${c.reward_threshold}"/></div>
+      </div>
+      <label>Récompense principale</label><input id="e-rwd-${c.id}" value="${esc(c.reward_label||'')}"/>
+      <label>Catalogue (nom | coût)</label>
+      <textarea id="e-cat-${c.id}" rows="3">${(c.rewards_catalog||[]).map(r=>esc(r.label)+' | '+r.cost).join('\n')}</textarea>
+      <label>Remplacer le logo</label>
+      <input id="e-logo-${c.id}" type="file" accept="image/*" style="padding:9px"/>
+      <button class="btn sm" style="margin-top:12px" onclick="saveEdit('${c.id}')">Enregistrer</button>
+    </div>
+  </div>`;
+}
+
+function renderCampaigns(){
+  document.getElementById('camps').innerHTML=CAMPS.length?CAMPS.map(campCard).join(''):'<div class="muted">Aucune campagne. Crée la première ci-dessus.</div>';
+}
+
+function renderAccess(){
+  document.getElementById('access').innerHTML=CAMPS.map(c=>{
+    const col=esc(c.brand_color||'#0b6cd4');
+    const ico=c.logo_url?('<img src="'+esc(c.logo_url)+'"/>'):((c.brand_name||'M').trim()[0]||'M').toUpperCase();
+    return `<div class="camp">
+      <div class="hd"><div class="ico" style="background:${col}26;color:${col};width:38px;height:38px;font-size:1.1rem">${ico}</div><div class="nm">${esc(c.brand_name)}</div></div>
+      ${c.accts.length?c.accts.map(a=>`<div class="acct"><code>${esc(a.login)}</code> <span style="color:var(--tx3)">${a.role==='shop'?'boutique':'marque'} · ${a.last_login?'vu '+new Date(a.last_login).toLocaleDateString('fr-FR'):'jamais connecté'}${a.active?'':' · désactivé'}</span>
+        <span class="sp"><button class="btn g sm" onclick="resetPass('${a.id}')">Reset mdp</button><button class="btn ${a.active?'d':'g'} sm" onclick="setActive('${a.id}',${!a.active})">${a.active?'Désactiver':'Activer'}</button></span></div>`).join(''):'<div class="muted" style="margin-bottom:8px">Aucun accès créé.</div>'}
+      <div class="row" style="margin-top:10px">
+        <input id="al-${c.id}" placeholder="login (ex: kirene)" autocomplete="off"/>
+        <input id="ap-${c.id}" type="text" placeholder="mot de passe (min 6)" autocomplete="off"/>
+      </div>
+      <div class="flex" style="margin-top:10px;gap:10px">
+        <select id="ar-${c.id}" style="max-width:200px"><option value="brand">Accès marque (dashboard)</option><option value="shop">Accès boutique (retrait)</option></select>
+        <button class="btn sm" onclick="createAccount('${c.id}','${esc(c.brand_name)}')">Créer l'accès</button>
+      </div>
+    </div>`;
+  }).join('')||'<div class="muted">Crée d\'abord une campagne.</div>';
+}
+
+async function uploadLogo(file,campId){
+  const ext=(file.name.split('.').pop()||'png').toLowerCase().replace(/[^a-z0-9]/g,'')||'png';
+  const path=campId+'-'+Date.now()+'.'+ext;
+  const r=await fetch(SB+'/storage/v1/object/brand-logos/'+path,{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+(tok()||SA),'Content-Type':file.type||'image/png','x-upsert':'true'},body:file});
+  if(!r.ok)throw new Error('Upload logo: '+r.status);
+  return SB+'/storage/v1/object/public/brand-logos/'+path;
+}
+function parseCat(v){return v.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const p=l.split('|').map(x=>x.trim());return {label:p[0]||'Récompense',cost:parseInt(p[1])||10};});}
+
+async function createCampaign(){
+  const name=document.getElementById('c-name').value.trim();if(!name){toast('Nom requis');return;}
+  const body={brand_name:name,emoji:'',brand_color:document.getElementById('c-color').value||'#0b6cd4',tagline:document.getElementById('c-tag').value||'',points_per_scan:parseInt(document.getElementById('c-pps').value)||1,reward_threshold:parseInt(document.getElementById('c-thr').value)||10,reward_label:document.getElementById('c-rwd').value||'Une récompense offerte',rewards_catalog:parseCat(document.getElementById('c-cat').value),active:true};
+  const btn=document.getElementById('btn-create');btn.disabled=true;btn.textContent='Création…';
+  try{
+    const r=await fetch(SB+'/rest/v1/brand_campaigns',{method:'POST',headers:{...H,'Prefer':'return=representation'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const camp=(await r.json())[0];
+    const f=document.getElementById('c-logo').files[0];
+    if(f&&camp){try{const url=await uploadLogo(f,camp.id);await fetch(SB+'/rest/v1/brand_campaigns?id=eq.'+camp.id,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({logo_url:url})});}catch(e){toast('Campagne créée, logo échoué');}}
+    toast('Campagne créée ✓');['c-name','c-cat','c-tag','c-rwd'].forEach(i=>document.getElementById(i).value='');document.getElementById('c-logo').value='';document.getElementById('c-logo-prev').style.display='none';
+    loadAll();
+  }catch(e){toast(e.message);}
+  btn.disabled=false;btn.textContent='Créer la campagne';
+}
+
+function toggleEdit(id){document.getElementById('edit-'+id).classList.toggle('hide');}
+async function saveEdit(id){
+  const g=s=>document.getElementById(s+'-'+id);
+  const body={brand_name:g('e-name').value.trim(),brand_color:g('e-color').value||'#0b6cd4',tagline:g('e-tag').value||'',points_per_scan:parseInt(g('e-pps').value)||1,reward_threshold:parseInt(g('e-thr').value)||10,reward_label:g('e-rwd').value||'',rewards_catalog:parseCat(g('e-cat').value)};
+  try{
+    const f=g('e-logo').files[0];if(f){body.logo_url=await uploadLogo(f,id);}
+    const r=await fetch(SB+'/rest/v1/brand_campaigns?id=eq.'+id,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('HTTP '+r.status);toast('Enregistré ✓');loadAll();
+  }catch(e){toast(e.message);}
+}
+async function delCampaign(id,name){
+  if(!confirm('Supprimer la campagne "'+name+'" ? Tous ses codes, cartes et accès seront effacés. Action irréversible.'))return;
+  try{const r=await fetch(SB+'/rest/v1/brand_campaigns?id=eq.'+id,{method:'DELETE',headers:H});if(!r.ok)throw new Error('HTTP '+r.status);toast('Campagne supprimée');loadAll();}catch(e){toast(e.message);}
+}
+
+async function createAccount(campId,name){
+  const login=document.getElementById('al-'+campId).value.trim().toLowerCase();const pass=document.getElementById('ap-'+campId).value;
+  const role=document.getElementById('ar-'+campId).value||'brand';
+  if(!login||pass.length<6){toast('Login + mot de passe (min 6) requis');return;}
+  try{const r=await fetch(SB+'/rest/v1/rpc/brand_create_account',{method:'POST',headers:H,body:JSON.stringify({p_campaign:campId,p_login:login,p_password:pass,p_brand_name:name,p_role:role})});const d=await r.json();if(!r.ok)throw new Error((d&&d.message)||'Erreur (login déjà pris ?)');toast('Accès '+(role==='shop'?'boutique':'marque')+' créé : '+login+' ✓');loadAll();}catch(e){toast(e.message);}
+}
+async function resetPass(id){
+  const p=prompt('Nouveau mot de passe (min 6 caractères) :');if(!p)return;if(p.length<6){toast('Min 6 caractères');return;}
+  try{const r=await fetch(SB+'/rest/v1/rpc/brand_account_reset_password',{method:'POST',headers:H,body:JSON.stringify({p_id:id,p_password:p})});if(!r.ok){const d=await r.json();throw new Error(d.message||'Erreur');}toast('Mot de passe réinitialisé ✓');}catch(e){toast(e.message);}
+}
+async function setActive(id,act){
+  try{const r=await fetch(SB+'/rest/v1/rpc/brand_account_set_active',{method:'POST',headers:H,body:JSON.stringify({p_id:id,p_active:act})});if(!r.ok){const d=await r.json();throw new Error(d.message||'Erreur');}toast(act?'Activé':'Désactivé');loadAll();}catch(e){toast(e.message);}
+}
+
+async function genCodes(id,prefix){
+  const n=parseInt(document.getElementById('gen-'+id).value)||0;if(n<1||n>100000){toast('Entre 1 et 100 000');return;}
+  try{const r=await fetch(SB+'/rest/v1/rpc/brand_generate_codes',{method:'POST',headers:H,body:JSON.stringify({p_campaign:id,p_count:n,p_prefix:prefix})});const created=await r.json();if(!r.ok)throw new Error(created.message||'Erreur');toast(created+' codes générés ✓');loadAll();}catch(e){toast(e.message);}
+}
+async function exportCsv(id,name){
+  toast('Préparation du CSV…');let all=[],from=0;
+  while(true){const rows=await fetch(SB+'/rest/v1/brand_codes?campaign_id=eq.'+id+'&select=code,scanned&order=created_at.asc&limit=10000&offset='+from,{headers:H}).then(r=>r.json());if(!rows.length)break;all=all.concat(rows);from+=rows.length;if(rows.length<10000)break;}
+  if(!all.length){toast('Aucun code à exporter');return;}
+  const lines=['code,url_qr,scanne'];all.forEach(r=>lines.push(`${r.code},https://mysargal.com/scan.html?c=${r.code},${r.scanned?'oui':'non'}`));
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='codes-'+name.replace(/\s/g,'-').toLowerCase()+'.csv';a.click();toast(all.length+' codes exportés ✓');
+}
+// ── Images QR (couleur marque + logo au centre) ──
+const SCAN_BASE='https://mysargal.com/scan.html?c=';
+function brandFg(col){
+  var h=String(col||'#101828').replace('#','');if(h.length===3)h=h.split('').map(function(x){return x+x;}).join('');
+  var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  if([r,g,b].some(isNaN))return '#101828';
+  var lum=0.2126*r+0.7152*g+0.0722*b;
+  if(lum>115){var f=(115/(lum||1))*0.6;r=Math.round(r*f);g=Math.round(g*f);b=Math.round(b*f);}
+  return '#'+[r,g,b].map(function(v){return ('0'+Math.max(0,Math.min(255,v)).toString(16)).slice(-2);}).join('');
+}
+function loadLogo(u){return new Promise(function(res){if(!u)return res(null);var im=new Image();im.crossOrigin='anonymous';im.onload=function(){res(im);};im.onerror=function(){res(null);};im.src=u;});}
+function qrCompose(text,size,fg,logo){
+  try{
+    var cv=document.createElement('canvas');
+    new QRious({element:cv,value:text,size:size||600,level:logo?'H':'M',padding:18,background:'#ffffff',foreground:fg});
+    if(logo){var ctx=cv.getContext('2d'),s=cv.width,box=Math.round(s*0.24),o=Math.round((s-box)/2),pad=Math.round(box*0.12);ctx.fillStyle='#fff';ctx.fillRect(o,o,box,box);ctx.drawImage(logo,o+pad,o+pad,box-2*pad,box-2*pad);}
+    return cv.toDataURL('image/png');
+  }catch(e){return new QRious({value:text,size:size||600,level:'M',padding:18,background:'#ffffff',foreground:fg}).toDataURL('image/png');}
+}
+async function fetchCodes(id){let all=[],from=0;while(true){const rows=await fetch(SB+'/rest/v1/brand_codes?campaign_id=eq.'+id+'&scanned=eq.false&select=code&order=created_at.asc&limit=10000&offset='+from,{headers:H}).then(r=>r.json());if(!rows||!rows.length)break;all=all.concat(rows);from+=rows.length;if(rows.length<10000)break;}return all;}
+async function qrZip(id,name,col,logoUrl){
+  if(typeof QRious==='undefined'||typeof JSZip==='undefined'){toast('Librairie QR en cours de chargement…');return;}
+  toast('Préparation des QR…');
+  try{
+    let rows=await fetchCodes(id);if(!rows.length){toast('Aucun code disponible — générez d\'abord');return;}
+    const CAP=2000;let capped=rows.length>CAP;if(capped)rows=rows.slice(0,CAP);
+    const fg=brandFg(col),logo=await loadLogo(logoUrl),sl=name.replace(/\s+/g,'-').toLowerCase();
+    const zip=new JSZip(),folder=zip.folder('qr-'+sl);
+    for(let i=0;i<rows.length;i++){folder.file(rows[i].code+'.png',qrCompose(SCAN_BASE+rows[i].code,600,fg,logo).split(',')[1],{base64:true});if(i%40===0)await new Promise(r=>setTimeout(r,0));}
+    const blob=await zip.generateAsync({type:'blob'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr-'+sl+'.zip';a.click();
+    toast(rows.length+' QR téléchargés'+(capped?' (max 2000/lot)':'')+' ✓');
+  }catch(e){toast(e.message||'Erreur QR');}
+}
+async function qrSheet(id,name,col,logoUrl){
+  if(typeof QRious==='undefined'){toast('Librairie QR en cours de chargement…');return;}
+  toast('Préparation de la planche…');
+  try{
+    let rows=await fetchCodes(id);if(!rows.length){toast('Aucun code disponible — générez d\'abord');return;}
+    const CAP=600;let capped=rows.length>CAP;if(capped)rows=rows.slice(0,CAP);
+    const fg=brandFg(col),logo=await loadLogo(logoUrl);
+    const cells=rows.map(function(r){return '<div class="q"><img src="'+qrCompose(SCAN_BASE+r.code,300,fg,logo)+'"/><div class="c">'+esc(r.code)+'</div></div>';}).join('');
+    const w=window.open('','_blank');if(!w){toast('Autorisez les pop-ups pour imprimer');return;}
+    w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>QR — '+esc(name)+'</title><style>body{font-family:Arial,Helvetica,sans-serif;margin:16px;color:#111}h1{font-size:15px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.q{border:1px solid #e5e7eb;border-radius:8px;padding:8px;text-align:center;break-inside:avoid}.q img{width:100%;height:auto;display:block}.c{font:700 9.5px/1.2 monospace;margin-top:5px;word-break:break-all}</style></head><body><h1>QR MySargal — '+esc(name)+' · '+rows.length+' code'+(rows.length>1?'s':'')+(capped?' (planche limitée à 600)':'')+'</h1><div class="grid">'+cells+'</div></body></html>');
+    w.document.close();setTimeout(function(){try{w.focus();w.print();}catch(e){}},500);
+    toast('Planche prête ✓');
+  }catch(e){toast(e.message||'Erreur planche');}
+}
+// « Ouvrir la marque » : jeton marque temporaire (admin) → ouvre /brand en tant que la marque
+async function impersonate(id,name){
+  try{
+    toast('Ouverture de '+name+'…');
+    const r=await fetch(SB+'/functions/v1/brand-impersonate',{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify({campaign_id:id})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.token)throw new Error(d.error||'Impossible d\'ouvrir la marque');
+    try{localStorage.setItem('brand_dash_jwt',d.token);}catch(e){}
+    window.open('/brand/','_blank');
+    toast('Espace « '+name+' » ouvert ✓');
+  }catch(e){toast(e.message);}
+}
+async function toggleActive(id,cur){try{await fetch(SB+'/rest/v1/brand_campaigns?id=eq.'+id,{method:'PATCH',headers:{...H,'Prefer':'return=minimal'},body:JSON.stringify({active:!cur})});loadAll();}catch(e){toast(e.message);}}
+
+async function searchClient(){
+  const q=document.getElementById('cl-q').value.replace(/\D/g,'');if(q.length<4){toast('Entre au moins 4 chiffres');return;}
+  const rows=await sbGet('/brand_cards?phone=ilike.*'+q+'*&select=phone,name,points,lifetime_points,rewards_won,campaign_id&order=lifetime_points.desc&limit=50');
+  const byId={};CAMPS.forEach(c=>byId[c.id]=c.brand_name);
+  document.getElementById('cl-res').innerHTML=rows.length?('<table class="tbl"><tr><th>Numéro</th><th>Nom</th><th>Marque</th><th>Points</th><th>Cumul</th><th>Récomp.</th></tr>'+rows.map(r=>`<tr><td><b>${esc(r.phone)}</b></td><td>${esc(r.name||'—')}</td><td>${esc(byId[r.campaign_id]||'?')}</td><td>${r.points}</td><td>${r.lifetime_points}</td><td style="color:var(--gold)">${r.rewards_won}</td></tr>`).join('')+'</table>'):'<div class="muted">Aucun client trouvé.</div>';
+}
+
+if(isAuth()){enter();}
+</script>
+</body>
+</html>

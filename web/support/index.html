@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';var ic=(t==='light'?'sun':'moon');document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+ic+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',msThemeUI);else msThemeUI();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#060d06"/>
+<title>Aide & Support — MySargal</title>
+<meta name="description" content="Centre d'aide MySargal : contactez-nous, questions fréquentes, et assistance pour l'application de fidélité et cartes cadeaux."/>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link rel="canonical" href="https://mysargal.com/support"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#060d06;--bg2:#0a150a;--line:rgba(255,255,255,.07);
+  --tx:#f0f7f0;--tx2:#8aab8a;--tx3:#3a5a3a;
+  --green:#16a34a;--green2:#22c55e;
+  --card:#0c160c;--r:14px;
+}
+html[data-theme="light"]{
+  --bg:#eef3ef;--bg2:#ffffff;--line:rgba(20,45,28,.12);
+  --tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;--card:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;line-height:1.65}
+a{color:var(--green2)}
+nav{position:fixed;top:0;left:0;right:0;height:64px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-bottom:1px solid var(--line);z-index:10}
+.nl{font-family:'Montserrat',sans-serif;font-size:1.15rem;font-weight:900;text-decoration:none;color:var(--tx)}
+.nl em{color:var(--green2);font-style:normal}
+.thbtn{width:36px;height:36px;border-radius:9px;background:transparent;border:1px solid var(--line);font-size:.95rem;cursor:pointer;color:var(--tx2)}
+.wrap{max-width:760px;margin:0 auto;padding:104px 22px 60px}
+h1{font-family:'Montserrat',sans-serif;font-size:clamp(1.9rem,4vw,2.6rem);font-weight:900;letter-spacing:-.02em;margin-bottom:10px}
+.lead{color:var(--tx2);font-size:1.05rem;margin-bottom:32px}
+h2{font-family:'Montserrat',sans-serif;font-size:1.15rem;font-weight:800;margin:34px 0 14px}
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.cc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;text-decoration:none;color:inherit;display:block;transition:border-color .15s}
+.cc:hover{border-color:rgba(34,197,94,.45)}
+.cc .ic{font-size:1.5rem;margin-bottom:8px}
+.cc .t{font-weight:700;margin-bottom:3px}
+.cc .s{font-size:.86rem;color:var(--tx2)}
+.faq{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:6px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq details:last-child{border-bottom:none}
+.faq summary{padding:16px 18px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--green2);font-size:1.2rem;font-weight:700}
+.faq details[open] summary::after{content:'–'}
+.faq .a{padding:0 18px 16px;color:var(--tx2);font-size:.95rem}
+.hours{color:var(--tx2);font-size:.92rem}
+.foot{margin-top:42px;padding-top:22px;border-top:1px solid var(--line);color:var(--tx3);font-size:.82rem;text-align:center}
+.foot a{color:var(--tx2);text-decoration:none}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+<symbol id="ic-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></symbol>
+</defs></svg>
+<nav>
+  <a href="/" class="nl">My<em>Sargal</em></a>
+  <button class="thbtn" onclick="msToggle()" aria-label="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+</nav>
+
+<div class="wrap">
+  <h1>Aide & Support</h1>
+  <p class="lead">Une question sur l'application MySargal, votre carte de fidélité ou une carte cadeau ? Notre équipe vous répond. Choisissez le canal qui vous convient.</p>
+
+  <h2>Nous contacter</h2>
+  <div class="contact-grid">
+    <a class="cc" href="https://wa.me/221777608983?text=Bonjour%20MySargal%2C%20j%27ai%20besoin%20d%27aide" target="_blank" rel="noopener">
+      <div class="ic"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chat"></use></svg></div>
+      <div class="t">WhatsApp</div>
+      <div class="s">+221 77 760 89 83 — réponse rapide</div>
+    </a>
+    <a class="cc" href="mailto:support@mysargal.com">
+      <div class="ic"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-mail"></use></svg></div>
+      <div class="t">E-mail</div>
+      <div class="s">support@mysargal.com</div>
+    </a>
+  </div>
+  <p class="hours" style="margin-top:14px">Horaires de réponse : du lundi au samedi, 9h–19h (GMT). Nous répondons généralement sous quelques heures.</p>
+
+  <h2>Questions fréquentes</h2>
+  <div class="faq">
+    <details open>
+      <summary>Comment fonctionne la carte de fidélité ?</summary>
+      <div class="a">À chaque achat, le commerçant scanne le QR code de votre carte et vous gagnez des points. Une fois le seuil atteint, vous débloquez votre récompense. Votre carte vit dans votre téléphone (lien, Apple Wallet ou Google Wallet) — rien à imprimer.</div>
+    </details>
+    <details>
+      <summary>Comment vérifier le solde de ma carte cadeau ?</summary>
+      <div class="a">Rendez-vous sur <a href="/solde">mysargal.com/solde</a> et saisissez le code de votre carte (GC-XXXXXX), ou ouvrez le lien reçu par WhatsApp. Vous y verrez le solde, l'historique et la validité.</div>
+    </details>
+    <details>
+      <summary>Je suis commerçant : comment me connecter à l'application ?</summary>
+      <div class="a">Ouvrez l'application MySargal, saisissez votre numéro de téléphone, puis le code reçu par SMS. Vous accédez ensuite à votre tableau de bord : scan des clients, points, récompenses et cartes cadeaux. Pour créer un compte commerçant, écrivez-nous sur WhatsApp.</div>
+    </details>
+    <details>
+      <summary>Je n'ai pas reçu mon code de connexion (OTP)</summary>
+      <div class="a">Vérifiez que le numéro saisi est correct, avec l'indicatif pays. Attendez une minute, puis réessayez. Si le problème persiste, contactez-nous sur WhatsApp et nous vous aidons à vous connecter.</div>
+    </details>
+    <details>
+      <summary>Mes points ou mon solde semblent incorrects</summary>
+      <div class="a">Contactez-nous par WhatsApp ou e-mail en indiquant le nom du commerce et le code de votre carte. Nous vérifions et corrigeons rapidement.</div>
+    </details>
+    <details>
+      <summary>Comment supprimer mon compte et mes données ?</summary>
+      <div class="a">Vous pouvez demander la suppression de votre compte et de vos données depuis la page <a href="/delete-account.html">Supprimer mon compte</a>, ou en nous écrivant à support@mysargal.com.</div>
+    </details>
+  </div>
+
+  <h2>Confidentialité & sécurité</h2>
+  <p style="color:var(--tx2)">Vos données sont protégées et ne sont jamais revendues. Consultez notre <a href="/privacy-policy.html">politique de confidentialité</a> et nos <a href="/conditions.html">conditions d'utilisation</a>.</p>
+
+  <div class="foot">
+    MySargal — la fidélité digitale et les cartes cadeaux d'Afrique de l'Ouest<br/>
+    <a href="/">mysargal.com</a> · <a href="mailto:support@mysargal.com">support@mysargal.com</a> · <a href="https://wa.me/221777608983" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</div>
+</body>
+</html>

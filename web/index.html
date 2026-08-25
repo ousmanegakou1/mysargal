@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<script>/* App native (Capacitor) : ouvrir directement l'espace marchand */try{if(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform()&&location.pathname.replace(/\/+$/,'')===''){location.replace('/merchant/');}}catch(e){}</script>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+(t==='light'?'sun':'moon')+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+document.addEventListener('DOMContentLoaded',msThemeUI);</script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#060d06"/>
+<meta name="description" content="MySargal — La plateforme de fidélité digitale et cartes cadeaux pour les commerçants d'Afrique de l'Ouest."/>
+<title id="ld-seo-title">MySargal — Cartes de fidélité digitales & cartes cadeaux pour commerçants en Afrique de l'Ouest</title>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/><link rel="canonical" href="https://mysargal.com/"/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="MySargal — La fidélité digitale des commerçants"/><meta property="og:description" content="Cartes de fidélité digitales, cartes cadeaux et WhatsApp automatique pour les commerçants d'Afrique de l'Ouest. Zéro papier, démarre gratuitement."/><meta property="og:url" content="https://mysargal.com/"/><meta property="og:image" content="https://mysargal.com/og-image.png"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="MySargal — La fidélité digitale des commerçants"/><meta name="twitter:image" content="https://mysargal.com/og-image.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060d06;--bg2:#0a150a;--bg3:#0f1f0f;
+  --line:rgba(255,255,255,.07);
+  --tx:#f0f7f0;--tx2:#8aab8a;--tx3:#3a5a3a;
+  --green:#16a34a;--green2:#22c55e;--gold:#f5c842;
+  --navbg:rgba(6,13,6,.9);--logo-box:#f3faf3;--logo-ink:#0a2810;
+}
+html[data-theme="light"]{
+  --bg:#eef3ef;--bg2:#ffffff;--bg3:#f1f6f1;
+  --line:rgba(20,45,28,.12);
+  --tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;
+  --navbg:rgba(238,243,239,.92);--logo-box:#0a0f0b;--logo-ink:#ffffff;
+}
+html{transition:background .25s ease}
+.ms-logo{height:34px;width:auto;display:block}
+footer .ms-logo{height:30px}
+.thbtn{width:34px;height:34px;border-radius:9px;background:transparent;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;color:var(--tx2);transition:transform .15s}
+.thbtn:active{transform:scale(.92)}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.6}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;background:var(--navbg);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nl{font-family:'Montserrat',sans-serif;font-size:1.15rem;font-weight:900;text-decoration:none;color:var(--tx)}
+.nl em{color:var(--green2);font-style:normal}
+.nlinks{display:flex;align-items:center;gap:2px}
+.nlink{color:var(--tx2);text-decoration:none;font-size:.85rem;padding:6px 14px;border-radius:8px;transition:all .15s}
+.nlink:hover{color:var(--tx);background:rgba(255,255,255,.05)}
+.nactions{display:flex;align-items:center;gap:10px}
+.nin{color:var(--tx2);text-decoration:none;font-size:.85rem;padding:7px 16px;border-radius:9px;border:1px solid var(--line);transition:all .15s}
+.nin:hover{color:var(--tx);border-color:rgba(255,255,255,.15)}
+.ncta{background:var(--green2);color:#fff;text-decoration:none;font-size:.85rem;font-weight:600;padding:8px 18px;border-radius:9px;transition:all .15s}
+.ncta:hover{background:#28d464;transform:translateY(-1px)}
+.mbtn{display:none;background:none;border:none;cursor:pointer;color:var(--tx2);padding:6px}
+.mmenu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--navbg);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);padding:16px 24px;flex-direction:column;gap:2px;z-index:99}
+.mmenu.open{display:flex}
+.mmenu .nlink{font-size:.92rem;padding:12px 14px}
+.mmenu .ncta{text-align:center;padding:13px;border-radius:12px;font-size:.92rem;margin-top:6px}
+
+/* LAYOUT */
+section{padding:96px 40px}
+.ctr{max-width:1080px;margin:0 auto}
+.slabel{font-family:'DM Mono',monospace;font-size:.7rem;font-weight:500;color:var(--green2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.slabel::before{content:'';width:20px;height:1px;background:var(--green2)}
+h2{font-family:'Montserrat',sans-serif;font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:900;line-height:1.15;letter-spacing:-.025em;margin-bottom:16px}
+h2 em{font-style:italic;color:var(--green2)}
+.stxt{font-size:1rem;color:var(--tx2);line-height:1.75;max-width:520px}
+
+/* HERO */
+.hero{min-height:100svh;padding:120px 40px 80px;display:flex;align-items:center}
+.hero-grid{max-width:1080px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hlabel{font-family:'DM Mono',monospace;font-size:.7rem;font-weight:500;color:var(--green2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.hlabel::before{content:'';width:24px;height:1px;background:var(--green2)}
+h1{font-family:'Montserrat',sans-serif;font-size:clamp(2.8rem,5.5vw,4.2rem);font-weight:900;line-height:1.06;letter-spacing:-.03em;margin-bottom:24px}
+h1 em{font-style:italic;color:var(--green2)}
+.htxt{font-size:1.05rem;color:var(--tx2);line-height:1.75;max-width:440px;margin-bottom:36px}
+.hbtns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.btnp{display:inline-flex;align-items:center;gap:8px;background:var(--green2);color:#fff;padding:14px 26px;border-radius:12px;font-size:.92rem;font-weight:600;text-decoration:none;transition:all .2s;border:none;cursor:pointer}
+.btnp:hover{background:#28d464;transform:translateY(-2px);box-shadow:0 12px 32px rgba(34,197,94,.25)}
+.btns{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--tx2);padding:14px 26px;border-radius:12px;font-size:.92rem;font-weight:500;text-decoration:none;border:1px solid var(--line);transition:all .2s}
+.btns:hover{color:var(--tx);border-color:rgba(255,255,255,.15)}
+.hnums{display:flex;gap:32px}
+.hnv{font-family:'Montserrat',sans-serif;font-size:1.6rem;font-weight:900;color:var(--tx);line-height:1}
+.hnl{font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+/* HERO IMAGE */
+.him{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:.85;background:var(--bg2);border:1px solid var(--line)}
+.him img{width:100%;height:100%;object-fit:cover;display:block}
+.hiph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:background .2s;text-align:center;padding:24px}
+.hiph:hover{background:var(--bg3)}
+.hiph input[type=file]{display:none}
+.hiph-ico{font-size:2.4rem;opacity:.25}
+.hiph-txt{font-size:.8rem;color:var(--tx3);line-height:1.6}
+.hibadge{position:absolute;bottom:20px;left:20px;background:var(--navbg);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.hbav{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),#00c4a3);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}
+.hbn{font-size:.78rem;font-weight:600;color:var(--tx)}
+.hbr{font-size:.65rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:1px}
+.hbp{font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:900;color:var(--green2);margin-left:auto}
+
+/* FEATURES */
+.fsec{background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-left:1px solid var(--line);margin-top:56px}
+.fi{padding:32px 28px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .2s}
+.fi:hover{background:rgba(255,255,255,.02)}
+.fnum{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--tx3);margin-bottom:20px}
+.ficon{font-size:1.5rem;margin-bottom:14px;display:block}
+.ftitle{font-family:'Montserrat',sans-serif;font-size:1.02rem;font-weight:700;margin-bottom:10px}
+.fdesc{font-size:.83rem;color:var(--tx2);line-height:1.65}
+
+/* SPLIT */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.split.rev{direction:rtl}
+.split.rev > *{direction:ltr}
+.simg{border-radius:20px;overflow:hidden;aspect-ratio:1.2;background:var(--bg2);border:1px solid var(--line);position:relative}
+.simg img{width:100%;height:100%;object-fit:cover;display:block}
+.simgph{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:background .2s;text-align:center;padding:20px}
+.simgph:hover{background:var(--bg3)}
+.simgph input[type=file]{display:none}
+.scontent{display:flex;flex-direction:column;gap:20px}
+.cklist{list-style:none;display:flex;flex-direction:column;gap:10px}
+.cklist li{display:flex;align-items:flex-start;gap:10px;font-size:.88rem;color:var(--tx2);line-height:1.55}
+.cklist li::before{content:'↗';color:var(--green2);font-size:.7rem;margin-top:3px;flex-shrink:0}
+
+/* GIFT CARDS */
+.gcscroll{display:flex;gap:20px;justify-content:safe center;margin-top:52px;overflow-x:auto;padding:4px 40px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab}
+.gcscroll::-webkit-scrollbar{display:none}
+.gcscroll.drag{cursor:grabbing}
+.gcc{flex-shrink:0;width:248px;aspect-ratio:1.586;border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;user-select:none}
+.gcc:hover{transform:translateY(-8px);box-shadow:0 24px 48px rgba(0,0,0,.5)}
+.gcsh{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.08) 50%,transparent 65%);animation:sh 3.5s ease-in-out infinite;pointer-events:none}
+@keyframes sh{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.dv{background:linear-gradient(135deg,#4c1d95,#7c3aed,#a855f7)}
+.dg{background:linear-gradient(135deg,#78350f,#d97706,#fbbf24)}
+.dt{background:linear-gradient(135deg,#134e4a,#0d9488,#2dd4bf)}
+.dr{background:linear-gradient(135deg,#881337,#db2777,#f472b6)}
+.db{background:linear-gradient(135deg,#1e3a8a,#2563eb,#60a5fa)}
+.dn{background:linear-gradient(135deg,#09090b,#1e1e2e,#3f3f5f)}
+.dni{background:linear-gradient(135deg,#0c1445,#1e3a5f,#2563eb)}
+.df{background:linear-gradient(135deg,#052e16,#14532d,#166534)}
+.gcl{font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:900;color:rgba(255,255,255,.9)}
+.gcl em{color:rgba(255,255,255,.4);font-style:normal}
+.gca{font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:900;color:#fff}
+.gclbl{font-size:.54rem;color:rgba(255,255,255,.45);font-family:'DM Mono',monospace;margin-bottom:3px}
+.gcf{font-size:.6rem;color:rgba(255,255,255,.5);margin-top:2px}
+
+/* TESTIMONIALS */
+.tsec{border-top:1px solid var(--line);background:var(--bg2)}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--line);margin-top:56px}
+.titem{background:var(--bg2);padding:32px}
+.tphoto{width:52px;height:52px;border-radius:50%;overflow:hidden;margin-bottom:20px;background:var(--bg3);border:1px solid var(--line);cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:opacity .2s;flex-shrink:0}
+.tphoto img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%}
+.tphoto input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.tphoto:hover{opacity:.8}
+.tq{font-size:.9rem;color:var(--tx2);line-height:1.75;margin-bottom:20px;font-style:italic}
+.tn{font-weight:600;font-size:.85rem;margin-bottom:2px}
+.tr{font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace}
+
+/* PRICING */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:820px;margin-top:56px}
+.pcard.pro{border-color:var(--green2);position:relative;box-shadow:0 24px 60px -24px rgba(34,197,94,.35)}
+.pbtnp{display:block;text-align:center;padding:13px;border-radius:10px;text-decoration:none;font-size:.88rem;font-weight:700;background:var(--green2);color:#fff;transition:all .15s}
+.pbtnp:hover{background:#28d464}
+@media(max-width:760px){.pgrid{grid-template-columns:1fr;max-width:420px}}
+.pcard{border:1px solid var(--line);border-radius:20px;padding:32px;position:relative;overflow:hidden}
+.pbadge{position:absolute;top:20px;right:20px;background:var(--green);color:#fff;border-radius:7px;padding:3px 10px;font-size:.62rem;font-weight:600;font-family:'DM Mono',monospace}
+.pplan{font-family:'DM Mono',monospace;font-size:.65rem;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.pnum{font-family:'Montserrat',sans-serif;font-size:2.6rem;font-weight:900;line-height:1}
+.pper{font-size:.8rem;color:var(--tx2);margin-bottom:24px;margin-top:4px}
+.pline{height:1px;background:var(--line);margin-bottom:20px}
+.plist{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plist li{font-size:.84rem;color:var(--tx2);display:flex;align-items:center;gap:9px}
+.plist li.off{color:var(--tx3)}
+.ok{color:var(--green2)}
+.no{color:var(--tx3)}
+.pbtnf{display:block;text-align:center;padding:12px;border-radius:10px;text-decoration:none;font-size:.88rem;font-weight:600;background:rgba(255,255,255,.05);color:var(--tx2);border:1px solid var(--line);transition:all .15s}
+.pbtnf:hover{background:rgba(255,255,255,.08);color:var(--tx)}
+
+/* HOW */
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-left:1px solid var(--line);margin-top:56px}
+.sitem{padding:32px 24px;border-right:1px solid var(--line);position:relative}
+.sn{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--green2);letter-spacing:.08em;margin-bottom:20px}
+.stitle{font-family:'Montserrat',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:8px}
+.sdesc{font-size:.82rem;color:var(--tx2);line-height:1.6}
+
+/* CTA */
+.ctasec{border-top:1px solid var(--line)}
+.ctai h2{font-size:clamp(2rem,4vw,3rem);margin-bottom:16px}
+.ctai p{font-size:1rem;color:var(--tx2);margin-bottom:32px;line-height:1.7}
+.ctabtns{display:flex;gap:12px;flex-wrap:wrap}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:48px 40px 32px}
+.fi2{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px}
+.flogo{font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:900;margin-bottom:12px}
+.flogo em{color:var(--green2);font-style:normal}
+.fdesc{font-size:.82rem;color:var(--tx3);line-height:1.65;max-width:230px;margin-bottom:16px}
+.forigin{font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.fcol h4{font-size:.65rem;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;font-family:'DM Mono',monospace;margin-bottom:16px}
+.fcol a{display:block;font-size:.82rem;color:var(--tx2);text-decoration:none;margin-bottom:10px;transition:color .15s}
+.fcol a:hover{color:var(--green2)}
+.fbot{max-width:1080px;margin:0 auto;padding-top:24px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.fbot p{font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  nav{padding:0 24px}
+  .nlinks,.nin{display:none}
+  .mbtn{display:flex}
+  section{padding:72px 24px}
+  .hero{padding:100px 24px 64px}
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .him{aspect-ratio:1.4;max-width:480px;margin:0 auto;width:100%}
+  .hnums{gap:20px}
+  .split{grid-template-columns:1fr;gap:40px}
+  .split.rev{direction:ltr}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .tgrid{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:1fr;max-width:400px}
+  .sgrid{grid-template-columns:1fr 1fr}
+  .fi2{grid-template-columns:1fr 1fr;gap:32px}
+  .gcscroll{padding:4px 24px 20px}
+}
+@media(max-width:560px){
+  section{padding:56px 20px}
+  h1{font-size:2.4rem}
+  h2{font-size:1.9rem}
+  .fgrid{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:1fr}
+  .fi2{grid-template-columns:1fr}
+  .hbtns{flex-direction:column}
+  .btnp,.btns{justify-content:center}
+}
+
+/* ── PHONE MOCKUP (hero) ── */
+.phone-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:560px}
+.phone{position:relative;width:290px;height:592px;border-radius:46px;background:linear-gradient(150deg,#1c241c,#0c120c);padding:11px;box-shadow:0 40px 90px -20px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.06),inset 0 0 0 2px rgba(255,255,255,.04);transform:rotate(-1.5deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.phone:hover{transform:rotate(0deg) translateY(-6px)}
+.phone-screen{position:relative;width:100%;height:100%;border-radius:36px;overflow:hidden;background:radial-gradient(130% 90% at 50% 0%,#0f240f 0%,#060d06 60%);display:flex;flex-direction:column;align-items:center;padding:46px 22px 26px}
+.notch{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:108px;height:26px;background:#000;border-radius:0 0 16px 16px;z-index:5}
+.ps-status{position:absolute;top:18px;width:calc(100% - 56px);display:flex;justify-content:space-between;align-items:center;font-size:.62rem;color:#cfe9d4;font-family:'DM Mono',monospace;z-index:4}
+.ps-hi{font-size:.62rem;color:var(--tx3);font-family:'DM Mono',monospace;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+/* La carte */
+.loy{position:relative;width:100%;border-radius:22px;padding:20px;background:linear-gradient(135deg,#15803d,#22c55e);box-shadow:0 18px 40px -10px rgba(22,163,74,.55),inset 0 1px 0 rgba(255,255,255,.25);overflow:hidden;color:#fff}
+.loy::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.18) 50%,transparent 62%);transform:translateX(-120%);animation:loyShine 4.5s ease-in-out infinite}
+@keyframes loyShine{0%,72%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+.loy-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.loy-brand{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.92rem}.loy-brand i{font-style:italic;opacity:.65}
+.loy-chip{font-size:.56rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.2);padding:3px 9px;border-radius:20px;letter-spacing:.06em}
+.loy-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:1.08rem;line-height:1.1}
+.loy-shop{font-size:.68rem;opacity:.8;margin-top:2px;margin-bottom:18px}
+.loy-ptsrow{display:flex;align-items:flex-end;justify-content:space-between}
+.loy-pts{font-family:'Montserrat',sans-serif;font-weight:900;font-size:2.5rem;line-height:.9;transition:transform .25s}
+.loy-pts .u{font-size:1rem;font-weight:600;opacity:.7}
+.loy-pts.bump{transform:scale(1.18)}
+.loy-goal{font-size:.62rem;opacity:.85;text-align:right;font-family:'DM Mono',monospace}
+.loy-bar{height:7px;border-radius:20px;background:rgba(255,255,255,.25);margin-top:14px;overflow:hidden}
+.loy-fill{height:100%;width:0%;border-radius:20px;background:#fff;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+/* Wallet rows */
+.ps-wallets{width:100%;margin-top:20px;display:flex;flex-direction:column;gap:9px}
+.wbtn{display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border-radius:11px;font-size:.74rem;font-weight:600}
+.wbtn.ap{background:#000;color:#fff}.wbtn.go{background:#fff;color:#1a1a1a}
+/* Scan button + reward pop */
+.demo-scan{margin-top:auto;width:100%;display:flex;align-items:center;justify-content:center;gap:9px;height:50px;border-radius:14px;border:none;cursor:pointer;background:rgba(255,255,255,.1);color:#eafff0;font-family:'Inter',sans-serif;font-size:.86rem;font-weight:600;backdrop-filter:blur(4px);transition:background .2s,transform .1s}
+.demo-scan:hover{background:rgba(255,255,255,.16)}
+.demo-scan:active{transform:scale(.97)}
+.scan-ping{position:absolute;width:8px;height:8px;border-radius:50%;background:#4ade80;opacity:0}
+.reward-pop{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;background:radial-gradient(circle at 50% 40%,rgba(14,61,34,.97),rgba(6,13,6,.99));opacity:0;pointer-events:none;transition:opacity .4s;z-index:8;border-radius:36px}
+.reward-pop.show{opacity:1;pointer-events:auto}
+.reward-emoji{font-size:3.4rem;animation:rwPop .6s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rwPop{from{transform:scale(0) rotate(-15deg)}to{transform:scale(1)}}
+.reward-pop .rt{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.4rem;color:#fff}
+.reward-pop .rs{font-size:.82rem;color:#9fd9b0;max-width:200px;line-height:1.5}
+.reward-pop .rb{margin-top:6px;background:#22c55e;color:#fff;border:none;border-radius:30px;padding:11px 24px;font-weight:700;font-size:.82rem;cursor:pointer;font-family:'Inter',sans-serif}
+.conf{position:absolute;top:-10px;width:9px;height:14px;border-radius:2px;opacity:0;z-index:9}
+.demo-hint{position:absolute;bottom:-34px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.72rem;color:var(--tx3);font-family:'DM Mono',monospace}
+/* ── WHATSAPP FLOAT ── */
+.wafab{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;align-items:center;gap:0;background:#25d366;color:#fff;border-radius:30px;height:56px;padding:0 17px;text-decoration:none;box-shadow:0 10px 30px rgba(37,211,102,.45);overflow:hidden;max-width:56px;transition:max-width .4s cubic-bezier(.2,.8,.2,1)}
+.wafab:hover{max-width:230px}
+.wafab svg{flex-shrink:0}
+.wafab span{white-space:nowrap;font-size:.85rem;font-weight:600;margin-left:10px;opacity:0;transition:opacity .3s}
+.wafab:hover span{opacity:1}
+/* ── STICKY MOBILE CTA ── */
+.mcta{position:fixed;left:0;right:0;bottom:0;z-index:150;display:none;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:var(--navbg);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.mcta a{display:flex;align-items:center;justify-content:center;background:var(--green2);color:#fff;text-decoration:none;font-weight:700;font-size:.95rem;height:50px;border-radius:13px}
+@media(max-width:760px){.mcta{display:block}.wafab{bottom:84px}}
+
+/* ── RÉVÉLATIONS AU SCROLL (langage Apple : subtil, fluide) ── */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.rv.in{opacity:1;transform:none}
+/* ── ENTRÉE DU HERO ── */
+.hi0{opacity:0;transform:translateY(24px);animation:hIn .9s cubic-bezier(.16,1,.3,1) forwards}
+.hi1{animation-delay:.08s}.hi2{animation-delay:.18s}.hi3{animation-delay:.3s}.hi4{animation-delay:.42s}.hi5{animation-delay:.54s}
+@keyframes hIn{to{opacity:1;transform:none}}
+.phone-stage{perspective:1200px}
+.phone{will-change:transform}
+.phone.enter{opacity:0;transform:rotate(-1.5deg) translateY(40px) scale(.96);animation:phIn 1.1s cubic-bezier(.16,1,.3,1) .35s forwards}
+@keyframes phIn{to{opacity:1;transform:rotate(-1.5deg) translateY(0) scale(1)}}
+/* ── SCROLL-TELLING « Comment ça marche » ── */
+.ht-wrap{position:relative;height:340svh}
+.ht-sticky{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center;gap:72px;max-width:1080px;margin:0 auto;padding:0 40px}
+.ht-phone{position:relative;width:250px;height:512px;border-radius:42px;background:linear-gradient(150deg,#1c241c,#0c120c);padding:10px;box-shadow:0 36px 80px -22px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);flex-shrink:0}
+.ht-screen{position:relative;width:100%;height:100%;border-radius:33px;overflow:hidden;background:radial-gradient(130% 90% at 50% 0%,#0f240f 0%,#060d06 60%)}
+.ht-notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:92px;height:22px;background:#000;border-radius:0 0 14px 14px;z-index:5}
+.ht-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px 22px;text-align:center;opacity:0;transform:scale(.96);transition:opacity .55s cubic-bezier(.16,1,.3,1),transform .55s cubic-bezier(.16,1,.3,1)}
+.ht-state.on{opacity:1;transform:none}
+.ht-ico{font-size:2.6rem}
+.ht-t{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.02rem;color:#fff;line-height:1.3}
+.ht-d{font-size:.76rem;color:#9fd9b0;line-height:1.6}
+.ht-card{width:100%;border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;text-align:left}
+.ht-card .n{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.85rem}
+.ht-card .pts{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;margin-top:6px}
+.ht-card .bar{height:5px;border-radius:10px;background:rgba(255,255,255,.25);margin-top:8px;overflow:hidden}
+.ht-card .fill{height:100%;background:#fff;border-radius:10px;transition:width .6s cubic-bezier(.16,1,.3,1)}
+.ht-bub{align-self:flex-start;max-width:88%;background:#1f2c24;border:1px solid rgba(34,197,94,.25);border-radius:14px 14px 14px 4px;padding:10px 13px;text-align:left;font-size:.74rem;color:#e8f5e9;line-height:1.55}
+.ht-bub .lk{color:#4ade80;text-decoration:underline}
+.ht-steps{display:flex;flex-direction:column;gap:8px;max-width:380px}
+.ht-step{padding:20px 22px;border-left:2px solid var(--line);transition:border-color .4s,opacity .4s;opacity:.35}
+.ht-step.on{border-color:var(--green2);opacity:1}
+.ht-step .sn{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--green2);letter-spacing:.08em;margin-bottom:8px}
+.ht-step .stitle{font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:6px;color:var(--tx)}
+.ht-step .sdesc{font-size:.84rem;color:var(--tx2);line-height:1.65}
+@media(max-width:960px){
+  .ht-wrap{height:auto}
+  .ht-sticky{position:static;height:auto;flex-direction:column;gap:32px;padding:24px}
+  .ht-phone{display:none}
+  .ht-step{opacity:1;border-color:var(--green2)}
+}
+@media(prefers-reduced-motion:reduce){
+  .rv,.hi0,.phone.enter{opacity:1!important;transform:none!important;animation:none!important;transition:none!important}
+  .ht-state{transition:none}
+}
+
+
+/* ── GIFT CARDS : coverflow 3D + flip ── */
+.gcscroll{perspective:1100px;padding-top:24px;padding-bottom:34px}
+.gcc{transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:box-shadow .35s;cursor:pointer;position:relative;overflow:visible!important}
+.gcc .gcfront{background:var(--gcbg)}
+/* anti-transparence (même fix que la carte fidélité) */
+.gcc[data-flip="1"] .gcfront{opacity:0;transition:opacity .2s ease .25s}
+.gcc:not([data-flip="1"]) .gcback{opacity:0;transition:opacity .2s ease .25s}
+.gcc[data-flip="1"] .gcback,.gcc:not([data-flip="1"]) .gcfront{opacity:1;transition:opacity .2s ease .25s}
+.gcc:hover{transform:none}
+.gcc .gcface{position:absolute;inset:0;border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.gcc .gcback{transform:rotateY(180deg);background:linear-gradient(150deg,#101810,#0a0f08);border:1px solid rgba(255,255,255,.1);align-items:center;justify-content:center;gap:10px;text-align:center}
+.gcqr{width:74px;height:74px;border-radius:10px;background:#fff;padding:7px;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);gap:1.5px}
+.gcqr i{background:#0a0f08;border-radius:1px}
+.gcqr i.o{background:transparent}
+.gcback .bt{font-size:.6rem;color:#9db59a;font-family:'DM Mono',monospace;letter-spacing:.08em}
+.gcback .ba{display:inline-block;background:#22c55e;color:#fff;border-radius:18px;padding:7px 14px;font-size:.66rem;font-weight:700;text-decoration:none}
+.gchint{text-align:center;font-size:.72rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:2px}
+@media(prefers-reduced-motion:reduce){.gcc{transform:none!important}}
+/* ===== PREMIUM ANIMATIONS ===== */
+.aurora{position:fixed;inset:-25%;z-index:0;pointer-events:none;filter:blur(90px);opacity:.5}
+.aurora i{position:absolute;border-radius:50%;mix-blend-mode:screen;animation:auroraDrift 22s ease-in-out infinite}
+.aurora .a1{width:46vw;height:46vw;left:-6vw;top:-6vw;background:radial-gradient(circle,#16a34a,transparent 62%)}
+.aurora .a2{width:40vw;height:40vw;right:-8vw;top:6vw;background:radial-gradient(circle,#00c4a3,transparent 62%);animation-delay:-6s}
+.aurora .a3{width:38vw;height:38vw;left:24vw;bottom:-16vw;background:radial-gradient(circle,#22c55e,transparent 60%);animation-delay:-12s}
+html[data-theme="light"] .aurora{opacity:.32}
+@keyframes auroraDrift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(4vw,3vw) scale(1.1)}66%{transform:translate(-3vw,2vw) scale(.95)}}
+nav,section,footer,.mmenu{position:relative;z-index:1}
+nav{z-index:100}
+h1 em,h2 em{background:linear-gradient(100deg,var(--green2),#4ade80,#00c4a3,var(--green2));background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:hueFlow 6s ease-in-out infinite}
+@keyframes hueFlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.ficon{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.10);margin-bottom:16px;transition:background .25s,transform .25s}
+.fi{position:relative;transition:background .25s}
+.fi::before{content:'';position:absolute;left:0;top:0;height:2px;width:0;background:linear-gradient(90deg,var(--green2),#00c4a3);transition:width .35s cubic-bezier(.22,1,.36,1)}
+.fi:hover::before{width:100%}
+.fi:hover .ficon{background:rgba(34,197,94,.2);transform:translateY(-3px)}
+.phone-stage{animation:landFloat 6.5s ease-in-out infinite}
+@keyframes landFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.btnp,.ncta{background:linear-gradient(135deg,var(--green2),var(--green));box-shadow:0 10px 26px rgba(22,163,74,.30)}
+.btnp:hover,.ncta:hover{filter:brightness(1.07);box-shadow:0 16px 34px rgba(22,163,74,.42)}
+.anim .rvl{opacity:0;transform:translateY(30px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.anim .rvl.in{opacity:1;transform:none}
+.sprog{position:fixed;top:0;left:0;right:0;height:3px;z-index:200;pointer-events:none;background:transparent}
+.sprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green2),#00c4a3);box-shadow:0 0 10px rgba(34,197,94,.6);transition:width .1s linear}
+.gcscroll{perspective:1200px}
+.gcc{transform-style:preserve-3d}
+.fi{--mx:50%;--my:50%}
+.fi::after{content:'';position:absolute;inset:0;background:radial-gradient(220px circle at var(--mx) var(--my),rgba(34,197,94,.13),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:0}
+.fi::before{z-index:2}
+.fi:hover::after{opacity:1}
+.fi > *{position:relative;z-index:1}
+.btnp,.ncta{will-change:transform}
+/* ===== 3D FLOATING CARDS ===== */
+.gd-scene{position:relative;width:100%;max-width:820px;margin:48px auto 0;height:min(52vh,470px);perspective:1500px}
+.gd-tilt{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.gd-deck{position:absolute;inset:0;transform-style:preserve-3d;animation:gdOrbit 26s ease-in-out infinite}
+@keyframes gdOrbit{0%,100%{transform:rotateY(-13deg) rotateX(6deg)}50%{transform:rotateY(13deg) rotateX(3deg)}}
+.gd-slot{position:absolute;left:50%;top:50%;transform-style:preserve-3d}
+.gd-card{position:absolute;left:-150px;top:-95px;width:300px;height:190px;border-radius:22px;overflow:hidden;color:#fff;box-shadow:0 40px 80px -18px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28);animation:gdBob 7s ease-in-out infinite;transform-style:preserve-3d}
+.gd-card .gp{position:relative;z-index:2;padding:20px;height:100%;display:flex;flex-direction:column;justify-content:space-between}
+.gd-card .gsh{position:absolute;inset:0;z-index:1;background:linear-gradient(105deg,transparent 36%,rgba(255,255,255,.30) 50%,transparent 64%);transform:translateX(-120%) skewX(-16deg);animation:gdShine 5s ease-in-out infinite;pointer-events:none}
+@keyframes gdShine{0%{transform:translateX(-120%) skewX(-16deg)}55%,100%{transform:translateX(220%) skewX(-16deg)}}
+@keyframes gdBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.gd-top{display:flex;justify-content:space-between;align-items:center}
+.gd-brand{font-weight:800;font-size:.9rem}.gd-brand em{opacity:.55;font-style:italic;color:inherit}
+.gd-chip{font-size:.5rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.2);padding:3px 9px;border-radius:20px;letter-spacing:.08em}
+.gd-emv{width:34px;height:26px;border-radius:6px;background:linear-gradient(135deg,#f3d9a0,#c99b52)}
+.gd-lbl{font-size:.5rem;text-transform:uppercase;letter-spacing:.12em;opacity:.55}
+.gd-amt{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.85rem;line-height:1;margin-top:2px}
+.gd-who{font-size:.66rem;opacity:.9;font-weight:600;margin-top:4px}
+.gd-code{font-family:'DM Mono',monospace;font-size:.52rem;opacity:.4}
+.gd-foot{display:flex;justify-content:space-between;align-items:flex-end}
+.gd-loy{background:linear-gradient(135deg,#15803d,#22c55e)}
+.gd-hint{text-align:center;font-size:.72rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:6px}
+@media(max-width:640px){.gd-scene{transform:scale(.78);margin:14px auto 0}}
+/* ===== SUPER PREMIUM POLISH ===== */
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+::selection{background:rgba(34,197,94,.30);color:#fff}
+html{scrollbar-width:thin;scrollbar-color:rgba(34,197,94,.45) transparent}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--green2),#0e7a6b);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-track{background:transparent}
+nav{box-shadow:0 6px 26px rgba(0,0,0,.20)}
+html[data-theme="light"] nav{box-shadow:0 6px 26px rgba(20,45,28,.06)}
+.nlink{position:relative}
+.nlink::after{content:'';position:absolute;left:14px;right:14px;bottom:3px;height:1.5px;background:linear-gradient(90deg,var(--green2),#00c4a3);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.nlink:hover::after{transform:scaleX(1)}
+.btnp,.ncta,.pbtn,.pbtnf{position:relative;overflow:hidden}
+.btnp::after,.ncta::after,.pbtn::after,.pbtnf::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.38),transparent);transform:skewX(-18deg);opacity:0}
+.btnp:hover::after,.ncta:hover::after,.pbtn:hover::after,.pbtnf:hover::after{animation:btnShine .75s ease}
+@keyframes btnShine{0%{left:-70%;opacity:1}100%{left:140%;opacity:1}}
+.pcard{transition:transform .25s cubic-bezier(.34,1.2,.64,1),box-shadow .25s,border-color .25s}
+.pcard:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(0,0,0,.26)}
+.pcard.pro{position:relative;box-shadow:0 24px 60px rgba(22,163,74,.18)}
+.pcard.pro::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,var(--green2),#00c4a3,transparent 62%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.9}
+.pcard.pro:hover{box-shadow:0 30px 72px rgba(22,163,74,.28)}
+.fi{background:transparent}
+/* Serif éditorial sur les mots-accent (façon premium) */
+h1 em,h2 em{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:0;padding-right:.04em}
+h1 em{font-size:1.08em;line-height:.9}
+h2 em{font-size:1.06em}
+/* ===== ÉDITORIAL : plus grand, plus aéré ===== */
+section{padding:118px 40px}
+.hero{padding:132px 40px 90px}
+h1{font-size:clamp(3rem,6vw,4.9rem);letter-spacing:-.035em}
+h2{font-size:clamp(2.1rem,4vw,3.3rem);letter-spacing:-.03em}
+.htxt{font-size:1.12rem;max-width:460px}
+.hero-grid{gap:70px}
+/* ===== SIDE BRAND RAIL ===== */
+.siderail{position:fixed;left:20px;top:0;bottom:0;width:44px;z-index:90;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;pointer-events:none;opacity:0;transform:translateX(-14px);animation:srIn .8s var(--eOut,cubic-bezier(.16,1,.3,1)) .5s forwards}
+@keyframes srIn{to{opacity:1;transform:none}}
+.sr-line{position:absolute;top:16%;bottom:16%;width:1.5px;background:linear-gradient(180deg,transparent,var(--line),transparent);left:50%;transform:translateX(-50%)}
+.sr-line>i{position:absolute;left:0;right:0;top:0;height:0;background:linear-gradient(180deg,var(--green2),#00c4a3);box-shadow:0 0 8px rgba(34,197,94,.5);transition:height .12s linear;display:block}
+.sr-dots{position:relative;display:flex;flex-direction:column;align-items:center;gap:16px;pointer-events:auto}
+.sr-dot{width:9px;height:9px;border-radius:50%;background:var(--tx3);cursor:pointer;transition:all .3s cubic-bezier(.22,1,.36,1);border:none;padding:0;position:relative}
+.sr-dot:hover{background:var(--green2);transform:scale(1.25)}
+.sr-dot.on{background:var(--green2);height:24px;border-radius:6px;box-shadow:0 0 10px rgba(34,197,94,.55)}
+.sr-dot .sr-tip{position:absolute;left:20px;top:50%;transform:translateY(-50%) translateX(-6px);white-space:nowrap;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);background:var(--navbg);border:1px solid var(--line);border-radius:6px;padding:4px 9px;opacity:0;pointer-events:none;transition:all .2s;backdrop-filter:blur(8px)}
+.sr-dot:hover .sr-tip{opacity:1;transform:translateY(-50%) translateX(0)}
+.sr-brand{position:absolute;bottom:26px;left:50%;writing-mode:vertical-rl;transform:translateX(-50%) rotate(180deg);font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.34em;color:var(--tx3);text-transform:uppercase}
+.sr-top{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:24px;height:24px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--tx2);pointer-events:auto;cursor:pointer;transition:all .2s}
+.sr-top:hover{border-color:var(--green2);color:var(--green2);transform:translateX(-50%) translateY(-2px)}
+@media (max-width:1200px){.siderail{display:none}}
+@media (prefers-reduced-motion:reduce){.siderail{animation:none;opacity:1;transform:none}}
+/* ===== SECTIONS EN CARTES PREMIUM ===== */
+.faqlist{display:flex;flex-direction:column;gap:12px}
+.faqlist>div{margin-bottom:0!important;background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px 24px;transition:transform .22s cubic-bezier(.34,1.2,.64,1),border-color .22s,box-shadow .22s;position:relative;overflow:hidden}
+.faqlist>div::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--green2),#00c4a3);transform:scaleY(0);transform-origin:top;transition:transform .3s cubic-bezier(.22,1,.36,1)}
+.faqlist>div:hover{transform:translateY(-2px);border-color:rgba(34,197,94,.32);box-shadow:0 14px 30px rgba(20,45,28,.10)}
+.faqlist>div:hover::before{transform:scaleY(1)}
+.faqlist>div>div:first-child{font-size:1rem;font-weight:600}
+/* pricing checkmarks -> pastilles */
+.ok{display:inline-flex!important;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:rgba(34,197,94,.15);color:var(--green2);font-size:.66rem;font-weight:700;flex-shrink:0;line-height:1}
+.plist li{display:flex;align-items:flex-start;gap:10px;padding:7px 0}
+/* how-it-works steps */
+.ht-step{transition:transform .2s,opacity .2s}
+.ht-step:hover{transform:translateX(5px)}
+.ht-step.on .sn{color:var(--green2)}
+/* footer refinement */
+.fcol a{transition:color .18s,transform .18s;display:inline-block}
+.fcol a:hover{color:var(--green2);transform:translateX(3px)}
+.fcol h4{position:relative;padding-bottom:8px}
+.fcol h4::after{content:'';position:absolute;left:0;bottom:0;width:22px;height:2px;background:var(--green2);border-radius:2px}
+footer{position:relative;z-index:1}
+/* split checklist bullets */
+.cklist li::before{color:var(--green2)}
+/* section labels : petit point pulsant */
+.slabel::before,.hlabel::before{box-shadow:0 0 6px rgba(34,197,94,.5)}
+@media (prefers-reduced-motion:reduce){.btnp::after,.ncta::after,.pbtn::after,.pbtnf::after{display:none}}
+@media (prefers-reduced-motion:reduce){.aurora,.phone-stage,h1 em,h2 em,.gd-card,.gd-deck,.gd-card .gsh{animation:none}.anim .rvl{opacity:1!important;transform:none!important}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","name":"MySargal","url":"https://mysargal.com","logo":"https://mysargal.com/icon-512.png","contactPoint":{"@type":"ContactPoint","email":"hello@mysargal.com","contactType":"customer service","availableLanguage":["fr"]}},
+{"@type":"WebSite","name":"MySargal","url":"https://mysargal.com"},
+{"@type":"SoftwareApplication","name":"MySargal","applicationCategory":"BusinessApplication","operatingSystem":"Web, iOS, Android","offers":{"@type":"Offer","price":"0","priceCurrency":"XOF"},"description":"Plateforme de fidélité digitale et de cartes cadeaux pour les commerçants d'Afrique de l'Ouest."},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"C'est quoi MySargal ?","acceptedAnswer":{"@type":"Answer","text":"MySargal est une plateforme ouest-africaine de fidélité digitale : chaque client reçoit une carte de fidélité avec QR code dans son téléphone, gagne des points à chaque achat et reçoit ses récompenses. Les commerçants peuvent aussi vendre des cartes cadeaux digitales livrées par WhatsApp."}},
+{"@type":"Question","name":"Combien coûte MySargal ?","acceptedAnswer":{"@type":"Answer","text":"MySargal offre 3 mois d'essai gratuit avec toutes les fonctionnalités, sans carte bancaire. Ensuite, l'abonnement Pro est proposé sur devis, adapté au pays et au volume du commerçant."}},
+{"@type":"Question","name":"MySargal fonctionne-t-il avec Shopify ou WooCommerce ?","acceptedAnswer":{"@type":"Answer","text":"Oui, sans plugin : une simple URL webhook à coller dans Shopify, WooCommerce ou n'importe quel site. Chaque commande payée crédite automatiquement les points fidélité du client et sa carte est envoyée par WhatsApp."}},
+{"@type":"Question","name":"Faut-il télécharger une application ?","acceptedAnswer":{"@type":"Answer","text":"Non. Tout fonctionne dans le navigateur du téléphone. Les clients peuvent ajouter leur carte à Apple Wallet ou Google Wallet."}},
+{"@type":"Question","name":"Comment mes clients gagnent-ils des points ?","acceptedAnswer":{"@type":"Answer","text":"À chaque achat, le commerçant scanne le QR code de la carte du client : les points sont ajoutés instantanément et le client est notifié sur WhatsApp."}},
+{"@type":"Question","name":"Qu'est-ce qu'une gift card MySargal ?","acceptedAnswer":{"@type":"Answer","text":"Une carte cadeau digitale d'une boutique, achetable en ligne et envoyée par WhatsApp avec une animation de déballage. Le destinataire l'utilise en caisse grâce à son QR code."}}
+]}]}
+</script><script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n-landing.js" defer></script>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="siderail" id="siderail">
+  <button class="sr-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Haut de page"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="M6 15l6-6 6 6"/></svg></button>
+  <div class="sr-line"><i id="sr-fill"></i></div>
+  <nav class="sr-dots" id="srDots">
+    <button class="sr-dot on" data-t="top" aria-label="Accueil"><span class="sr-tip">Accueil</span></button>
+    <button class="sr-dot" data-t="features" aria-label="Fonctionnalités"><span class="sr-tip">Fonctionnalités</span></button>
+    <button class="sr-dot" data-t="giftcards" aria-label="Cartes cadeaux"><span class="sr-tip">Cartes cadeaux</span></button>
+    <button class="sr-dot" data-t="how" aria-label="Comment ça marche"><span class="sr-tip">Comment ça marche</span></button>
+    <button class="sr-dot" data-t="pricing" aria-label="Tarifs"><span class="sr-tip">Tarifs</span></button>
+    <button class="sr-dot" data-t="faq" aria-label="FAQ"><span class="sr-tip">FAQ</span></button>
+  </nav>
+  <div class="sr-brand">MySargal</div>
+</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol>
+<symbol id="ic-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9.5h18M6 15h4"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+<symbol id="ic-store" viewBox="0 0 24 24"><path d="M4 9l1.2-4h13.6L20 9"/><path d="M4 9a2 2 0 004 0 2 2 0 004 0 2 2 0 004 0 2 2 0 004 0"/><path d="M5 11v8h14v-8"/><path d="M9 19v-4h4v4"/></symbol>
+<symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 10-13h-7z"/></symbol>
+<symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.5"/></symbol>
+<symbol id="ic-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-5.4 6.5-5.4S15.5 16.4 15.5 20"/><circle cx="18" cy="9" r="2.4"/><path d="M17 14.6c2.6.2 4.5 1.7 4.5 4.4"/></symbol>
+<symbol id="ic-robot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="10" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><path d="M12 4v4M9 18v2M15 18v2"/></symbol>
+<symbol id="ic-scale" viewBox="0 0 24 24"><path d="M12 3v18M6 21h12M5 7h14l-3-3M5 7l-3 5a3 3 0 006 0zM19 7l-3 5a3 3 0 006 0z"/></symbol>
+<symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+<symbol id="ic-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.4-3 8.2-7 9-4-.8-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+<symbol id="ic-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/></symbol>
+</defs></svg>
+
+<nav>
+  <a href="/" class="nl" style="display:flex;align-items:center" aria-label="MySargal"><svg class="ms-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg></a>
+  <div class="nlinks">
+    <a href="#features" class="nlink">Fonctionnalités</a>
+    <a href="#giftcards" class="nlink">Cartes cadeaux</a>
+    <a href="/marques" class="nlink">Marques</a>
+    <a href="#pricing" class="nlink">Tarifs</a>
+  </div>
+  <div class="nactions">
+    <button class="thbtn" onclick="msToggle()" title="Changer de thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+    <a href="/merchant/" class="nin">Se connecter</a>
+    <a href="/onboarding/" class="ncta">Démarrer gratuitement</a>
+  </div>
+  <button class="mbtn" onclick="document.querySelector('.mmenu').classList.toggle('open')" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+<div class="mmenu">
+  <a href="#features" class="nlink" onclick="this.closest('.mmenu').classList.remove('open')">Fonctionnalités</a>
+  <a href="#giftcards" class="nlink" onclick="this.closest('.mmenu').classList.remove('open')">Cartes cadeaux</a>
+  <a href="/marques" class="nlink">Marques</a>
+  <a href="#pricing" class="nlink" onclick="this.closest('.mmenu').classList.remove('open')">Tarifs</a>
+  <a href="/merchant/" class="nlink">Se connecter</a>
+  <a href="javascript:msToggle()" class="nlink" style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg> Changer de thème</a>
+  <a href="/onboarding/" class="ncta">Démarrer gratuitement</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="hlabel hi0 hi1">Pour les commerçants d'Afrique de l'Ouest</div>
+      <h1 id="ld-hero-title" class="hi0 hi2">Fidélisez vos clients.<br>Offrez des <em>cadeaux</em><br>qui marquent.</h1>
+      <p class="htxt hi0 hi3" id="ld-hero-sub">Cartes de fidélité digitales et cartes cadeaux pour votre boutique. Vos clients scannent, accumulent, reviennent. Sans papier, sans application.</p>
+      <div class="hbtns hi0 hi4">
+        <a href="/onboarding/" class="btnp" id="ld-hero-cta">Créer ma boutique — c'est gratuit</a>
+        <a href="#how" class="btns">Comment ça marche →</a>
+      </div>
+      <div class="hnums hi0 hi5">
+        <div><div class="hnv" id="ld-trust">100%</div><div class="hnl">WhatsApp</div></div>
+        <div><div class="hnv">2 min</div><div class="hnl">Pour démarrer</div></div>
+        <div><div class="hnv">3 mois</div><div class="hnl">Offerts à l'inscription</div></div>
+      </div>
+      <div id="ld-social" style="margin-top:22px;display:none">
+        <div id="ld-counters" style="display:none;gap:26px;margin-bottom:14px;flex-wrap:wrap"></div>
+        <div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px">Ils utilisent MySargal</div>
+        <div id="ld-logos-row" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;align-items:center">
+        <span style="font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;width:100%">La carte de tes clients, dans leur téléphone :</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#000;color:#fff;border-radius:10px;padding:9px 16px;font-size:.82rem;font-weight:600"><svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M16.5 11.55c-.02-2.1 1.71-3.1 1.79-3.16-.98-1.43-2.5-1.63-3.04-1.65-1.3-.13-2.54.76-3.2.76-.66 0-1.68-.74-2.77-.72-1.42.02-2.74.83-3.47 2.1-1.49 2.57-.38 6.38 1.06 8.47.71 1.02 1.55 2.16 2.65 2.12 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.65.69 2.78.67 1.14-.02 1.87-1.03 2.57-2.06.81-1.17 1.14-2.31 1.16-2.37-.03-.01-2.28-.87-2.3-3.47z" fill="white"/><path d="M14.32 5.13c.59-.71.98-1.7.87-2.69-.84.03-1.86.56-2.47 1.26-.54.62-1.01 1.62-.88 2.58.93.07 1.88-.47 2.48-1.15z" fill="white"/></svg> Apple Wallet</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;border:1px solid #dadce0;border-radius:10px;padding:9px 16px;font-size:.82rem;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.32z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Google Wallet</span>
+      </div>
+    </div>
+
+    <!-- Démo interactive : iPhone + carte de fidélité -->
+    <div class="phone-stage">
+      <div class="phone enter" id="demoPhone">
+        <div class="phone-screen">
+          <div class="notch"></div>
+          <div class="ps-status"><span>9:41</span><span>● ▮▮ ⌁</span></div>
+          <div class="ps-hi">Ma carte de fidélité</div>
+
+          <div class="loy">
+            <div class="loy-top"><div class="loy-brand">My<i>Sargal</i></div><div class="loy-chip">FIDÉLITÉ</div></div>
+            <div class="loy-name">Awa Ndiaye</div>
+            <div class="loy-shop">Café Teranga · Dakar</div>
+            <div class="loy-ptsrow">
+              <div class="loy-pts" id="dPts">3<span class="u"> pts</span></div>
+              <div class="loy-goal">Récompense<br>à <b>10 pts</b></div>
+            </div>
+            <div class="loy-bar"><div class="loy-fill" id="dFill" style="width:30%"></div></div>
+          </div>
+
+          <div class="ps-wallets">
+            <div class="wbtn ap"><svg width="15" height="15" viewBox="0 0 22 22"><path d="M16.5 11.55c-.02-2.1 1.71-3.1 1.79-3.16-.98-1.43-2.5-1.63-3.04-1.65-1.3-.13-2.54.76-3.2.76-.66 0-1.68-.74-2.77-.72-1.42.02-2.74.83-3.47 2.1-1.49 2.57-.38 6.38 1.06 8.47.71 1.02 1.55 2.16 2.65 2.12 1.07-.04 1.47-.69 2.77-.69 1.29 0 1.65.69 2.78.67 1.14-.02 1.87-1.03 2.57-2.06.81-1.17 1.14-2.31 1.16-2.37-.03-.01-2.28-.87-2.3-3.47z" fill="#fff"/><path d="M14.32 5.13c.59-.71.98-1.7.87-2.69-.84.03-1.86.56-2.47 1.26-.54.62-1.01 1.62-.88 2.58.93.07 1.88-.47 2.48-1.15z" fill="#fff"/></svg> Ajouter à Apple Wallet</div>
+            <div class="wbtn go"><svg width="15" height="15" viewBox="0 0 24 24"><path fill="#4285f4" d="M22.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.32z"/><path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fbbc04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93z"/><path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> Ajouter à Google Wallet</div>
+          </div>
+
+          <button class="demo-scan" id="dScan" onclick="msDemoScan()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M3 12h18"/></svg>
+            <span id="dScanLbl">Scanner un achat</span>
+          </button>
+
+          <!-- écran récompense -->
+          <div class="reward-pop" id="dReward">
+            <div class="reward-emoji"><svg viewBox="0 0 24 24" style="width:3.4rem;height:3.4rem;stroke:#4ade80;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div>
+            <div class="rt">Récompense débloquée !</div>
+            <div class="rs">Awa a atteint 10 points :<br>un café offert chez Café Teranga.</div>
+            <button class="rb" onclick="msDemoReset()">Recommencer ↺</button>
+          </div>
+        </div>
+      </div>
+      <div class="demo-hint">↑ Touche « Scanner » pour essayer</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="fsec" id="features">
+  <div class="ctr">
+    <div class="slabel">Fonctionnalités</div>
+    <h2>Tout ce dont votre<br>boutique a besoin</h2>
+    <p class="stxt">Une plateforme pensée pour l'Afrique de l'Ouest — Sénégal, Côte d'Ivoire et au-delà. Fonctionne via QR code et WhatsApp, sans installation.</p>
+    <div class="fgrid">
+      <div class="fi"><div class="fnum">01</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-card"></use></svg></span><div class="ftitle">Cartes de fidélité</div><p class="fdesc">QR code unique par client. Points automatiques à chaque scan, récompense quand le seuil est atteint.</p></div>
+      <div class="fi"><div class="fnum">02</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-card"></use></svg></span><div class="ftitle">Apple & Google Wallet</div><p class="fdesc">La carte s'ajoute au Wallet du téléphone en un tap, avec le solde de points mis à jour automatiquement.</p></div>
+      <div class="fi"><div class="fnum">03</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-robot"></use></svg></span><div class="ftitle">Automations WhatsApp</div><p class="fdesc">Relance des clients inactifs, vœux d'anniversaire avec bonus, alertes récompense — envoyés tout seuls, chaque matin.</p></div>
+      <div class="fi"><div class="fnum">04</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></span><div class="ftitle">Cartes cadeaux animées</div><p class="fdesc">Cartes cadeaux livrées par WhatsApp avec une vraie animation de déballage. Solde en temps réel, rechargeable.</p></div>
+      <div class="fi"><div class="fnum">05</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-users"></use></svg></span><div class="ftitle">Parrainage intégré</div><p class="fdesc">Tes clients invitent leurs amis : points bonus pour le parrain ET le filleul. Ta clientèle grandit toute seule.</p></div>
+      <div class="fi"><div class="fnum">06</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-scale"></use></svg></span><div class="ftitle">Points à ta façon</div><p class="fdesc">Par passage (1 visite = 1 point) ou par montant dépensé (1 point = X FCFA). Tu choisis, tu changes quand tu veux.</p></div>
+      <div class="fi"><div class="fnum">07</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-chart"></use></svg></span><div class="ftitle">Dashboard analytics</div><p class="fdesc">Top clients, heures de pointe, performances cartes cadeaux, export CSV. Filtrable sur 7, 30 ou 90 jours.</p></div>
+      <div class="fi"><div class="fnum">08</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-shield"></use></svg></span><div class="ftitle">Anti-fraude & caissiers</div><p class="fdesc">Délai anti re-scan, plafond de points par jour, PIN caissier et journal des scans. Ta caisse est protégée.</p></div>
+      <div class="fi"><div class="fnum">09</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-phone"></use></svg></span><div class="ftitle">App mobile (PWA)</div><p class="fdesc">S'installe sur iPhone et Android, fonctionne hors ligne — les scans se synchronisent automatiquement.</p></div>
+      <div class="fi"><div class="fnum">10</div><span class="ficon"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-store"></use></svg></span><div class="ftitle">Boutique en ligne connectée</div><p class="fdesc">Shopify, WooCommerce ou ton propre site : chaque commande payée crédite les points automatiquement. Sans plugin — <a href="/developers.html" style="color:var(--green2)">une URL à coller</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- SPLIT 1 -->
+<section>
+  <div class="ctr">
+    <div class="split">
+      <div class="scontent">
+        <div class="slabel">Dashboard analytics</div>
+        <h2>Connaissez vos clients<br>comme <em>jamais avant</em></h2>
+        <ul class="cklist">
+          <li>Scans et points distribués jour par jour</li>
+          <li>Top 5 clients les plus fidèles avec progression</li>
+          <li>Heures de pointe sur 24h pour optimiser vos horaires</li>
+          <li>Performances des cartes cadeaux par design</li>
+          <li>Export CSV pour votre comptabilité</li>
+        </ul>
+        <a href="/merchant/" class="btns" style="width:fit-content">Voir le panel →</a>
+      </div>
+      <div class="simg" id="split1-wrap">
+        <img src="https://iiocxlvcuoqafzlisqwd.supabase.co/storage/v1/object/public/merchants/landing/split1_1775605709100.jpg" alt="Commerçant utilisant le dashboard MySargal" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:20px"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT 2 -->
+<section style="background:var(--bg2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="ctr">
+    <div class="split rev">
+      <div class="scontent">
+        <div class="slabel">Flow d'achat carte cadeau</div>
+        <h2>Vendez des cadeaux<br><em>sans effort</em></h2>
+        <p class="stxt" style="margin-bottom:0">Partagez simplement votre lien. N'importe qui peut acheter une carte cadeau pour votre boutique en quelques minutes.</p>
+        <ul class="cklist">
+          <li>Design, montant et message personnalisé</li>
+          <li>Paiement Wave, Orange Money ou en boutique</li>
+          <li>Carte envoyée automatiquement par WhatsApp</li>
+          <li>Le destinataire scanne pour payer en boutique</li>
+        </ul>
+        <a href="/buy-giftcard.html" class="btnp" style="width:fit-content;margin-top:4px">Acheter une carte cadeau</a>
+      </div>
+      <div class="simg" id="split2-wrap">
+        <img src="https://iiocxlvcuoqafzlisqwd.supabase.co/storage/v1/object/public/merchants/landing/split2_1775606330295.jpg" alt="Carte cadeau MySargal offerte en boutique" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:20px"/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GIFT CARDS -->
+<section id="giftcards" style="padding-left:0;padding-right:0">
+  <div class="ctr" style="padding:0 40px">
+    <div class="slabel">Cartes cadeaux</div>
+    <h2>8 designs<br>pour chaque occasion</h2>
+    <p class="stxt">Anniversaires, fêtes, remerciements. Des cartes avec effet shimmer et solde en temps réel.</p>
+  </div>
+  <div class="gd-scene"><div class="gd-tilt" id="gdTilt"><div class="gd-deck">
+    <div class="gd-slot" style="transform:translate3d(-230px,-30px,-220px) rotateY(26deg) rotateZ(-9deg)">
+      <div class="gd-card db" style="animation-delay:-2.2s"><div class="gsh" style="animation-delay:-1s"></div><div class="gp">
+        <div class="gd-top"><div class="gd-brand">My<em>Sargal</em></div><div class="gd-chip">CADEAU</div></div>
+        <div class="gd-foot"><div><div class="gd-lbl">Solde</div><div class="gd-amt">10 000</div><div class="gd-who">Bleu Profond</div></div><div class="gd-code">GC-8F2K</div></div>
+      </div></div>
+    </div>
+    <div class="gd-slot" style="transform:translate3d(215px,-46px,-200px) rotateY(-24deg) rotateZ(8deg)">
+      <div class="gd-card dr" style="animation-delay:-3.6s"><div class="gsh" style="animation-delay:-2.4s"></div><div class="gp">
+        <div class="gd-top"><div class="gd-brand">My<em>Sargal</em></div><div class="gd-chip">CADEAU</div></div>
+        <div class="gd-foot"><div><div class="gd-lbl">Pour Fatou</div><div class="gd-amt">25 000</div><div class="gd-who">Rose Ardent</div></div><div class="gd-code">GC-QL9M</div></div>
+      </div></div>
+    </div>
+    <div class="gd-slot" style="transform:translate3d(-150px,120px,-120px) rotateY(18deg) rotateZ(6deg)">
+      <div class="gd-card dg" style="animation-delay:-1.2s"><div class="gsh" style="animation-delay:-3s"></div><div class="gp">
+        <div class="gd-top"><div class="gd-brand">My<em>Sargal</em></div><div class="gd-chip">CADEAU</div></div>
+        <div class="gd-foot"><div><div class="gd-lbl">Pour Amina</div><div class="gd-amt">5 000</div><div class="gd-who">Or Précieux</div></div><div class="gd-code">GC-3RT7</div></div>
+      </div></div>
+    </div>
+    <div class="gd-slot" style="transform:translate3d(165px,110px,-90px) rotateY(-16deg) rotateZ(-7deg)">
+      <div class="gd-card dt" style="animation-delay:-4.4s"><div class="gsh" style="animation-delay:-1.8s"></div><div class="gp">
+        <div class="gd-top"><div class="gd-brand">My<em>Sargal</em></div><div class="gd-chip">CADEAU</div></div>
+        <div class="gd-foot"><div><div class="gd-lbl">Solde</div><div class="gd-amt">15 000</div><div class="gd-who">Turquoise</div></div><div class="gd-code">GC-M0P4</div></div>
+      </div></div>
+    </div>
+    <div class="gd-slot" style="transform:translate3d(-70px,-6px,-40px) rotateY(12deg) rotateZ(-4deg)">
+      <div class="gd-card dv" style="animation-delay:-2.8s"><div class="gsh" style="animation-delay:-0.5s"></div><div class="gp">
+        <div class="gd-top"><div class="gd-brand">My<em>Sargal</em></div><div class="gd-chip">CADEAU</div></div>
+        <div class="gd-foot"><div><div class="gd-lbl">Solde</div><div class="gd-amt">12 000</div><div class="gd-who">Violet Mystère</div></div><div class="gd-code">GC-DXGH</div></div>
+      </div></div>
+    </div>
+    <div class="gd-slot" style="transform:translate3d(30px,10px,90px) rotateY(-6deg) rotateZ(2deg)">
+      <div class="gd-card gd-loy" style="animation-delay:-0.3s"><div class="gsh"></div><div class="gp">
+        <div class="gd-top"><div class="gd-brand">My<em>Sargal</em></div><div class="gd-chip">FIDÉLITÉ</div></div>
+        <div><div class="gd-emv"></div></div>
+        <div class="gd-foot"><div><div class="gd-lbl">points fidélité</div><div class="gd-amt">10</div><div class="gd-who">Awa Ndiaye · Café Teranga</div></div><div class="gd-code">LC-A1B2</div></div>
+      </div></div>
+    </div>
+  </div></div></div>
+  <div class="gd-hint">Bouge la souris — les cartes suivent le regard</div>
+</section>
+
+<!-- HOW -->
+<section style="border-top:1px solid var(--line)" id="how">
+  <div class="ctr">
+    <div class="slabel">Comment ça marche</div>
+    <h2>Opérationnel en<br><em>2 minutes</em></h2>
+  </div>
+  <div class="ht-wrap" id="htWrap">
+    <div class="ht-sticky">
+      <div class="ht-phone"><div class="ht-screen"><div class="ht-notch"></div>
+
+        <div class="ht-state on" data-st="0">
+          <div class="ht-ico">🏪</div>
+          <div class="ht-t">Café Teranga<br>est en ligne</div>
+          <div class="ht-d">Boutique créée en 2 minutes,<br>vérifiée par WhatsApp.</div>
+        </div>
+
+        <div class="ht-state" data-st="1">
+          <div class="ht-bub">Salut Awa ! 👋 Voici ta carte de fidélité <b>Café Teranga</b> :<br><span class="lk">mysargal.com/c/?code=LC-4AB53E</span></div>
+          <div class="ht-d">La carte part par WhatsApp.<br>Aucune app à télécharger.</div>
+        </div>
+
+        <div class="ht-state" data-st="2">
+          <div class="ht-card"><div class="n">Awa Ndiaye</div><div class="pts" id="htPts">7 pts</div><div class="bar"><div class="fill" id="htFill" style="width:70%"></div></div></div>
+          <div class="ht-d">Un scan en caisse,<br>les points tombent. Même hors ligne.</div>
+        </div>
+
+        <div class="ht-state" data-st="3">
+          <div class="ht-ico">🎉</div>
+          <div class="ht-t">Récompense<br>débloquée</div>
+          <div class="ht-d">10 points atteints : Awa reçoit<br>son café offert — et revient.</div>
+        </div>
+
+      </div></div>
+      <div class="ht-steps">
+        <div class="ht-step on" data-st="0"><div class="sn">ÉTAPE 01</div><div class="stitle">Créer votre boutique</div><p class="sdesc">Nom, type, récompense, téléphone. Vérification par code WhatsApp. Aucun mot de passe à retenir.</p></div>
+        <div class="ht-step" data-st="1"><div class="sn">ÉTAPE 02</div><div class="stitle">Ajouter vos clients</div><p class="sdesc">Créez une carte par client. Envoyez le lien par WhatsApp en 1 tap. Aucune app à télécharger.</p></div>
+        <div class="ht-step" data-st="2"><div class="sn">ÉTAPE 03</div><div class="stitle">Scanner à chaque visite</div><p class="sdesc">Le client présente son QR. Vous scannez et ajoutez les points. 3 secondes, même hors ligne.</p></div>
+        <div class="ht-step" data-st="3"><div class="sn">ÉTAPE 04</div><div class="stitle">Récompenser fidèlement</div><p class="sdesc">MySargal alerte quand le seuil est atteint. Vous offrez la récompense, les compteurs repartent.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="tsec" id="tsec" style="display:none">
+  <div class="ctr">
+    <div class="slabel">Témoignages</div>
+    <h2>Ce que disent<br>nos commerçants</h2>
+    <div class="tgrid">
+      <div class="titem">
+        <div class="tphoto" title="Changer la photo">
+          <span id="t1i">A</span>
+          <input type="file" accept="image/*" disabled/>
+        </div>
+        <p class="tq" id="ld-t1-text">"Mes clients adorent scanner leur carte. Les habitués reviennent bien plus souvent depuis MySargal. Le système de récompenses marche vraiment."</p>
+        <div class="tn" id="ld-t1-name">Aminata Diallo</div>
+        <div class="tr" id="ld-t1-role">Café Atlas · Dakar</div>
+      </div>
+      <div class="titem">
+        <div class="tphoto" title="Changer la photo">
+          <span id="t2i">M</span>
+          <input type="file" accept="image/*" disabled/>
+        </div>
+        <p class="tq" id="ld-t2-text">"Les cartes cadeaux ont transformé mon business. Des clients en achètent pour offrir à leurs proches et ça m'amène de nouveaux clients."</p>
+        <div class="tn" id="ld-t2-name">Mamadou Sow</div>
+        <div class="tr" id="ld-t2-role">Téléphonie · Thiès</div>
+      </div>
+      <div class="titem">
+        <div class="tphoto" title="Changer la photo">
+          <span id="t3i">F</span>
+          <input type="file" accept="image/*" disabled/>
+        </div>
+        <p class="tq" id="ld-t3-text">"Simple, rapide, zéro papier. Je gère tout depuis mon téléphone. Le dashboard m'aide à voir quels jours sont les plus chargés."</p>
+        <div class="tn" id="ld-t3-name">Fatou Ndiaye</div>
+        <div class="tr" id="ld-t3-role">Salon Beauté Plus · Saint-Louis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="border-top:1px solid var(--line)">
+  <div class="ctr">
+    <div class="slabel">Tarifs</div>
+    <h2>Simple.<br><em>Transparent.</em></h2>
+    <p class="stxt">Tout est inclus, dès le premier jour. <b><span id="ld-trial-head">3 mois</span> offerts</b> — sans carte bancaire.</p>
+    <div class="pgrid">
+      <div class="pcard">
+        <div class="pplan">Essai gratuit</div>
+        <!-- « 0 FCFA » annonçait une monnaie à un visiteur de Nairobi. La gratuité
+             se dit sans monnaie, dans toutes les langues. -->
+        <div class="pnum">0</div>
+        <div class="pper">pendant <span id="ld-trial">90</span> jours — sans carte bancaire</div>
+        <div class="pline"></div>
+        <ul class="plist">
+          <li><span class="ok">✓</span> <b>Toutes les fonctionnalités</b>, sans restriction</li>
+          <li><span class="ok">✓</span> Clients illimités</li>
+          <li><span class="ok">✓</span> Cartes de fidélité + scan QR</li>
+          <li><span class="ok">✓</span> Apple & Google Wallet</li>
+          <li><span class="ok">✓</span> Automations WhatsApp</li>
+          <li><span class="ok">✓</span> Cartes cadeaux + designs personnalisés</li>
+          <li><span class="ok">✓</span> Zéro engagement — tu arrêtes quand tu veux</li>
+        </ul>
+        <a href="/onboarding/" class="pbtnf">Commencer gratuitement</a>
+      </div>
+      <div class="pcard pro">
+        <div class="pbadge">APRÈS L'ESSAI</div>
+        <div class="pplan" style="color:var(--green2)">Pro — tout illimité</div>
+        <div class="pnum" id="ld-pro-bloc"><span id="ld-pro-price">Sur devis</span> <span id="ld-pro-cur" style="font-size:1.2rem;font-weight:400;color:var(--tx2)"></span></div>
+        <div class="pper" id="ld-pro-note">Tarif adapté à ton pays et à ton volume</div>
+        <div class="pline"></div>
+        <ul class="plist">
+          <li><span class="ok">✓</span> <b>Clients illimités</b></li>
+          <li><span class="ok">✓</span> Automations WhatsApp — relances inactifs, anniversaires</li>
+          <li><span class="ok">✓</span> Parrainage intégré (bonus parrain + filleul)</li>
+          <li><span class="ok">✓</span> Cartes cadeaux illimitées + designs personnalisés</li>
+          <li><span class="ok">✓</span> Caissiers, PIN & anti-fraude</li>
+          <li><span class="ok">✓</span> Multi-boutiques</li>
+          <li><span class="ok">✓</span> Analytics complet + export CSV</li>
+          <li><span class="ok">✓</span> Support prioritaire WhatsApp</li>
+        </ul>
+        <a href="/onboarding/" class="pbtnp" id="ld-pro-cta">Démarrer — 3 mois offerts</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="ctasec">
+  <div class="ctr">
+    <div class="ctai">
+      <div class="slabel">Prêt à démarrer ?</div>
+      <h2>Commencez à fidéliser<br><em>dès aujourd'hui</em></h2>
+      <p>Rejoignez les commerçants d'Afrique de l'Ouest qui fidélisent autrement. Aucune carte bancaire, aucune installation.</p>
+      <div class="ctabtns">
+        <a href="/onboarding/" class="btnp">Créer ma boutique — gratuit</a>
+        <a href="/merchant/" class="btns">Déjà inscrit ? Se connecter</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FAQ -->
+<section style="border-top:1px solid var(--line)" id="faq">
+  <div class="ctr">
+    <div class="slabel">FAQ</div>
+    <h2>Questions<br><em>fréquentes</em></h2>
+    <div class="faqlist" style="max-width:660px;margin-top:44px">
+      <div style="margin-bottom:24px"><div style="font-weight:600;margin-bottom:6px">C'est quoi MySargal ?</div><p style="font-size:.88rem;color:var(--tx2);line-height:1.7">Une plateforme ouest-africaine de fidélité digitale : cartes avec QR code, points automatiques, récompenses et cartes cadeaux digitales pour les commerçants et leurs clients.</p></div>
+      <div style="margin-bottom:24px"><div style="font-weight:600;margin-bottom:6px">Combien ça coûte ?</div><p style="font-size:.88rem;color:var(--tx2);line-height:1.7">3 mois d'essai gratuit avec tout inclus, sans carte bancaire. Ensuite, un abonnement sur devis, adapté à ton pays et à ton volume.</p></div>
+      <div style="margin-bottom:24px"><div style="font-weight:600;margin-bottom:6px">J'ai une boutique en ligne (Shopify, WooCommerce…), ça marche ?</div><p style="font-size:.88rem;color:var(--tx2);line-height:1.7">Oui — sans plugin. Tu colles une URL dans ta boutique et chaque commande payée crédite automatiquement les points de ton client, avec sa carte envoyée par WhatsApp. <a href="/developers.html" style="color:var(--green2)">Guide d'installation (5 min)</a>.</p></div>
+      <div style="margin-bottom:24px"><div style="font-weight:600;margin-bottom:6px">Faut-il télécharger une application ?</div><p style="font-size:.88rem;color:var(--tx2);line-height:1.7">Non. Tout fonctionne dans le navigateur du téléphone — et les clients peuvent ajouter leur carte à Apple Wallet ou Google Wallet.</p></div>
+      <div style="margin-bottom:24px"><div style="font-weight:600;margin-bottom:6px">Comment mes clients gagnent-ils des points ?</div><p style="font-size:.88rem;color:var(--tx2);line-height:1.7">Un scan du QR code en caisse suffit : points ajoutés instantanément, client averti sur WhatsApp. Tu choisis tes règles, par passage ou par montant.</p></div>
+      <div><div style="font-weight:600;margin-bottom:6px">Qu'est-ce qu'une carte cadeau MySargal ?</div><p style="font-size:.88rem;color:var(--tx2);line-height:1.7">Une carte cadeau digitale de ta boutique, envoyée par WhatsApp avec une animation de déballage, encaissable via QR code — parfaite pour la Tabaski, la Korité et les anniversaires.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fi2">
+    <div>
+      <div class="flogo"><svg class="ms-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg></div>
+      <p class="fdesc">La plateforme de fidélité digitale et cartes cadeaux pour les commerçants d'Afrique de l'Ouest. Simple, rapide, sans installation.</p>
+      
+    </div>
+    <div class="fcol"><h4>Produit</h4><a href="#features">Fonctionnalités</a><a href="#giftcards">Cartes cadeaux</a><a href="/marques">Pour les marques</a><a href="#pricing">Tarifs</a><a href="#how">Comment ça marche</a></div>
+    <div class="fcol"><h4>Accès</h4><a href="/onboarding/">Créer une boutique</a><a href="/merchant/">Panel commerçant</a><a href="/client-app/">App client</a><a href="/buy-giftcard.html">Acheter une carte cadeau</a></div>
+    <div class="fcol"><h4>Contact</h4><a href="https://wa.me/221777608983">WhatsApp support</a><a href="mailto:hello@mysargal.com">hello@mysargal.com</a><a href="/developers.html">Développeurs / API</a><a href="/conditions.html">Conditions</a><a href="/privacy-policy.html">Confidentialité</a></div>
+  </div>
+  <div class="fbot">
+    <p>© 2026 MySargal · Tous droits réservés</p>
+    
+  </div>
+</footer>
+
+<script>
+// Gift cards drag scroll (legacy — carrousel remplacé par le deck 3D)
+const gcEl=document.getElementById('gcscroll');
+if(gcEl){
+  let isDown=false,startX,scrollLeft;
+  gcEl.addEventListener('mousedown',e=>{isDown=true;gcEl.classList.add('drag');startX=e.pageX-gcEl.offsetLeft;scrollLeft=gcEl.scrollLeft;});
+  gcEl.addEventListener('mouseleave',()=>{isDown=false;gcEl.classList.remove('drag');});
+  gcEl.addEventListener('mouseup',()=>{isDown=false;gcEl.classList.remove('drag');});
+  gcEl.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();gcEl.scrollLeft=scrollLeft-(e.pageX-gcEl.offsetLeft-startX)*1.5;});
+}
+// Deck 3D — parallax souris
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var t=document.getElementById('gdTilt');if(!t||reduce)return;
+  var mx=0,my=0,cx=0,cy=0;
+  window.addEventListener('pointermove',function(e){mx=(e.clientX/window.innerWidth-0.5);my=(e.clientY/window.innerHeight-0.5);},{passive:true});
+  (function loop(){cx+=(mx-cx)*0.05;cy+=(my-cy)*0.05;t.style.transform='rotateY('+(cx*18).toFixed(2)+'deg) rotateX('+(-cy*14).toFixed(2)+'deg)';requestAnimationFrame(loop);})();
+})();
+
+// Image upload handlers
+// Image upload only from admin panel
+// Landing images loaded from Supabase settings
+
+function setTestiPhoto(n,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const wrap=input.closest('.tphoto');
+    document.getElementById('t'+n+'i').style.display='none';
+    let img=wrap.querySelector('img');
+    if(!img){img=document.createElement('img');wrap.insertBefore(img,wrap.querySelector('input'));}
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// Load from Supabase settings
+(async()=>{
+  const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+  const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+  const el=id=>document.getElementById(id);
+  const txt=(id,val)=>{const e=el(id);if(e&&val)e.textContent=val;};
+  try{
+    const r=await fetch(`${SB}/rest/v1/rpc/get_landing_settings`,{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+SA,'Content-Type':'application/json'},body:'{}'});
+    if(!r.ok)return;
+    const cfg=await r.json()||{};
+
+    // Ces textes viennent de la console admin, pas du code : le dictionnaire de
+    // traduction ne peut donc rien pour eux. On lit la variante de la langue
+    // affichée si elle existe, sinon le français.
+    const LG=(function(){ try{ if(window.msI18nLanding&&msI18nLanding.langue) return msI18nLanding.langue; }catch(e){}
+      try{ var q=new URLSearchParams(location.search).get('lang'); if(['fr','en','es'].indexOf(q)>=0) return q;
+           var m=localStorage.getItem('ms_lang'); if(['fr','en','es'].indexOf(m)>=0) return m; }catch(e){}
+      return 'fr'; })();
+    const variante=(o)=>(o && typeof o==='object' && o[LG] && typeof o[LG]==='object') ? Object.assign({}, o, o[LG]) : (o||{});
+
+    const h=variante(cfg['landing_hero']);
+    if(h.title){const e=el('ld-hero-title');if(e)e.innerHTML=h.title;}
+    if(h.sub)txt('ld-hero-sub',h.sub);
+    if(h.cta){const e=el('ld-hero-cta');if(e)e.textContent=h.cta;}
+
+    const s=variante(cfg['landing_stats']);
+    if(s.trust)txt('ld-trust',s.trust);
+    if(s.s1v)txt('ld-s1v',s.s1v); if(s.s1l)txt('ld-s1l',s.s1l);
+    if(s.s2v)txt('ld-s2v',s.s2v); if(s.s2l)txt('ld-s2l',s.s2l);
+
+    const p=cfg['landing_pricing']||{};
+    // Le prix n'est plus affiché : l'abonnement est sur devis. On ne réécrit
+    // donc ni le montant ni le bouton, sinon le tarif reviendrait par la base.
+    if(p.trial){
+      txt('ld-trial',p.trial);
+      const mo=Math.round(p.trial/30);
+      const UNITE={fr:['mois','jours'],en:['months','days'],es:['meses','días']}[LG]||['mois','jours'];
+      const lbl=(p.trial%30===0&&mo>=1)?(mo+' '+UNITE[0]):(p.trial+' '+UNITE[1]);
+      txt('ld-trial-head',lbl);
+    }
+
+    const seo=variante(cfg['landing_seo']);
+    if(seo.title)document.title=seo.title;
+
+    const t=cfg['landing_testimonials'];
+    if(t&&Array.isArray(t)&&t.length){const ts=document.getElementById('tsec');if(ts)ts.style.display='';}
+    if(t&&Array.isArray(t))t.forEach((x0,i)=>{const x=variante(x0);const n=i+1;txt(`ld-t${n}-name`,x.name);txt(`ld-t${n}-role`,x.role);const e=el(`ld-t${n}-text`);if(e&&x.text)e.textContent='"'+x.text+'"';});
+
+    // Images gérées depuis l'admin (sections 1 & 2 — le hero est désormais la démo interactive)
+    ['split1','split2'].forEach(type=>{
+      const img=cfg['img_'+type];
+      if(!img||!img.url)return;
+      const n=type.replace('split','');
+      const wrap=el('split'+n+'-wrap');
+      if(wrap){
+        wrap.innerHTML=`<img src="${img.url}" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:20px"/>`;
+      }
+    });
+
+  }catch(e){}
+})();
+</script>
+
+<!-- WhatsApp flottant -->
+<a class="wafab" href="https://wa.me/221777608983?text=Bonjour%2C%20je%20veux%20cr%C3%A9er%20ma%20boutique%20MySargal" target="_blank" rel="noopener" aria-label="Nous écrire sur WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  <span>Écris-nous sur WhatsApp</span>
+</a>
+
+<!-- CTA sticky mobile -->
+<div class="mcta" id="mcta"><a href="/onboarding/">Créer ma boutique — gratuit</a></div>
+<script>
+// CTA sticky : caché tant que le CTA du hero est à l'écran (évite le doublon)
+(function(){
+  var hero=document.getElementById('ld-hero-cta'),bar=document.getElementById('mcta');
+  if(!hero||!bar||!('IntersectionObserver' in window))return;
+  bar.style.transition='transform .25s ease,opacity .25s ease';
+  new IntersectionObserver(function(en){
+    var vis=en[0].isIntersecting;
+    bar.style.transform=vis?'translateY(110%)':'translateY(0)';
+    bar.style.opacity=vis?'0':'1';
+  },{threshold:.1}).observe(hero);
+})();
+</script>
+
+<script>
+(function(){
+  var pts=3, goal=10, busy=false;
+  window.msDemoScan=function(){
+    if(busy) return;
+    var d=document.getElementById('dPts'), f=document.getElementById('dFill'), phone=document.getElementById('demoPhone');
+    if(pts>=goal){ msDemoReset(); return; }
+    busy=true;
+    pts++;
+    d.innerHTML=pts+'<span class="u"> pts</span>';
+    d.classList.add('bump'); setTimeout(function(){d.classList.remove('bump');},250);
+    f.style.width=Math.min(100,pts/goal*100)+'%';
+    // petit feedback haptique si dispo
+    if(navigator.vibrate) try{navigator.vibrate(15);}catch(e){}
+    if(pts>=goal){
+      setTimeout(function(){ document.getElementById('dReward').classList.add('show'); msConfetti(phone); },420);
+      var lbl=document.getElementById('dScanLbl'); if(lbl) lbl.textContent='Objectif atteint 🎉';
+    }
+    setTimeout(function(){busy=false;},260);
+  };
+  window.msDemoReset=function(){
+    pts=3;
+    document.getElementById('dPts').innerHTML='3<span class="u"> pts</span>';
+    document.getElementById('dFill').style.width='30%';
+    document.getElementById('dReward').classList.remove('show');
+    var lbl=document.getElementById('dScanLbl'); if(lbl) lbl.textContent='Scanner un achat';
+  };
+  function msConfetti(host){
+    var cols=['#22c55e','#f5c842','#ffffff','#4ade80'];
+    for(var i=0;i<22;i++){
+      (function(i){
+        var c=document.createElement('div'); c.className='conf';
+        c.style.left=(15+Math.random()*70)+'%';
+        c.style.background=cols[i%cols.length];
+        host.querySelector('.phone-screen').appendChild(c);
+        var dx=(Math.random()*2-1)*120, dur=900+Math.random()*700;
+        c.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate('+dx+'px,520px) rotate('+(Math.random()*720)+'deg)',opacity:0}],{duration:dur,easing:'cubic-bezier(.2,.6,.4,1)'});
+        setTimeout(function(){c.remove();},dur);
+      })(i);
+    }
+  }
+})();
+</script>
+
+<script>
+(function(){
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Révélations au scroll, en cascade */
+  if(!reduced && 'IntersectionObserver' in window){
+    var targets = document.querySelectorAll('section .slabel, section h2, section .stxt, .fi, .titem, .pcard, .cklist li, .gcc, .ctai p, .ctabtns, #faq .ctr > div > div');
+    var bySection = {};
+    targets.forEach(function(el){
+      var sec = el.closest('section') || document.body;
+      var k = sec.id || Array.prototype.indexOf.call(document.querySelectorAll('section'), sec);
+      bySection[k] = (bySection[k]||0);
+      el.classList.add('rv');
+      el.style.transitionDelay = Math.min(bySection[k]*70, 420)+'ms';
+      bySection[k]++;
+    });
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* Téléphone 3D qui suit la souris (desktop) */
+  var stage = document.querySelector('.phone-stage'), ph = document.getElementById('demoPhone');
+  if(stage && ph && !reduced && matchMedia('(hover:hover)').matches){
+    var raf = null;
+    stage.addEventListener('mousemove', function(e){
+      if(raf) return;
+      raf = requestAnimationFrame(function(){
+        var r = stage.getBoundingClientRect();
+        var x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
+        ph.style.transform = 'rotateY('+(x*9)+'deg) rotateX('+(-y*7)+'deg) translateY(-4px)';
+        raf = null;
+      });
+    });
+    stage.addEventListener('mouseleave', function(){ ph.style.transform=''; });
+  }
+
+  /* Scroll-telling « Comment ça marche » */
+  var wrap = document.getElementById('htWrap');
+  if(wrap && matchMedia('(min-width:961px)').matches){
+    var states = wrap.querySelectorAll('.ht-state'), steps = wrap.querySelectorAll('.ht-step');
+    var cur = 0;
+    function setStep(i){
+      if(i===cur) return; cur = i;
+      states.forEach(function(s){ s.classList.toggle('on', +s.dataset.st===i); });
+      steps.forEach(function(s){ s.classList.toggle('on', +s.dataset.st===i); });
+      if(i===2){ var f=document.getElementById('htFill'), p=document.getElementById('htPts');
+        if(f){ f.style.width='40%'; requestAnimationFrame(function(){ setTimeout(function(){ f.style.width='70%'; if(p)p.textContent='7 pts'; },180); }); } }
+    }
+    var ticking=false;
+    function onScroll(){
+      if(ticking) return; ticking=true;
+      requestAnimationFrame(function(){
+        var rect = wrap.getBoundingClientRect();
+        var total = wrap.offsetHeight - window.innerHeight;
+        var prog = Math.min(1, Math.max(0, -rect.top / total));
+        setStep(Math.min(3, Math.floor(prog*4)));
+        ticking=false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  }
+})();
+</script>
+
+
+
+<script>
+(function(){
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var sc=document.getElementById('gcscroll'); if(!sc) return;
+  var cards=[].slice.call(sc.querySelectorAll('.gcc'));
+
+  /* Restructurer : recto (contenu existant) + verso (QR + CTA) */
+  var qrPat='1111111 1000001 1011101 1011101 1011101 1000001 1111111'.split(' ');
+  cards.forEach(function(c,idx){
+    /* transférer le dégradé du parent vers le recto */
+    var bg=getComputedStyle(c).backgroundImage;
+    c.style.setProperty('--gcbg', bg && bg!=='none' ? bg : getComputedStyle(c).backgroundColor);
+    c.style.setProperty('background','transparent','important');
+    var front=document.createElement('div'); front.className='gcface gcfront';
+    while(c.firstChild) front.appendChild(c.firstChild);
+    /* le fond du recto = la classe de dégradé de la carte elle-même */
+    var back=document.createElement('div'); back.className='gcface gcback';
+    var qr='<div class="gcqr">';
+    for(var r=0;r<7;r++)for(var col=0;col<7;col++){var on=qrPat[r][col]==='1'||((r*7+col+idx)%3===0&&r>0&&r<6&&col>0&&col<6);qr+='<i class="'+(on?'':'o')+'"></i>';}
+    qr+='</div>';
+    back.innerHTML=qr+'<div class="bt">SCANNE EN CAISSE</div><a class="ba" href="/buy-giftcard.html">Offrir cette carte →</a>';
+    c.appendChild(front); c.appendChild(back);
+    c.dataset.flip='0';
+    c.addEventListener('click', function(e){
+      if(e.target.closest('a')) return;
+      c.dataset.flip = c.dataset.flip==='1' ? '0' : '1';
+      apply();
+    });
+    c.addEventListener('mouseenter', function(){ c.dataset.h='1'; apply(); });
+    c.addEventListener('mouseleave', function(){ c.dataset.h='0'; apply(); });
+  });
+
+  /* Coverflow : rotation selon la distance au centre + lift au survol + flip */
+  function apply(){
+    var mid=sc.getBoundingClientRect().left + sc.clientWidth/2;
+    cards.forEach(function(c){
+      var r=c.getBoundingClientRect();
+      var d=(r.left + r.width/2 - mid)/sc.clientWidth; /* -0.5..0.5 env */
+      var rot=Math.max(-13,Math.min(13,-d*26));
+      var lift=c.dataset.h==='1' ? ' translateY(-12px) scale(1.05)' : '';
+      var flip=c.dataset.flip==='1' ? 180 : 0;
+      if(reduced){ c.style.transform = flip? 'rotateY(180deg)':''; return; }
+      c.style.transform='rotateY('+(rot+flip)+'deg) translateZ('+(Math.abs(d)<.12?26:0)+'px)'+lift;
+      c.style.transition='transform .55s cubic-bezier(.16,1,.3,1), box-shadow .35s';
+      c.style.boxShadow=c.dataset.h==='1' ? '0 26px 50px rgba(0,0,0,.55)' : '0 14px 30px rgba(0,0,0,.35)';
+    });
+  }
+  sc.addEventListener('scroll', function(){ requestAnimationFrame(apply); }, {passive:true});
+  addEventListener('resize', apply); apply();
+
+  /* Dérive automatique lente (pause au survol / au toucher / hors écran) */
+  if(!reduced){
+    var paused=false, dir=1;
+    ['pointerenter','pointerdown','touchstart'].forEach(function(ev){ sc.addEventListener(ev,function(){paused=true;},{passive:true}); });
+    sc.addEventListener('pointerleave', function(){ paused=false; });
+    var visible=true;
+    new IntersectionObserver(function(es){ visible=es[0].isIntersecting; },{threshold:.1}).observe(sc);
+    var pos=null;
+    (function drift(){
+      if(!paused && visible){
+        if(pos===null || Math.abs(pos-sc.scrollLeft)>3) pos=sc.scrollLeft; /* resynchro si l'utilisateur a fait défiler */
+        pos += 0.45*dir;
+        sc.scrollLeft = pos;
+        if(pos >= sc.scrollWidth - sc.clientWidth - 2) dir=-1;
+        else if(pos <= 2) dir=1;
+        apply();
+      }
+      requestAnimationFrame(drift);
+    })();
+  }
+})();
+</script>
+<script>
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  document.documentElement.classList.add('anim');
+  var els=document.querySelectorAll('.fi,.titem,.split,section:not(.hero) .slabel,section:not(.hero) h2,section:not(.hero) .stxt');
+  if(reduce||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+  els.forEach(function(e){e.classList.add('rvl');});
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(x){
+      if(!x.isIntersecting)return;
+      var el=x.target,sib=el.parentNode?el.parentNode.children:null,idx=0;
+      if(sib){idx=Array.prototype.indexOf.call(sib,el);}
+      el.style.transitionDelay=(Math.min(0.36,(idx%3)*0.09))+'s';
+      el.classList.add('in');
+      io.unobserve(el);
+    });
+  },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(e){io.observe(e);});
+})();
+</script>
+<script>
+// ===== Side brand rail : scroll-spy + progression + clic =====
+(function(){
+  var dots=Array.prototype.slice.call(document.querySelectorAll('#srDots .sr-dot'));
+  var fill=document.getElementById('sr-fill');
+  if(!dots.length)return;
+  function elFor(t){return t==='top'?document.body:document.getElementById(t);}
+  dots.forEach(function(d){
+    d.addEventListener('click',function(){
+      var t=d.getAttribute('data-t');
+      if(t==='top'){window.scrollTo({top:0,behavior:'smooth'});return;}
+      var el=document.getElementById(t);
+      if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+  function onScroll(){
+    var h=document.documentElement,max=h.scrollHeight-h.clientHeight,p=max>0?h.scrollTop/max:0;
+    if(fill)fill.style.height=(Math.max(0,Math.min(1,p))*100)+'%';
+    // dot actif = dernière section dont le haut est passé sous 45% de l'écran
+    var mid=window.innerHeight*0.42,active='top';
+    dots.forEach(function(d){
+      var t=d.getAttribute('data-t');if(t==='top')return;
+      var el=document.getElementById(t);if(!el)return;
+      if(el.getBoundingClientRect().top<=mid)active=t;
+    });
+    dots.forEach(function(d){d.classList.toggle('on',d.getAttribute('data-t')===active);});
+  }
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll,{passive:true});onScroll();
+})();
+</script>
+<script>
+(function(){
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // Barre de progression au scroll
+  var sp=document.createElement('div');sp.className='sprog';sp.innerHTML='<i></i>';document.body.appendChild(sp);
+  var spi=sp.firstChild;
+  function onScroll(){var h=document.documentElement,max=h.scrollHeight-h.clientHeight;var p=max>0?(h.scrollTop)/max:0;spi.style.width=(Math.max(0,Math.min(1,p))*100).toFixed(1)+'%';}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+  // Compteurs animés du hero
+  document.querySelectorAll('.hnv').forEach(function(el){
+    var m=String(el.textContent).match(/^(\d+)(.*)$/);if(!m)return;var to=+m[1],suf=m[2];
+    if(reduce){return;}
+    var t0=performance.now();
+    (function s(t){var k=Math.min(1,(t-t0)/1300),e=1-Math.pow(1-k,3);el.textContent=Math.round(to*e)+suf;if(k<1)requestAnimationFrame(s);})(t0);
+  });
+
+  if(reduce)return;
+
+  // Parallax souris : aurora + téléphone (+ lévitation intégrée)
+  var aur=document.querySelector('.aurora'),stage=document.querySelector('.phone-stage');
+  var mx=0,my=0,cx=0,cy=0,t0=performance.now();
+  addEventListener('pointermove',function(e){mx=(e.clientX/innerWidth-0.5);my=(e.clientY/innerHeight-0.5);},{passive:true});
+  (function loop(){cx+=(mx-cx)*0.06;cy+=(my-cy)*0.06;
+    var fl=Math.sin((performance.now()-t0)/1050)*9;
+    if(aur)aur.style.transform='translate('+(cx*24).toFixed(1)+'px,'+(cy*24).toFixed(1)+'px)';
+    if(stage)stage.style.transform='translate('+(cx*-16).toFixed(1)+'px,'+((cy*-12)+fl).toFixed(1)+'px)';
+    requestAnimationFrame(loop);})();
+
+  // Projecteur qui suit le curseur sur les cartes de fonctionnalités
+  document.querySelectorAll('.fi').forEach(function(fi){
+    fi.addEventListener('pointermove',function(e){var r=fi.getBoundingClientRect();fi.style.setProperty('--mx',(e.clientX-r.left)+'px');fi.style.setProperty('--my',(e.clientY-r.top)+'px');});
+  });
+
+  // Cartes cadeaux : inclinaison 3D à la souris
+  document.querySelectorAll('.gcc').forEach(function(c){
+    c.addEventListener('pointermove',function(e){var r=c.getBoundingClientRect();var px=(e.clientX-r.left)/r.width-0.5,py=(e.clientY-r.top)/r.height-0.5;c.style.transform='translateY(-8px) rotateY('+(px*14).toFixed(1)+'deg) rotateX('+(-py*14).toFixed(1)+'deg)';});
+    c.addEventListener('pointerleave',function(){c.style.transform='';});
+  });
+
+  // Boutons magnétiques
+  document.querySelectorAll('.btnp,.ncta').forEach(function(b){
+    b.addEventListener('pointermove',function(e){var r=b.getBoundingClientRect();var x=(e.clientX-r.left-r.width/2)/r.width,y=(e.clientY-r.top-r.height/2)/r.height;b.style.transform='translate('+(x*8).toFixed(1)+'px,'+(y*6-2).toFixed(1)+'px)';});
+    b.addEventListener('pointerleave',function(){b.style.transform='';});
+  });
+})();
+</script>
+<script>
+(function(){
+  var SBU='https://iiocxlvcuoqafzlisqwd.supabase.co';
+  var SBA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+  var H={'apikey':SBA,'Authorization':'Bearer '+SBA};
+  function esc(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function safeImg(u){var v=String(u||'').trim();return (/^data:image\/(png|jpe?g|gif|webp|svg\+xml);/i.test(v)||/^https:\/\//i.test(v))?v:'';}
+  // Bandeau des logos clients : mis en sommeil le temps de rassembler des
+  // logos propres. Il affichait des cases vides pour les boutiques qui n'en
+  // ont pas encore, ce qui donnait l'impression d'un chargement raté sur la
+  // toute premiere chose que voit un visiteur.
+  // Pour le rallumer : retirer les deux lignes ci dessous.
+  var MS_LOGOS_CLIENTS = false;
+  if(!MS_LOGOS_CLIENTS) return;
+
+  var wrap=document.getElementById('ld-social'); if(!wrap) return;
+  // Compteurs (n'apparaissent qu'au-dessus d'un seuil credible)
+  fetch(SBU+'/rest/v1/public_stats?select=merchants,clients,giftcards&limit=1',{headers:H}).then(function(r){return r.json();}).then(function(rows){
+    var st=Array.isArray(rows)?rows[0]:null; if(!st) return;
+    if((st.merchants||0)>=25){
+      var C=document.getElementById('ld-counters');
+      function fN(n){return (Math.round(n)).toLocaleString('fr-FR').replace(/,/g,' ');}
+      C.innerHTML=[[st.merchants,'commerces'],[st.clients,'clients fidélisés'],[st.giftcards,'cartes cadeaux']].map(function(x){return '<div><div class="hnv">'+fN(x[0])+'</div><div class="hnl">'+x[1]+'</div></div>';}).join('');
+      C.style.display='flex';
+    }
+  }).catch(function(){});
+  // Bande de logos (authentique)
+  fetch(SBU+'/rest/v1/merchant_directory?select=name,logo_url,logo_base64,emoji&order=name.asc&limit=14',{headers:H}).then(function(r){return r.json();}).then(function(rows){
+    if(!Array.isArray(rows)||rows.length<3) return;
+    var row=document.getElementById('ld-logos-row');
+    row.innerHTML=rows.map(function(m){
+      var lg=safeImg(m.logo_url||m.logo_base64||'');
+      if(lg) return '<div style="height:40px;padding:0 12px;background:var(--s2,#fff);border:1px solid var(--line,#eee);border-radius:10px;display:flex;align-items:center"><img src="'+lg+'" alt="'+esc(m.name)+'" style="max-height:26px;max-width:90px;object-fit:contain"/></div>';
+      return '<div style="height:40px;padding:0 14px;background:var(--s2,#fff);border:1px solid var(--line,#eee);border-radius:10px;display:flex;align-items:center;font-weight:700;font-size:.82rem;color:var(--tx2,#555)">'+esc(m.name)+'</div>';
+    }).join('');
+    wrap.style.display='block';
+  }).catch(function(){});
+})();
+</script>
+<script>
+/* ── Tarif sur devis ────────────────────────────────────────────────────
+   Le prix n'est plus affiché publiquement. MySargal s'adresse maintenant à
+   des pays aux monnaies et aux moyens de paiement très différents : un
+   montant en francs CFA payable par Wave n'a de sens qu'en zone UEMOA.
+   Chaque tarif se fixe donc en conversation, par WhatsApp. */
+(function(){
+  var WA = '221774388766';
+  var T = {
+    fr: { devis:'Sur devis', note:'Tarif adapté à ton pays et à ton volume',
+          cta:'Demander un devis',
+          msg:'Bonjour MySargal, je souhaite un devis pour ma boutique.' },
+    en: { devis:'On request', note:'Priced for your country and your volume',
+          cta:'Request a quote',
+          msg:'Hello MySargal, I would like a quote for my shop.' },
+    es: { devis:'A consultar', note:'Precio adaptado a tu país y a tu volumen',
+          cta:'Solicitar presupuesto',
+          msg:'Hola MySargal, quiero un presupuesto para mi tienda.' }
+  };
+  function langue(){
+    try{
+      var p = new URLSearchParams(location.search).get('lang');
+      if(p && T[p]) return p;
+      var m = localStorage.getItem('ms_lang');
+      if(m && T[m]) return m;
+    }catch(e){}
+    var n = ((navigator.language||'fr')+'').slice(0,2).toLowerCase();
+    return T[n] ? n : 'fr';
+  }
+  function appliquer(){
+    var t = T[langue()] || T.fr;
+    var prix = document.getElementById('ld-pro-price');
+    var cur  = document.getElementById('ld-pro-cur');
+    var note = document.getElementById('ld-pro-note');
+    var cta  = document.getElementById('ld-pro-cta');
+    if(prix) prix.textContent = t.devis;
+    if(cur)  cur.textContent = '';
+    if(note) note.textContent = t.note;
+    if(cta){
+      cta.textContent = t.cta;
+      cta.href = 'https://wa.me/'+WA+'?text='+encodeURIComponent(t.msg);
+      cta.target = '_blank'; cta.rel = 'noopener';
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',appliquer);
+  else appliquer();
+})();
+</script>
+</body>
+</html>

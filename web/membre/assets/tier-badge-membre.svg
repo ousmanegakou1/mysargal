@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Membre">
+  <defs>
+    <style>
+      .m-fill{fill:#f3ede0}
+      .m-stroke{fill:none;stroke:#1e3a5f;stroke-width:2;stroke-linejoin:miter}
+      .m-tri{fill:#c85a3e}
+      .m-txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;letter-spacing:6px;fill:#1e3a5f;font-size:16px}
+    </style>
+  </defs>
+  <polygon class="m-fill" points="80,10 148,45 148,115 80,150 12,115 12,45"/>
+  <polygon class="m-stroke" points="80,10 148,45 148,115 80,150 12,115 12,45"/>
+  <polygon class="m-tri" points="80,32 88,46 72,46"/>
+  <text class="m-txt" x="80" y="98" text-anchor="middle">MEMBRE</text>
+</svg>

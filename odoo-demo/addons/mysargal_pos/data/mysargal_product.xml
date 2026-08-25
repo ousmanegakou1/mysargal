@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Produit technique qui porte la remise fidélité sur le ticket -->
+  <record id="product_mysargal_reward" model="product.product">
+    <field name="name">Récompense fidélité MySargal</field>
+    <field name="default_code">MYSARGAL_REWARD</field>
+    <field name="type">service</field>
+    <field name="available_in_pos" eval="True"/>
+    <field name="sale_ok" eval="False"/>
+    <field name="purchase_ok" eval="False"/>
+    <field name="list_price">0</field>
+    <field name="taxes_id" eval="[(5, 0, 0)]"/>
+  </record>
+</odoo>

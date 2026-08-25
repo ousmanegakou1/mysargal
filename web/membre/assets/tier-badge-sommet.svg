@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Sommet">
+  <defs>
+    <style>
+      .s-fill{fill:#1e3a5f}
+      .s-stroke{fill:none;stroke:#1e3a5f;stroke-width:2;stroke-linejoin:miter}
+      .s-tri{fill:#c85a3e}
+      .s-txt{font-family:-apple-system,"Helvetica Neue","Inter",sans-serif;font-weight:700;letter-spacing:6px;fill:#f3ede0;font-size:16px}
+      .s-underline{stroke:#c85a3e;stroke-width:1.5;fill:none}
+    </style>
+  </defs>
+  <polygon class="s-fill" points="80,10 148,45 148,115 80,150 12,115 12,45"/>
+  <polygon class="s-stroke" points="80,10 148,45 148,115 80,150 12,115 12,45"/>
+  <polygon class="s-tri" points="80,22 96,50 64,50"/>
+  <text class="s-txt" x="80" y="102" text-anchor="middle">SOMMET</text>
+  <line class="s-underline" x1="52" y1="114" x2="108" y2="114"/>
+</svg>

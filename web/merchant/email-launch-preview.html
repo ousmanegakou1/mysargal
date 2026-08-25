@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MARAZ Summit Club — Preview email de lancement</title>
+<style>
+  :root { --navy:#1e3a5f; --orange:#c85a3e; --cream:#f3ede0; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Plus Jakarta Sans',Inter,system-ui,sans-serif;background:var(--cream);color:var(--navy);min-height:100vh}
+  header{background:var(--navy);color:#fff;padding:24px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  header h1{margin:0;font-size:1.2rem;letter-spacing:.04em}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  .tab{background:transparent;color:var(--cream);border:1px solid rgba(255,255,255,.35);padding:8px 16px;border-radius:99px;cursor:pointer;font-size:.85rem;font-weight:600;font-family:inherit}
+  .tab.on{background:var(--orange);border-color:var(--orange);color:#fff}
+  .toolbar{background:#fff;padding:18px 32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;border-bottom:1px solid #e6ded0}
+  .toolbar label{font-size:.7rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px}
+  .toolbar input, .toolbar select{width:100%;padding:10px 12px;border:1.5px solid #d5cab5;border-radius:10px;font:inherit;color:var(--navy);background:#fff}
+  .toolbar button{background:var(--navy);color:#fff;border:none;padding:11px 18px;border-radius:10px;cursor:pointer;font-weight:700;font-family:inherit;align-self:end}
+  .preview{padding:32px;display:flex;justify-content:center}
+  iframe{width:100%;max-width:640px;height:900px;border:1px solid #d5cab5;border-radius:20px;background:var(--cream);box-shadow:0 12px 40px rgba(30,58,95,.12)}
+  footer{padding:16px 32px;text-align:center;font-size:.72rem;color:#6a5a3a}
+  @media (max-width: 640px){ header,.toolbar,.preview{padding:16px} iframe{height:780px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>MARAZ Summit Club — Preview email de lancement</h1>
+  <div class="actions">
+    <button class="tab on" id="btn-fr" onclick="setLang('fr')">Francais</button>
+    <button class="tab" id="btn-en" onclick="setLang('en')">English</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div><label>Prenom</label><input id="v-first" value="Aissatou"/></div>
+  <div><label>Niveau initial</label>
+    <select id="v-tier">
+      <option>Membre</option>
+      <option>Ascension</option>
+      <option>Sommet</option>
+    </select>
+  </div>
+  <div><label>Nom marchand</label><input id="v-merchant" value="MARAZ Origins"/></div>
+  <div><label>URL CTA</label><input id="v-url" value="https://mysargal.com/maraz/membre?ref=launch"/></div>
+  <div><button onclick="render()">Rafraichir la preview</button></div>
+</div>
+
+<div class="preview">
+  <iframe id="frame" title="preview"></iframe>
+</div>
+
+<footer>Ce rendu doit rester identique a celui envoye par la fonction <code>send-launch-email</code>.</footer>
+
+<script>
+var LANG = 'fr';
+
+function setLang(l){
+  LANG = l;
+  document.getElementById('btn-fr').classList.toggle('on', l==='fr');
+  document.getElementById('btn-en').classList.toggle('on', l==='en');
+  render();
+}
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+function renderEmail(lang, vars){
+  var NAVY='#1e3a5f', ORANGE='#c85a3e', CREAM='#f3ede0';
+  var first = esc(vars.first_name || (lang==='en'?'friend':'cher client'));
+  var tier  = esc(vars.tier || 'Membre');
+  var url   = esc(vars.cta_url);
+  var merchant = esc(vars.merchant_name || 'MARAZ');
+
+  if(lang==='en'){
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"/></head>'
+    + '<body style="margin:0;padding:0;background:'+CREAM+';font-family:Georgia,Times New Roman,serif;color:'+NAVY+'">'
+    + '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:'+CREAM+';padding:32px 0"><tr><td align="center">'
+    + '<table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 12px 40px rgba(30,58,95,.12)">'
+    + '<tr><td style="background:'+NAVY+';padding:36px 28px;text-align:center">'
+    +   '<div style="color:'+CREAM+';font-size:.75rem;letter-spacing:.28em;text-transform:uppercase">'+merchant+'</div>'
+    +   '<div style="color:#ffffff;font-size:2rem;font-weight:800;margin-top:10px;letter-spacing:.02em">Summit Club</div>'
+    +   '<div style="color:'+ORANGE+';font-size:.9rem;margin-top:8px;letter-spacing:.14em;text-transform:uppercase">Your journey begins</div>'
+    + '</td></tr>'
+    + '<tr><td style="padding:36px 32px">'
+    +   '<p style="font-size:1.05rem;line-height:1.7;margin:0 0 16px">Dear '+first+',</p>'
+    +   '<p style="font-size:1rem;line-height:1.75;margin:0 0 16px">You are among the first VIP members invited to join <b>Summit Club</b>, our new premium loyalty program. Three tiers, five reward families, one promise: to celebrate every step of your journey with us.</p>'
+    +   '<p style="font-size:1rem;line-height:1.75;margin:0 0 20px">Based on your history with us, your starting tier is:</p>'
+    +   '<div style="text-align:center;margin:24px 0"><div style="display:inline-block;background:'+NAVY+';color:#ffffff;padding:14px 32px;border-radius:99px;font-size:1.1rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase">'+tier+'</div></div>'
+    +   '<p style="font-size:1rem;line-height:1.75;margin:0 0 24px">Discover your benefits, your rewards catalog and your personalized experiences below.</p>'
+    +   '<div style="text-align:center;margin:32px 0 8px"><a href="'+url+'" style="display:inline-block;background:'+ORANGE+';color:#ffffff;padding:16px 36px;border-radius:12px;font-size:1rem;font-weight:800;text-decoration:none;letter-spacing:.04em">Discover my Summit Club</a></div>'
+    + '</td></tr>'
+    + '<tr><td style="background:'+CREAM+';padding:22px 28px;text-align:center;color:'+NAVY+';font-size:.75rem;line-height:1.6">'+merchant+' &middot; Powered by MySargal</td></tr>'
+    + '</table></td></tr></table></body></html>';
+  }
+
+  return '<!DOCTYPE html><html><head><meta charset="utf-8"/></head>'
+    + '<body style="margin:0;padding:0;background:'+CREAM+';font-family:Georgia,Times New Roman,serif;color:'+NAVY+'">'
+    + '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:'+CREAM+';padding:32px 0"><tr><td align="center">'
+    + '<table role="presentation" width="560" cellspacing="0" cellpadding="0" style="max-width:560px;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 12px 40px rgba(30,58,95,.12)">'
+    + '<tr><td style="background:'+NAVY+';padding:36px 28px;text-align:center">'
+    +   '<div style="color:'+CREAM+';font-size:.75rem;letter-spacing:.28em;text-transform:uppercase">'+merchant+'</div>'
+    +   '<div style="color:#ffffff;font-size:2rem;font-weight:800;margin-top:10px;letter-spacing:.02em">Summit Club</div>'
+    +   '<div style="color:'+ORANGE+';font-size:.9rem;margin-top:8px;letter-spacing:.14em;text-transform:uppercase">Votre ascension commence</div>'
+    + '</td></tr>'
+    + '<tr><td style="padding:36px 32px">'
+    +   '<p style="font-size:1.05rem;line-height:1.7;margin:0 0 16px">Cher(e) '+first+',</p>'
+    +   '<p style="font-size:1rem;line-height:1.75;margin:0 0 16px">Vous faites partie des premiers membres VIP invites a rejoindre le <b>Summit Club</b>, notre nouveau programme de fidelite premium. Trois niveaux, cinq familles de recompenses, une promesse : celebrer chaque etape de votre parcours avec nous.</p>'
+    +   '<p style="font-size:1rem;line-height:1.75;margin:0 0 20px">A partir de votre historique, votre niveau de depart est :</p>'
+    +   '<div style="text-align:center;margin:24px 0"><div style="display:inline-block;background:'+NAVY+';color:#ffffff;padding:14px 32px;border-radius:99px;font-size:1.1rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase">'+tier+'</div></div>'
+    +   '<p style="font-size:1rem;line-height:1.75;margin:0 0 24px">Decouvrez vos avantages, votre catalogue de recompenses et vos experiences personnalisees des maintenant.</p>'
+    +   '<div style="text-align:center;margin:32px 0 8px"><a href="'+url+'" style="display:inline-block;background:'+ORANGE+';color:#ffffff;padding:16px 36px;border-radius:12px;font-size:1rem;font-weight:800;text-decoration:none;letter-spacing:.04em">Decouvrir mon Summit Club</a></div>'
+    + '</td></tr>'
+    + '<tr><td style="background:'+CREAM+';padding:22px 28px;text-align:center;color:'+NAVY+';font-size:.75rem;line-height:1.6">'+merchant+' &middot; Propulse par MySargal</td></tr>'
+    + '</table></td></tr></table></body></html>';
+}
+
+function render(){
+  var html = renderEmail(LANG, {
+    first_name: document.getElementById('v-first').value,
+    tier:       document.getElementById('v-tier').value,
+    merchant_name: document.getElementById('v-merchant').value,
+    cta_url:    document.getElementById('v-url').value
+  });
+  var f = document.getElementById('frame');
+  f.srcdoc = html;
+}
+render();
+</script>
+</body>
+</html>

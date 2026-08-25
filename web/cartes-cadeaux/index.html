@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';var ic=(t==='light'?'sun':'moon');document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+ic+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#060d06"/>
+<title>Cartes cadeaux — Offrir une carte cadeau digitale | MySargal</title>
+<meta name="description" content="Découvrez toutes les boutiques, restaurants et marques participantes et offrez une carte cadeau digitale, envoyée par WhatsApp en quelques secondes."/>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link rel="canonical" href="https://mysargal.com/cartes-cadeaux"/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/>
+<meta property="og:title" content="Offrir une carte cadeau digitale | MySargal"/>
+<meta property="og:description" content="Toutes les marques participantes, une carte cadeau envoyée par WhatsApp en quelques secondes."/>
+<meta property="og:url" content="https://mysargal.com/cartes-cadeaux"/>
+<meta property="og:image" content="https://mysargal.com/og-image.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:ital,wght@0,700;0,800;0,900;1,600;1,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#060d06;--bg2:#0a150a;--bg3:#0f1f0f;
+  --line:rgba(255,255,255,.07);
+  --tx:#f0f7f0;--tx2:#8aab8a;--tx3:#3a5a3a;
+  --green:#16a34a;--green2:#22c55e;--gold:#f5c842;
+  --navbg:rgba(6,13,6,.9);--logo-box:#f3faf3;--logo-ink:#0a2810;
+  --card:#0c160c;--cardhov:#10210f;
+  --r:14px;
+}
+html[data-theme="light"]{
+  --bg:#eef3ef;--bg2:#ffffff;--bg3:#f1f6f1;
+  --line:rgba(20,45,28,.12);
+  --tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;
+  --navbg:rgba(238,243,239,.92);--logo-box:#0a0f0b;--logo-ink:#ffffff;
+  --card:#ffffff;--cardhov:#f6fbf6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;line-height:1.6;min-height:100vh}
+a{color:inherit}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:var(--navbg);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.nl{font-family:'Montserrat',sans-serif;font-size:1.15rem;font-weight:900;text-decoration:none;color:var(--tx);display:flex;align-items:center;gap:8px}
+.nl em{color:var(--green2);font-style:normal}
+.ms-logo{height:30px;width:auto;display:block}
+.nav-r{display:flex;align-items:center;gap:10px}
+.nlink{color:var(--tx2);text-decoration:none;font-size:.85rem;padding:7px 14px;border-radius:9px;border:1px solid var(--line);transition:all .15s}
+.nlink:hover{color:var(--tx);border-color:rgba(255,255,255,.15)}
+.thbtn{width:36px;height:36px;border-radius:9px;background:transparent;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer;color:var(--tx2)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header.hero{padding:120px 0 28px;text-align:center}
+.hlabel{font-family:'DM Mono',monospace;font-size:.7rem;font-weight:500;color:var(--green2);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:inline-flex;align-items:center;gap:8px}
+.hlabel::before,.hlabel::after{content:'';width:22px;height:1px;background:var(--green2)}
+h1{font-family:'Montserrat',sans-serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.08;letter-spacing:-.03em;margin-bottom:16px}
+h1 em{font-style:italic;color:var(--green2)}
+.sub{font-size:1.02rem;color:var(--tx2);max-width:560px;margin:0 auto 28px}
+.tools{position:sticky;top:64px;z-index:50;background:var(--bg);padding:14px 0 14px;margin-bottom:8px}
+.search{position:relative;max-width:520px;margin:0 auto 14px}
+.search input{width:100%;padding:14px 16px 14px 44px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:.95rem;font-family:inherit;outline:none;transition:border-color .15s}
+.search input:focus{border-color:var(--green2)}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--tx2)}
+.cats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--tx2);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.chip:hover{color:var(--tx);border-color:rgba(34,197,94,.4)}
+.chip.on{background:var(--green2);border-color:var(--green2);color:#04240f}
+.count{text-align:center;color:var(--tx3);font-size:.78rem;font-family:'DM Mono',monospace;margin:4px 0 20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;padding-bottom:60px}
+.card{display:flex;flex-direction:column;transition:transform .18s;text-decoration:none;color:inherit}
+.card:hover{transform:translateY(-4px)}
+/* visuel carte cadeau */
+.gcface{position:relative;aspect-ratio:1.6/1;border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,.28);color:#fff}
+.card:hover .gcface{box-shadow:0 14px 32px rgba(0,0,0,.4)}
+.gcface::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.14) 50%,transparent 65%);transform:translateX(-120%);transition:transform .7s}
+.card:hover .gcface::after{transform:translateX(120%)}
+.gc-top{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1}
+.gc-tag{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.gc-ms{font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:900;color:#fff}
+.gc-ms em{color:rgba(255,255,255,.6);font-style:normal}
+.gc-logoimg{width:34px;height:34px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.18);overflow:hidden}
+.gc-logoimg img{width:100%;height:100%;object-fit:cover;display:block}
+.gc-name{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.18rem;line-height:1.12;letter-spacing:-.02em;position:relative;z-index:1;text-shadow:0 1px 8px rgba(0,0,0,.25);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gc-bottom{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.gc-chip{width:30px;height:21px;border-radius:5px;background:linear-gradient(135deg,rgba(255,255,255,.85),rgba(255,255,255,.45));opacity:.9}
+.gc-host{font-family:'DM Mono',monospace;font-size:.56rem;color:rgba(255,255,255,.7)}
+.meta{padding:12px 4px 0;display:flex;flex-direction:column;flex:1}
+.cname2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.92rem;line-height:1.2}
+.ccat{font-size:.74rem;color:var(--tx2);margin-top:2px}
+.cloc{font-size:.7rem;color:var(--tx3);margin-top:2px}
+.cbtn{margin-top:12px;width:100%;padding:11px;border-radius:10px;background:var(--green2);color:#fff;font-weight:600;font-size:.85rem;display:flex;align-items:center;justify-content:center;gap:6px;transition:background .15s}
+.card:hover .cbtn{background:var(--green)}
+.empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--tx2)}
+.empty .ico{font-size:2.4rem;margin-bottom:12px}
+.skel{display:flex;flex-direction:column}
+.skel .b{background:linear-gradient(90deg,var(--line),rgba(255,255,255,.04),var(--line));background-size:200% 100%;animation:sh 1.3s infinite;border-radius:8px}
+.skel .b1{aspect-ratio:1.6/1;border-radius:16px;margin-bottom:12px}
+.skel .b2{width:60%;height:13px;margin:0 4px 8px}
+.skel .b4{width:100%;height:38px;margin:4px 0 0}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.foot{border-top:1px solid var(--line);padding:30px 0 50px;text-align:center;color:var(--tx2);font-size:.85rem}
+.foot a{color:var(--green2);text-decoration:none;font-weight:600}
+.balbar{max-width:520px;margin:0 auto 34px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.balbar span{font-size:.86rem;color:var(--tx2)}
+.balbar a{color:var(--green2);font-weight:700;text-decoration:none;font-size:.86rem;white-space:nowrap}
+@media(max-width:520px){header.hero{padding:96px 0 18px}.grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}.av{width:60px;height:60px;font-size:1.3rem}}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol>
+<symbol id="ic-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="ic-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.3 7-11a7 7 0 10-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+</defs></svg>
+<nav>
+  <a href="/" class="nl" aria-label="MySargal"><svg class="ms-logo" xmlns="http://www.w3.org/2000/svg" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg></a>
+  <div class="nav-r">
+    <a href="/solde" class="nlink">Vérifier un solde</a>
+    <button class="thbtn" onclick="msToggle()" aria-label="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hlabel">Marketplace · Cartes cadeaux</div>
+    <h1>Offrez une carte cadeau <em>digitale</em></h1>
+    <p class="sub">Choisissez une boutique, un restaurant ou une marque. La carte est envoyée par WhatsApp en quelques secondes — utilisable directement en caisse.</p>
+    <div class="balbar">
+      <span style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg>Vous avez déjà une carte ?</span>
+      <a href="/solde">Vérifier mon solde →</a>
+    </div>
+  </div>
+</header>
+
+<div class="tools">
+  <div class="wrap">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Rechercher une boutique, un restaurant…" oninput="render()" autocomplete="off"/>
+    </div>
+    <div class="cats" id="cats"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid">
+    <div class="skel"><div class="b b1"></div><div class="b b2"></div><div class="b b3"></div><div class="b b4"></div></div>
+    <div class="skel"><div class="b b1"></div><div class="b b2"></div><div class="b b3"></div><div class="b b4"></div></div>
+    <div class="skel"><div class="b b1"></div><div class="b b2"></div><div class="b b3"></div><div class="b b4"></div></div>
+    <div class="skel"><div class="b b1"></div><div class="b b2"></div><div class="b b3"></div><div class="b b4"></div></div>
+  </div>
+</div>
+
+<div class="foot">
+  <div class="wrap">
+    Vous êtes commerçant ? <a href="/onboarding/">Proposez vos cartes cadeaux →</a><br/>
+    <span style="color:var(--tx3);font-size:.78rem">© MySargal — la fidélité digitale d'Afrique de l'Ouest</span>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const H={'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let ALL=[],CAT='all';
+
+// defensive field accessors (schema may vary)
+const fLogo=m=>m.logo_url||m.logo||m.logo_image||m.image_url||m.avatar_url||'';
+const fCat =m=>m.category||m.secteur||m.type||m.sector||'';
+const fLoc =m=>m.city||m.ville||m.location||m.address||'';
+const fName=m=>m.name||m.merchant_name||m.business_name||'Boutique';
+
+function initials(n){return (String(n||'?').trim()[0]||'?').toUpperCase();}
+
+// palette de cartes cadeaux (reprend buy-giftcard) — couleur stable par marque
+const GRADS=[
+ 'linear-gradient(135deg,#4c1d95,#7c3aed,#a855f7)',
+ 'linear-gradient(135deg,#78350f,#d97706,#fbbf24)',
+ 'linear-gradient(135deg,#134e4a,#0d9488,#2dd4bf)',
+ 'linear-gradient(135deg,#881337,#db2777,#f472b6)',
+ 'linear-gradient(135deg,#1e3a8a,#2563eb,#60a5fa)',
+ 'linear-gradient(135deg,#09090b,#1e1e2e,#3f3f5f)',
+ 'linear-gradient(135deg,#0c1445,#1e3a5f,#2563eb)',
+ 'linear-gradient(135deg,#052e16,#14532d,#166534)'
+];
+function gradFor(key){let h=0;const s=String(key||'');for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return GRADS[h%GRADS.length];}
+
+async function load(){
+  let rows=[];
+  try{
+    const r=await fetch(`${SB_URL}/rest/v1/marketplace_directory?order=name.asc`,{headers:H});
+    rows=await r.json();
+    if(!Array.isArray(rows))rows=[];
+  }catch(e){rows=[];}
+  // only merchants with a usable id + name
+  ALL=rows.filter(m=>m&&m.id&&fName(m));
+  buildCats();
+  render();
+}
+
+function buildCats(){
+  const set=new Map();
+  ALL.forEach(m=>{const c=fCat(m).trim();if(c)set.set(c.toLowerCase(),c);});
+  const cats=[...set.values()].sort((a,b)=>a.localeCompare(b,'fr'));
+  let html=`<button class="chip on" data-c="all" onclick="setCat('all',this)">Tout</button>`;
+  cats.forEach(c=>{html+=`<button class="chip" data-c="${esc(c.toLowerCase())}" onclick="setCat('${esc(c.toLowerCase())}',this)">${esc(c)}</button>`;});
+  document.getElementById('cats').innerHTML=cats.length?html:'';
+}
+
+function setCat(c,el){
+  CAT=c;
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x.getAttribute('data-c')===c));
+  render();
+}
+
+function render(){
+  const q=(document.getElementById('q').value||'').trim().toLowerCase();
+  let list=ALL.filter(m=>{
+    if(CAT!=='all' && fCat(m).toLowerCase()!==CAT)return false;
+    if(q){
+      const hay=(fName(m)+' '+fCat(m)+' '+fLoc(m)).toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  const grid=document.getElementById('grid');
+  const cnt=document.getElementById('count');
+  if(!ALL.length){
+    grid.innerHTML=`<div class="empty"><div class="ico"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div><div>Aucune boutique disponible pour le moment.<br/>Revenez bientôt !</div></div>`;
+    cnt.textContent='';return;
+  }
+  if(!list.length){
+    grid.innerHTML=`<div class="empty"><div class="ico"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-search"></use></svg></div><div>Aucun résultat${q?` pour « ${esc(q)} »`:''}.</div></div>`;
+    cnt.textContent='';return;
+  }
+  cnt.textContent=`${list.length} boutique${list.length>1?'s':''}`;
+  grid.innerHTML=list.map(m=>{
+    const name=esc(fName(m)),logo=fLogo(m),cat=fCat(m),loc=fLoc(m);
+    const grad=gradFor(m.id||fName(m));
+    const logoBox=logo?`<div class="gc-logoimg"><img src="${esc(logo)}" alt="" onerror="this.style.display='none'"/></div>`:'';
+    return `<a class="card" href="/buy-giftcard.html?merchant=${encodeURIComponent(m.id)}">
+      <div class="gcface" style="background:${grad}">
+        <div class="gc-top">
+          <div class="gc-tag">Carte cadeau</div>
+          ${logoBox||`<div class="gc-ms">My<em>Sargal</em></div>`}
+        </div>
+        <div class="gc-name">${name}</div>
+        <div class="gc-bottom">
+          <div class="gc-chip"></div>
+          <div class="gc-host">mysargal.com</div>
+        </div>
+      </div>
+      <div class="meta">
+        ${cat?`<div class="ccat">${esc(cat)}</div>`:''}
+        ${loc?`<div class="cloc"><svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-1px"><use href="#ic-pin"></use></svg> ${esc(loc)}</div>`:''}
+        <div class="cbtn"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg> Offrir une carte</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+msThemeUI();
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#060d06"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Retrait récompense — MySargal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#060d06;--s2:#0a150a;--s3:#0f1f0f;--b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.14);--tx:#f0f7f0;--tx2:#8aab8a;--tx3:#3a5a3a;--grn:#22c55e;--gold:#f5c842;--red:#f87171;--navbg:rgba(6,13,6,.9)}
+html[data-theme="light"]{--bg:#eef3ef;--s2:#ffffff;--s3:#eef4ee;--b1:rgba(20,45,28,.12);--b2:rgba(20,45,28,.2);--tx:#12241a;--tx2:#557056;--tx3:#8aa08c;--grn:#16a34a;--red:#dc2626;--navbg:rgba(238,243,239,.92)}
+html{transition:background .25s ease}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh}
+.thbtn{width:36px;height:36px;border-radius:10px;background:transparent;border:1px solid var(--b1);display:inline-flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer;color:var(--tx2)}
+.top{display:flex;align-items:center;justify-content:space-between;padding:15px 22px;border-bottom:1px solid var(--b1);position:sticky;top:0;background:var(--navbg);backdrop-filter:blur(12px);z-index:10}
+.brandbar{display:flex;align-items:center;gap:11px}
+.brandbar .lg{width:38px;height:38px;border-radius:10px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-family:'Montserrat';font-weight:800;overflow:hidden;color:var(--grn)}
+.brandbar .lg img{width:100%;height:100%;object-fit:contain;padding:3px}
+.brandbar .nm{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1rem}
+.brandbar .sb{font-size:.64rem;color:var(--tx3);font-family:'DM Mono',monospace}
+.wrap{max-width:520px;margin:0 auto;padding:24px 18px 70px}
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:18px;padding:24px;margin-bottom:16px}
+h2{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:4px;letter-spacing:-.3px}
+.hint{font-size:.84rem;color:var(--tx2);margin-bottom:16px;line-height:1.5}
+label{display:block;font-size:.74rem;font-weight:700;color:var(--tx2);margin:12px 0 6px}
+input{width:100%;background:var(--s3);border:1.5px solid var(--b1);border-radius:12px;padding:15px;color:var(--tx);font-family:inherit;font-size:1.05rem;outline:none}
+input:focus{border-color:var(--grn)}
+.btn{width:100%;border:none;border-radius:12px;padding:16px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;background:var(--grn);color:#fff;transition:background .15s,transform .1s;margin-top:16px}
+.btn:active{transform:scale(.99)}
+.btn.g{background:transparent;border:1.5px solid var(--b2);color:var(--tx)}
+.btn:disabled{opacity:.5}
+.res{text-align:center;padding:8px 0}
+.res .nm{font-family:'Montserrat';font-weight:800;font-size:1.3rem}
+.res .big{font-family:'Montserrat';font-weight:900;font-size:3.4rem;line-height:1.1;color:var(--gold)}
+.res .lbl{font-size:.9rem;color:var(--tx2);margin-top:4px}
+.res .none{color:var(--tx3);font-size:.95rem;padding:14px}
+.msg{margin-top:14px;font-size:.85rem;padding:12px 14px;border-radius:12px;display:none;line-height:1.45;text-align:center}
+.msg.err{background:rgba(248,113,113,.12);color:var(--red);display:block}
+.msg.ok{background:rgba(34,197,94,.14);color:var(--grn);display:block}
+.rec{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--tx2);padding:9px 0;border-bottom:1px solid var(--b1)}
+.rec .t{margin-left:auto;color:var(--tx3);font-family:'DM Mono';font-size:.7rem}
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.lcard{background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:32px;max-width:380px;width:100%;text-align:center;position:relative}
+.logo{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;margin-bottom:4px;display:inline-flex;align-items:center;justify-content:center}.logo i{font-style:normal;color:var(--grn)}.logo .ms-ico{height:30px;margin-right:8px}
+.muted{font-size:.8rem;color:var(--tx2);line-height:1.6}
+.hide{display:none}#login.hide{display:none!important}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--s3);border:1px solid var(--b2);border-radius:12px;padding:12px 18px;font-size:.85rem;z-index:60;display:none;max-width:90vw}
+.toast.show{display:block}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></symbol>
+<symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a6.5 6.5 0 0010 10z"/></symbol>
+</defs></svg>
+<div id="login">
+  <form class="lcard" onsubmit="event.preventDefault();login();">
+    <button type="button" class="thbtn" onclick="msToggle()" title="Thème" style="position:absolute;top:16px;right:16px"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button>
+    <div class="logo"><img class="ms-ico" src="/favicon.svg"/>My<i>Sargal</i></div>
+    <div class="muted" style="margin-bottom:18px">Point de retrait — récompenses fidélité</div>
+    <input id="l-login" autocomplete="username" placeholder="Identifiant boutique" style="margin-bottom:10px"/>
+    <input id="l-pass" type="password" autocomplete="current-password" placeholder="Mot de passe"/>
+    <button class="btn" type="submit">Se connecter →</button>
+    <div class="muted" id="lerr" style="color:#f87171;margin-top:10px"></div>
+    <div class="muted" style="margin-top:16px;font-size:.72rem">Accès fourni par la marque / MySargal.</div>
+  </form>
+</div>
+
+<div id="app" class="hide">
+  <div class="top">
+    <div class="brandbar"><div class="lg" id="b-lg">M</div><div><div class="nm" id="b-nm">Marque</div><div class="sb">Point de retrait</div></div></div>
+    <div style="display:flex;gap:8px;align-items:center"><button class="thbtn" onclick="msToggle()" title="Thème"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-moon"></use></svg></button><button class="btn g" style="width:auto;margin:0;padding:9px 14px;font-size:.8rem" onclick="logout()">Quitter</button></div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <h2>Vérifier un client</h2>
+      <div class="hint">Entrez le numéro de téléphone du client pour voir ses récompenses à remettre.</div>
+      <label>Numéro de téléphone</label>
+      <input id="q-phone" type="tel" inputmode="tel" placeholder="Ex : 77 123 45 67" onkeydown="if(event.key==='Enter')lookup()"/>
+      <button class="btn" onclick="lookup()" id="btn-look">Vérifier</button>
+      <div class="msg" id="msg"></div>
+      <div id="result" class="hide" style="margin-top:18px"></div>
+    </div>
+    <div class="card">
+      <h2>Derniers retraits</h2>
+      <div id="recent"><div class="muted">Chargement…</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+function tok(){try{return localStorage.getItem('brand_shop_jwt')||'';}catch(e){return '';}}
+const H={'apikey':SA,get Authorization(){return 'Bearer '+(tok()||SA);},'Content-Type':'application/json'};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+let CAMPID=null,LASTPHONE=null;
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function msToggle(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=(c==='light'?'dark':'light');document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ms-theme',n);}catch(e){}msThemeUI();}
+function msThemeUI(){var t=document.documentElement.getAttribute('data-theme')||'dark';var ic=(t==='light'?'sun':'moon');document.querySelectorAll('.thbtn').forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-'+ic+'"></use></svg>';});var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',t==='light'?'#eef3ef':'#060d06');}
+msThemeUI();
+function claims(t){try{return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));}catch(e){return null;}}
+function isAuth(){var t=tok();if(!t)return false;var c=claims(t);return c&&c.exp*1000>Date.now()&&c.brand_campaign;}
+
+function login(){
+  const login=document.getElementById('l-login').value.trim();const pass=document.getElementById('l-pass').value;
+  if(!login||!pass){document.getElementById('lerr').textContent='Identifiant et mot de passe requis';return;}
+  document.getElementById('lerr').textContent='Connexion…';
+  const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),12000);
+  fetch(SB+'/functions/v1/brand-login',{method:'POST',headers:{'apikey':SA,'Content-Type':'application/json'},body:JSON.stringify({login,password:pass}),signal:ctrl.signal})
+  .then(async r=>{clearTimeout(to);const d=await r.json().catch(()=>({}));if(r.status===401)throw new Error('Identifiants incorrects');if(!r.ok||!d.token)throw new Error(d.error||('Erreur '+r.status));
+    localStorage.setItem('brand_shop_jwt',d.token);document.getElementById('lerr').textContent='';enter();})
+  .catch(e=>document.getElementById('lerr').textContent=(e.name==='AbortError'?'Délai dépassé — réessaie':e.message));
+}
+function logout(){localStorage.removeItem('brand_shop_jwt');location.reload();}
+function enter(){const c=claims(tok());CAMPID=c.brand_campaign;document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';document.getElementById('app').classList.remove('hide');document.getElementById('b-nm').textContent=c.brand_name||'Marque';loadBrand();loadRecent();}
+
+async function sbGet(path){const r=await fetch(SB+'/rest/v1'+path,{headers:H});return r.ok?r.json():[];}
+async function rpc(fn,body){const r=await fetch(SB+'/rest/v1/rpc/'+fn,{method:'POST',headers:H,body:JSON.stringify(body||{})});const d=await r.json().catch(()=>({}));return {ok:r.ok,d};}
+
+async function loadBrand(){
+  const rows=await sbGet('/brand_campaigns?id=eq.'+CAMPID+'&select=brand_name,logo_url,brand_color&limit=1');
+  const c=rows[0];if(!c)return;
+  if(c.brand_color){document.documentElement.style.setProperty('--grn',c.brand_color);}
+  document.getElementById('b-lg').innerHTML=c.logo_url?'<img src="'+esc(c.logo_url)+'"/>':((c.brand_name||'M').trim()[0]||'M').toUpperCase();
+}
+
+function clearMsg(){var e=document.getElementById('msg');e.className='msg';e.textContent='';}
+function msg(t,ok){var e=document.getElementById('msg');e.className='msg '+(ok?'ok':'err');e.textContent=t;}
+
+async function lookup(){
+  clearMsg();document.getElementById('result').classList.add('hide');
+  const phone=document.getElementById('q-phone').value.replace(/\D/g,'');
+  if(phone.length<8){msg('Entrez un numéro valide.');return;}
+  LASTPHONE=phone;
+  const btn=document.getElementById('btn-look');btn.disabled=true;btn.textContent='Recherche…';
+  const {ok,d}=await rpc('brand_pending_lookup',{p_campaign:CAMPID,p_phone:phone});
+  btn.disabled=false;btn.textContent='Vérifier';
+  if(!ok){msg((d&&d.message)||'Erreur');return;}
+  const res=document.getElementById('result');res.classList.remove('hide');
+  if(!d.found){res.innerHTML='<div class="res"><div class="none">Aucun client avec ce numéro dans cette campagne.</div></div>';return;}
+  const pend=d.pending||0;
+  if(pend<1){res.innerHTML=`<div class="res"><div class="nm">${esc(d.name||'Client')}</div><div class="lbl">${d.points||0} point(s) · aucune récompense à remettre pour l'instant.</div></div>`;return;}
+  res.innerHTML=`<div class="res"><div class="nm">${esc(d.name||'Client')}</div><div class="big">${pend}</div><div class="lbl">récompense(s) à remettre — <b>${esc(d.reward_label||'')}</b></div></div>
+    <button class="btn" onclick="redeem()" id="btn-redeem">Remettre 1 récompense ✓</button>`;
+}
+
+async function redeem(){
+  const btn=document.getElementById('btn-redeem');if(btn){btn.disabled=true;btn.textContent='Validation…';}
+  const {ok,d}=await rpc('brand_redeem',{p_campaign:CAMPID,p_phone:LASTPHONE});
+  if(!ok||!d.ok){msg((d&&(d.error||d.message))||'Erreur');if(btn){btn.disabled=false;btn.textContent='Remettre 1 récompense ✓';}return;}
+  msg('Récompense remise à '+(d.name||'ce client')+' ✓',true);
+  loadRecent();
+  setTimeout(lookup,400);
+}
+
+async function loadRecent(){
+  const rows=await sbGet('/brand_redemptions?campaign_id=eq.'+CAMPID+'&select=phone,reward_label,redeemed_at&order=redeemed_at.desc&limit=12');
+  document.getElementById('recent').innerHTML=rows.length?rows.map(r=>`<div class="rec"><div><b style="color:var(--tx)">${esc(r.phone)}</b> · ${esc(r.reward_label||'récompense')}</div><div class="t">${r.redeemed_at?new Date(r.redeemed_at).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''}</div></div>`).join(''):'<div class="muted">Aucun retrait pour l\'instant.</div>';
+}
+
+if(isAuth()){enter();}
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MySargal — Reversements marketplace</title>
+<style>
+:root{--green:#0f7a4d;--greend:#0b5c3a;--greent:#eaf6f0;--greenl:#cdeadd;--ink:#152019;--mut:#6a7871;--line:#e7e9e7;--soft:#f6f7f6;--bg:#eef0ef;--gold:#c9a24a;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding:24px 16px 60px}
+.wrap{max-width:960px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.brand{font-weight:800;font-size:20px}.brand span{color:var(--green)}
+.top .sub{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:18px;box-shadow:0 4px 14px rgba(15,61,46,.05)}
+.login{max-width:360px;margin:60px auto}
+label{display:block;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin:0 0 6px}
+.inp{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:12px 13px;font-size:15px;font-family:inherit;background:#fafbfa;margin-bottom:14px}
+.inp:focus{outline:none;border-color:var(--green);background:#fff}
+.btn{background:var(--green);color:#fff;font-weight:800;font-size:15px;padding:13px 18px;border:none;border-radius:11px;cursor:pointer;font-family:inherit}
+.btn:disabled{opacity:.6}
+.btn.sm{padding:8px 13px;font-size:13px;border-radius:9px}
+.btn.ghost{background:#fff;border:1.5px solid var(--green);color:var(--green)}
+.msg{font-size:13px;min-height:18px;margin:4px 0}.msg.err{color:var(--err)}.msg.ok{color:var(--green)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
+.kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+.kpi .v{font-size:24px;font-weight:800;margin-top:4px}
+.kpi.you{background:var(--greent);border-color:var(--greenl)}.kpi.you .v{color:var(--greend)}
+.kpi.due .v{color:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);padding:10px 8px;border-bottom:2px solid var(--line)}
+td{padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+td.num,th.num{text-align:right}
+.due-badge{color:var(--gold);font-weight:800}
+.h2{font-size:16px;font-weight:800;margin-bottom:4px}
+.h2s{font-size:13px;color:var(--mut);margin-bottom:14px}
+.mrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mrow .nm{flex:1;font-weight:600;min-width:140px}
+.mrow input[type=number]{width:70px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-family:inherit}
+.sw{position:relative;width:44px;height:26px;flex:0 0 44px}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:#cdd6d0;border-radius:20px;transition:.2s;cursor:pointer}
+.sl:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+.sl{background:var(--green)}
+.sw input:checked+.sl:before{transform:translateX(18px)}
+.hide{display:none}
+.rowbtns{display:flex;gap:8px;justify-content:flex-end}
+.small{font-size:12px;color:var(--mut)}
+@media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}table{font-size:12.5px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">My<span>Sargal</span> · Reversements</div>
+    <div class="sub" id="whoami"></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login" class="card login hide">
+    <div class="h2">Connexion admin</div>
+    <div class="h2s">Réservé à l'équipe MySargal.</div>
+    <label>Téléphone (optionnel)</label>
+    <input class="inp" id="l-phone" inputmode="numeric" placeholder="77 123 45 67"/>
+    <label>Mot de passe</label>
+    <input class="inp" id="l-pass" type="password" placeholder="••••••••"/>
+    <div class="msg" id="l-msg"></div>
+    <button class="btn" id="l-btn" onclick="doLogin()" style="width:100%">Se connecter</button>
+  </div>
+
+  <!-- DASH -->
+  <div id="dash" class="hide">
+    <div class="kpis">
+      <div class="kpi"><div class="l">Cartes vendues</div><div class="v" id="k-cards">0</div></div>
+      <div class="kpi you"><div class="l">Ta commission</div><div class="v" id="k-comm">0</div></div>
+      <div class="kpi due"><div class="l">À reverser</div><div class="v" id="k-due">0</div></div>
+      <div class="kpi"><div class="l">Déjà reversé</div><div class="v" id="k-paid">0</div></div>
+    </div>
+
+    <div class="card">
+      <div class="h2">Par marchand</div>
+      <div class="h2s">Ce que tu dois reverser à chaque commerce, et ta commission.</div>
+      <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Marchand</th><th class="num">Cartes</th><th class="num">Faciale</th><th class="num">Ta commission</th><th class="num">À reverser</th><th></th></tr></thead>
+        <tbody id="rows"><tr><td colspan="6" class="small">Chargement…</td></tr></tbody>
+      </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="h2">Marchands participants</div>
+      <div class="h2s">Active la marketplace pour un commerce et fixe ta commission (%). Réservé au super admin.</div>
+      <div id="merchants"><div class="small">Chargement…</div></div>
+      <div class="msg" id="m-msg"></div>
+    </div>
+    <div style="text-align:right"><button class="btn ghost sm" onclick="logout()">Se déconnecter</button></div>
+  </div>
+</div>
+
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SA='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+function tok(){try{return localStorage.getItem('adm_jwt')||'';}catch(e){return '';}}
+function role(){try{var p=JSON.parse(atob(tok().split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return p.adm_role||'super';}catch(e){return 'super';}}
+function fmt(n){return (Math.round(Number(n)||0)).toLocaleString('fr-FR').replace(/,/g,' ')+' F';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function show(id,on){document.getElementById(id).classList.toggle('hide',!on);}
+async function api(action,body){
+  const r=await fetch(SB+'/functions/v1/admin-marketplace',{method:'POST',headers:{'apikey':SA,'Authorization':'Bearer '+tok(),'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action},body||{}))});
+  const d=await r.json().catch(()=>({}));
+  if(r.status===401){logout();throw new Error('Session expirée');}
+  if(!r.ok)throw new Error(d.error||'Erreur');
+  return d;
+}
+async function doLogin(){
+  const msg=document.getElementById('l-msg');msg.className='msg';msg.textContent='';
+  const p=document.getElementById('l-pass').value, ph=document.getElementById('l-phone').value.replace(/\D/g,'');
+  if(!p){msg.className='msg err';msg.textContent='Mot de passe requis';return;}
+  const btn=document.getElementById('l-btn');btn.disabled=true;
+  try{
+    const r=await fetch(SB+'/functions/v1/admin-login',{method:'POST',headers:{'apikey':SA,'Content-Type':'application/json'},body:JSON.stringify({password:p,phone:ph||undefined})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.token)throw new Error(d.error||'Identifiants incorrects');
+    localStorage.setItem('adm_jwt',d.token);localStorage.setItem('adm_role',d.role||'super');
+    boot();
+  }catch(e){msg.className='msg err';msg.textContent=e.message;}
+  btn.disabled=false;
+}
+function logout(){try{localStorage.removeItem('adm_jwt');}catch(e){}boot();}
+
+async function loadSummary(){
+  const d=await api('summary');
+  document.getElementById('k-cards').textContent=d.totals.cards||0;
+  document.getElementById('k-comm').textContent=fmt(d.totals.commission);
+  document.getElementById('k-due').textContent=fmt(d.totals.due);
+  document.getElementById('k-paid').textContent=fmt(d.totals.paid);
+  const tb=document.getElementById('rows');
+  if(!d.rows.length){tb.innerHTML='<tr><td colspan="6" class="small">Aucune vente marketplace pour l\'instant.</td></tr>';return;}
+  tb.innerHTML=d.rows.map(function(r){
+    var due=Number(r.net_due)||0;
+    var btn=(due>0 && role()==='super')?'<button class="btn sm" onclick="markPaid(\''+r.merchant_id+'\')">Marquer payé</button>':'';
+    return '<tr><td>'+esc(r.merchant_name||'—')+'</td><td class="num">'+(r.cards_sold||0)+'</td><td class="num">'+fmt(r.gross_faciale)+'</td><td class="num" style="color:var(--green);font-weight:700">'+fmt(r.commission_earned)+'</td><td class="num"><span class="due-badge">'+fmt(due)+'</span></td><td class="rowbtns">'+btn+'</td></tr>';
+  }).join('');
+}
+async function markPaid(mid){
+  if(!confirm('Confirmer que ce marchand a bien été reversé ? Les montants dus passeront en payé.'))return;
+  try{await api('mark_paid',{merchant_id:mid});await loadSummary();}catch(e){alert(e.message);}
+}
+async function loadMerchants(){
+  const box=document.getElementById('merchants');
+  const d=await api('merchants');
+  const sup=role()==='super';
+  box.innerHTML=d.merchants.map(function(m){
+    return '<div class="mrow" data-id="'+m.id+'">'
+      +'<label class="sw"><input type="checkbox" '+(m.marketplace_active?'checked':'')+' '+(sup?'':'disabled')+' onchange="saveMerchant(\''+m.id+'\')"><span class="sl"></span></label>'
+      +'<span class="nm">'+esc(m.name)+'</span>'
+      +'<span class="small">Commission</span> <input type="number" min="0" max="90" value="'+(Number(m.marketplace_commission_pct)||0)+'" '+(sup?'':'disabled')+' onchange="saveMerchant(\''+m.id+'\')"/> <span class="small">%</span>'
+      +'</div>';
+  }).join('')||'<div class="small">Aucun marchand.</div>';
+  if(!sup)document.getElementById('m-msg').textContent='Lecture seule (réservé au super admin pour modifier).';
+}
+async function saveMerchant(id){
+  const row=document.querySelector('.mrow[data-id="'+id+'"]');
+  const active=row.querySelector('input[type=checkbox]').checked;
+  const pct=parseFloat(row.querySelector('input[type=number]').value)||0;
+  const msg=document.getElementById('m-msg');msg.className='msg';
+  try{await api('set_merchant',{id:id,active:active,pct:pct});msg.className='msg ok';msg.textContent='Enregistré.';setTimeout(()=>{msg.textContent='';},1500);}
+  catch(e){msg.className='msg err';msg.textContent=e.message;}
+}
+
+function boot(){
+  if(!tok()){show('login',true);show('dash',false);document.getElementById('whoami').textContent='';return;}
+  show('login',false);show('dash',true);
+  document.getElementById('whoami').textContent=role()==='super'?'Super admin':'Admin';
+  loadSummary().catch(e=>{});
+  loadMerchants().catch(e=>{});
+}
+boot();
+</script>
+</body>
+</html>

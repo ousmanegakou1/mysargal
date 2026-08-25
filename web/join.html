@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/svg+xml" href="/favicon.svg"/><link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#061206"/>
+<meta property="og:type" content="website"/><meta property="og:site_name" content="MySargal"/><meta property="og:title" content="Rejoins le programme de fidélité"/><meta property="og:description" content="Crée ta carte de fidélité en 30 secondes, dans ton téléphone."/><meta property="og:image" content="https://mysargal.com/og-image.png"/>
+<title>MySargal — Carte de fidélité</title>
+<script>(function(){try{var t=localStorage.getItem('ms-theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#061206;--s2:#0f240f;--s3:#152e15;--b1:rgba(34,197,94,.14);--b2:rgba(34,197,94,.22);--tx:#ecf5ec;--tx2:#7aaa7a;--tx3:#3a5e3a;--grn:#16a34a;--grn2:#22c55e;--violet:#7c3aed;--r:16px}
+html[data-theme="light"]{--bg:#eef3ef;--s2:#fff;--s3:#f1f6f1;--b1:rgba(22,163,74,.12);--b2:rgba(22,163,74,.2);--tx:#12241a;--tx2:#557056;--tx3:#9bb3a0;--grn2:#16a34a}
+body{background:var(--bg);color:var(--tx);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 18px 40px}
+.wrap{width:100%;max-width:440px}
+.shop{text-align:center;margin-bottom:26px}
+.shop .logo{width:74px;height:74px;border-radius:20px;background:var(--s3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 12px;overflow:hidden}
+.shop .logo img{width:100%;height:100%;object-fit:cover}
+.shop h1{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5rem;line-height:1.15}
+.shop .tag{font-size:.84rem;color:var(--tx2);margin-top:5px}
+.card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:22px;margin-bottom:14px}
+.choice{display:flex;align-items:center;gap:14px;background:var(--s2);border:1.5px solid var(--b2);border-radius:var(--r);padding:18px;margin-bottom:12px;cursor:pointer;transition:transform .12s,border-color .15s;text-decoration:none;color:inherit}
+.choice:active{transform:scale(.98)}
+.choice .ic{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.choice .ic.lo{background:rgba(34,197,94,.14)}
+.choice .ic.gi{background:rgba(124,58,237,.16)}
+.choice .t{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1rem}
+.choice .s{font-size:.76rem;color:var(--tx2);margin-top:2px}
+.choice .ar{margin-left:auto;color:var(--tx3);font-size:1.2rem}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--tx2);margin:14px 0 6px}
+input{width:100%;background:var(--s3);border:1.5px solid var(--b1);border-radius:12px;padding:14px;color:var(--tx);font-family:inherit;font-size:1rem;outline:none}
+input:focus{border-color:var(--grn2)}
+.row{display:flex;gap:8px}
+.row select{background:var(--s3);border:1.5px solid var(--b1);border-radius:12px;padding:0 8px;color:var(--tx);font-family:'DM Mono',monospace;font-size:.85rem;outline:none;max-width:108px}
+.btn{width:100%;border:none;border-radius:30px;padding:15px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.95rem;cursor:pointer;margin-top:18px;background:var(--grn);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:disabled{opacity:.6}
+.btn.sec{background:transparent;border:1.5px solid var(--b2);color:var(--tx)}
+.otp-row{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.otp-row input{width:46px;height:56px;text-align:center;font-size:1.5rem;font-weight:700;padding:0}
+.msg{margin-top:12px;padding:11px;border-radius:10px;font-size:.82rem;display:none;text-align:center}
+.msg.err{background:rgba(239,68,68,.12);color:#f87171;display:block}
+.msg.ok{background:rgba(34,197,94,.12);color:var(--grn2);display:block}
+.hide{display:none}
+.back{background:none;border:none;color:var(--tx3);font-family:'Inter';font-size:.8rem;cursor:pointer;margin-top:12px;width:100%}
+.foot{text-align:center;font-size:.7rem;color:var(--tx3);font-family:'DM Mono',monospace;margin-top:18px}
+.foot b{color:var(--grn2)}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+<script src="/assets/ms-bug.js" defer></script>
+  <script src="/assets/ms-langue.js" defer></script>
+  <script src="/assets/ms-i18n.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ic-store" viewBox="0 0 24 24"><path d="M4 9l1.2-4h13.6L20 9"/><path d="M4 9a2 2 0 004 0 2 2 0 004 0 2 2 0 004 0 2 2 0 004 0"/><path d="M5 11v8h14v-8"/><path d="M9 19v-4h4v4"/></symbol>
+<symbol id="ic-star" viewBox="0 0 24 24"><polygon points="12,3 14.6,9 21,9.4 16,13.6 17.8,20 12,16.3 6.2,20 8,13.6 3,9.4 9.4,9"/></symbol>
+<symbol id="ic-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="11" rx="2"/><path d="M3.5 9V7a2 2 0 012-2h13a2 2 0 012 2v2"/><line x1="12" y1="5" x2="12" y2="20"/><path d="M12 5C11 2.5 7.5 3 8 6M12 5c1-2.5 4.5-2 4 1"/></symbol>
+<symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 011 1v9a1 1 0 01-1 1H9l-4 4v-4H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></symbol>
+</defs></svg>
+<div class="wrap">
+  <div class="shop">
+    <div class="logo" id="shop-logo" style="color:var(--grn2)"><svg viewBox="0 0 24 24" style="width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-store"></use></svg></div>
+    <h1 id="shop-name">Cette boutique</h1>
+    <div class="tag">utilise <b style="color:var(--grn2)">MySargal</b> · fidélité &amp; cartes cadeaux</div>
+  </div>
+
+  <!-- ÉTAPE 0 : choix -->
+  <div id="step-choice">
+    <a class="choice" onclick="goLoyalty()">
+      <div class="ic lo" style="color:var(--grn2)"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-star"></use></svg></div>
+      <div><div class="t">Ma carte de fidélité</div><div class="s">Gagne des points à chaque visite</div></div>
+      <div class="ar">→</div>
+    </a>
+    <a class="choice" id="gift-choice">
+      <div class="ic gi" style="color:var(--violet)"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg></div>
+      <div><div class="t">Offrir une carte cadeau</div><div class="s">Pour un proche, en 2 minutes</div></div>
+      <div class="ar">→</div>
+    </a>
+  </div>
+
+  <!-- ÉTAPE 1 : nom + téléphone -->
+  <div id="step-phone" class="hide">
+    <div class="card">
+      <div style="font-family:'Montserrat';font-weight:800;font-size:1.05rem;margin-bottom:2px">Crée ta carte de fidélité</div>
+      <div style="font-size:.8rem;color:var(--tx2)">30 secondes. Gratuit. Dans ton téléphone.</div>
+      <label>Ton prénom</label>
+      <input id="f-name" type="text" placeholder="Ex : Awa" autocomplete="given-name"/>
+      <div id="bloc-wa">
+      <label>Ton numéro WhatsApp</label>
+      <div class="row">
+        <select id="f-cc">
+          <option value="+221">🇸🇳 +221</option><option value="+225">🇨🇮 +225</option><option value="+223">🇲🇱 +223</option><option value="+226">🇧🇫 +226</option><option value="+229">🇧🇯 +229</option><option value="+228">🇹🇬 +228</option><option value="+227">🇳🇪 +227</option><option value="+245">🇬🇼 +245</option><option value="+224">🇬🇳 +224</option><option value="+220">🇬🇲 +220</option><option value="+222">🇲🇷 +222</option><option value="+238">🇨🇻 +238</option><option value="+234">🇳🇬 +234</option><option value="+233">🇬🇭 +233</option><option value="+254">🇰🇪 +254</option><option value="+255">🇹🇿 +255</option><option value="+250">🇷🇼 +250</option><option value="+256">🇺🇬 +256</option><option value="+257">🇧🇮 +257</option><option value="+251">🇪🇹 +251</option><option value="+260">🇿🇲 +260</option><option value="+27">🇿🇦 +27</option><option value="+237">🇨🇲 +237</option><option value="+241">🇬🇦 +241</option><option value="+242">🇨🇬 +242</option><option value="+243">🇨🇩 +243</option><option value="+212">🇲🇦 +212</option><option value="+213">🇩🇿 +213</option><option value="+216">🇹🇳 +216</option><option value="+33">🇫🇷 +33</option><option value="+32">🇧🇪 +32</option><option value="+41">🇨🇭 +41</option><option value="+39">🇮🇹 +39</option><option value="+34">🇪🇸 +34</option><option value="+351">🇵🇹 +351</option><option value="+44">🇬🇧 +44</option><option value="+49">🇩🇪 +49</option><option value="+1">🇺🇸 +1</option><option value="+55">🇧🇷 +55</option></select>
+        <input id="f-phone" type="tel" placeholder="77 123 45 67" inputmode="tel" autocomplete="tel"/>
+      </div>
+      </div>
+      <div id="bloc-mail" class="hide">
+      <label>Ton adresse email</label>
+      <input id="f-email" type="email" placeholder="awa@exemple.com" inputmode="email" autocomplete="email"/>
+      </div>
+      <button type="button" id="btn-mode" onclick="basculerMode()" style="display:block;width:100%;margin-top:10px;background:none;border:none;padding:6px;font-family:inherit;font-size:.78rem;color:var(--tx2);text-decoration:underline;cursor:pointer">Je préfère par email</button>
+      <button class="btn" id="btn-send" onclick="sendOtp()"><span id="send-lbl"><svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px"><use href="#ic-chat"></use></svg>Recevoir mon code</span></button>
+      <div class="msg" id="msg1"></div>
+    </div>
+    <button class="back" onclick="show('step-choice')">← Retour</button>
+  </div>
+
+  <!-- ÉTAPE 2 : OTP -->
+  <div id="step-otp" class="hide">
+    <div class="card">
+      <div style="font-family:'Montserrat';font-weight:800;font-size:1.05rem;margin-bottom:2px">Entre ton code</div>
+      <div style="font-size:.8rem;color:var(--tx2)"><span id="otp-canal">Envoyé sur WhatsApp au</span> <b id="otp-phone"></b></div>
+      <div class="otp-row">
+        <input class="otpd" maxlength="1" inputmode="numeric"/><input class="otpd" maxlength="1" inputmode="numeric"/><input class="otpd" maxlength="1" inputmode="numeric"/>
+        <input class="otpd" maxlength="1" inputmode="numeric"/><input class="otpd" maxlength="1" inputmode="numeric"/><input class="otpd" maxlength="1" inputmode="numeric"/>
+      </div>
+      <button class="btn" id="btn-verify" onclick="verifyOtp()"><span id="verify-lbl">Valider</span></button>
+      <div class="msg" id="msg2"></div>
+    </div>
+    <button class="back" id="btn-retour-saisie" onclick="show('step-phone')">← Changer de numéro</button>
+  </div>
+
+  <div class="foot">Propulsé par My<b>Sargal</b> · mysargal.com</div>
+</div>
+
+<script>
+const SB_URL='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const Q=new URLSearchParams(location.search);
+const MID=Q.get('merchant')||'';
+const MNAME=Q.get('n')||'';
+let TOKEN=null, FULLPHONE='';
+// 'wa' = code par WhatsApp, 'mail' = code par email. Les deux exigent la même
+// preuve : un code reçu puis saisi. Personne ne peut inscrire autrui.
+let MODE='wa', DEST='';
+function langueChoisie(){
+  try{ if(window.msI18n && msI18n.langue) return msI18n.langue(); }catch(e){}
+  try{
+    var q=new URLSearchParams(location.search).get('lang');
+    if(['fr','en','es'].indexOf(q)>=0) return q;
+    var l=localStorage.getItem('ms_lang');
+    if(['fr','en','es'].indexOf(l)>=0) return l;
+    var n=(navigator.language||'fr').slice(0,2).toLowerCase();
+    if(['fr','en','es'].indexOf(n)>=0) return n;
+  }catch(e){}
+  return 'fr';
+}
+const LIB={
+  fr:{ versMail:'Je préfère par email', versWa:'Je préfère par WhatsApp',
+       canalWa:'Envoyé sur WhatsApp au', canalMail:'Envoyé par email à',
+       retourWa:'← Changer de numéro', retourMail:'← Changer d\'adresse',
+       mailInvalide:'Entre une adresse email valide.' },
+  en:{ versMail:'I would rather use email', versWa:'I would rather use WhatsApp',
+       canalWa:'Sent on WhatsApp to', canalMail:'Sent by email to',
+       retourWa:'← Change number', retourMail:'← Change address',
+       mailInvalide:'Enter a valid email address.' },
+  es:{ versMail:'Prefiero por correo', versWa:'Prefiero por WhatsApp',
+       canalWa:'Enviado por WhatsApp al', canalMail:'Enviado por correo a',
+       retourWa:'← Cambiar de número', retourMail:'← Cambiar de dirección',
+       mailInvalide:'Introduce una dirección de correo válida.' }
+};
+const lib=()=>LIB[langueChoisie()]||LIB.fr;
+function basculerMode(){
+  MODE = (MODE==='wa') ? 'mail' : 'wa';
+  const t=lib();
+  document.getElementById('bloc-wa').classList.toggle('hide', MODE!=='wa');
+  document.getElementById('bloc-mail').classList.toggle('hide', MODE!=='mail');
+  document.getElementById('btn-mode').textContent = (MODE==='wa') ? t.versMail : t.versWa;
+  document.getElementById('msg1').textContent='';
+  setTimeout(()=>document.getElementById(MODE==='wa'?'f-phone':'f-email').focus(),60);
+}
+
+// Affiche le nom de la boutique (passé dans l'URL du QR)
+if(MNAME){ document.getElementById('shop-name').textContent=decodeURIComponent(MNAME); }
+// Lien "offrir une carte cadeau"
+document.getElementById('gift-choice').setAttribute('href','/buy-giftcard.html?merchant='+encodeURIComponent(MID));
+
+// Couleur de marque du commerce (accents, bouton, logo, barre système)
+(function(){
+  if(!MID)return;
+  fetch(SB_URL+'/rest/v1/merchant_directory?id=eq.'+encodeURIComponent(MID)+'&select=brand,name',{headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON}})
+    .then(function(r){return r.json();}).then(function(d){
+      var m=d&&d[0]; if(!m)return;
+      if(m.name && !MNAME){var sn=document.getElementById('shop-name');if(sn)sn.textContent=m.name;}
+      var b=m.brand; if(!b||!b.bg2)return;
+      var root=document.documentElement;
+      root.style.setProperty('--grn', b.bg2);
+      root.style.setProperty('--grn2', b.accent||b.bg2);
+      var hx=String(b.bg2).replace('#','');
+      if(hx.length===6){var rr=parseInt(hx.slice(0,2),16),gg=parseInt(hx.slice(2,4),16),bb=parseInt(hx.slice(4,6),16);
+        root.style.setProperty('--b1','rgba('+rr+','+gg+','+bb+',.16)');
+        root.style.setProperty('--b2','rgba('+rr+','+gg+','+bb+',.24)');}
+      var mt=document.querySelector('meta[name=theme-color]');
+      if(mt&&root.getAttribute('data-theme')!=='light'&&b.bg1)mt.setAttribute('content',b.bg1);
+    }).catch(function(){});
+})();
+
+function show(id){['step-choice','step-phone','step-otp'].forEach(s=>document.getElementById(s).classList.add('hide'));document.getElementById(id).classList.remove('hide');}
+function msg(id,txt,ok){const e=document.getElementById(id);e.className='msg '+(ok?'ok':'err');e.textContent=txt;}
+function goLoyalty(){ if(!MID){msg('msg1','Lien invalide — flyer sans boutique.');return;} show('step-phone'); setTimeout(()=>document.getElementById('f-name').focus(),100); }
+
+async function sendOtp(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){msg('msg1','Entre ton prénom.');return;}
+  const t=lib(), lang=langueChoisie();
+  let url, corps;
+  if(MODE==='wa'){
+    const cc=document.getElementById('f-cc').value;
+    const ph=document.getElementById('f-phone').value.replace(/\D/g,'');
+    if(ph.length<8){msg('msg1','Entre un numéro valide.');return;}
+    FULLPHONE=cc+ph; DEST=FULLPHONE;
+    url=SB_URL+'/functions/v1/send-client-otp'; corps={phone:FULLPHONE};
+  }else{
+    const em=document.getElementById('f-email').value.trim().toLowerCase();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg('msg1',t.mailInvalide);return;}
+    DEST=em;
+    url=SB_URL+'/functions/v1/send-email-otp'; corps={email:em,lang:lang};
+  }
+  const btn=document.getElementById('btn-send'), lbl=document.getElementById('send-lbl');
+  const libelleInitial=lbl.innerHTML;
+  btn.disabled=true; lbl.innerHTML='<span class="spin"></span>';
+  try{
+    const r=await fetch(url,{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'},body:JSON.stringify(corps)});
+    const d=await r.json();
+    if(!r.ok||d.error)throw new Error(d.error||'Erreur d\'envoi');
+    document.getElementById('otp-canal').textContent = (MODE==='wa') ? t.canalWa : t.canalMail;
+    document.getElementById('otp-phone').textContent = DEST;
+    document.getElementById('btn-retour-saisie').textContent = (MODE==='wa') ? t.retourWa : t.retourMail;
+    show('step-otp');
+    setTimeout(()=>document.querySelector('.otpd').focus(),100);
+  }catch(e){ msg('msg1',e.message||'Erreur réseau'); }
+  finally{ btn.disabled=false; lbl.innerHTML=libelleInitial; }
+}
+
+// gestion saisie OTP
+const otps=[...document.querySelectorAll('.otpd')];
+otps.forEach((inp,i)=>{
+  inp.addEventListener('input',()=>{ inp.value=inp.value.replace(/\D/g,''); if(inp.value&&i<5)otps[i+1].focus(); if(otps.every(o=>o.value))verifyOtp(); });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Backspace'&&!inp.value&&i>0)otps[i-1].focus(); });
+});
+
+async function verifyOtp(){
+  const code=otps.map(o=>o.value).join('');
+  if(code.length<6){msg('msg2','Entre les 6 chiffres.');return;}
+  const btn=document.getElementById('btn-verify'), lbl=document.getElementById('verify-lbl');
+  btn.disabled=true; lbl.innerHTML='<span class="spin"></span>';
+  try{
+    const urlV = (MODE==='wa') ? '/functions/v1/verify-client-otp' : '/functions/v1/verify-email-otp';
+    const corpsV = (MODE==='wa') ? {phone:FULLPHONE,code} : {email:DEST,code};
+    const r=await fetch(SB_URL+urlV,{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON,'Content-Type':'application/json'},body:JSON.stringify(corpsV)});
+    const d=await r.json();
+    if(!r.ok||!d.token)throw new Error(d.error||'Code incorrect');
+    TOKEN=d.token;
+    // Inscription fidélité
+    const name=document.getElementById('f-name').value.trim();
+    const er=await fetch(SB_URL+'/functions/v1/enroll-loyalty',{method:'POST',headers:{'apikey':SB_ANON,'Authorization':'Bearer '+TOKEN,'Content-Type':'application/json'},body:JSON.stringify({merchant_id:MID,name,lang:langueChoisie()})});
+    const ed=await er.json();
+    if(!er.ok||ed.error)throw new Error(ed.error||'Inscription impossible');
+    msg('msg2',(ed.already?'Tu as déjà une carte ✓':'Carte créée ✓')+' Redirection...',true);
+    location.href=ed.card_url||('/c/?code='+ed.card_code);
+  }catch(e){
+    msg('msg2',e.message||'Erreur'); otps.forEach(o=>o.value=''); otps[0].focus();
+  }finally{ btn.disabled=false; lbl.textContent='Valider'; }
+}
+</script>
+</body>
+</html>
