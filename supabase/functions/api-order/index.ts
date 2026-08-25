@@ -159,6 +159,14 @@ Deno.serve(async (req) => {
       const newTier = newLifetime >= 500 ? 'platinum' : newLifetime >= 200 ? 'gold' : newLifetime >= 50 ? 'silver' : 'bronze'
       await sb.from('loyalty_cards').update({ pts: newPts, lifetime_pts: newLifetime, tier: newTier, last_scan_at: new Date().toISOString() }).eq('id', card.id)
       await sb.from('transactions').insert({ card_id: card.id, merchant_id: merchant.id, pts: earned, type: 'earn', note: noteBase + (boostX > 1 ? ` (x${boostX} 🔥)` : ''), source: 'ecommerce', amount_fcfa: amount || null, operator_ref: opRef, operator_name: opName, operator_src: opSrc })
+      // --- MARAZ SUMMIT CLUB : ledger 24 mois glissants + reevaluation du statut (zero-regression) ---
+      try {
+        const { data: tiersExist } = await sb.from('sargal_tiers').select('id').eq('merchant_id', merchant.id).limit(1)
+        if (tiersExist && tiersExist.length > 0) {
+          try { await sb.from('sargal_points').insert({ merchant_id: merchant.id, card_id: card.id, delta: earned, reason: noteBase, source: 'ecommerce', earned_at: new Date().toISOString() }) } catch (_) {}
+          try { await sb.rpc('reevaluate_tier', { p_card_id: card.id }) } catch (_) {}
+        }
+      } catch (_) { /* jamais bloquant */ }
       try { fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/sync-google-pass?code=${encodeURIComponent(card.code)}`, { method: 'POST' }).catch(() => {}) } catch (_) {}
       try { fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/sync-apple-pass?code=${encodeURIComponent(card.code)}`, { method: 'POST' }).catch(() => {}) } catch (_) {}
     }

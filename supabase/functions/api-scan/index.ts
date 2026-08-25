@@ -67,6 +67,15 @@ serve(async (req) => {
       .update({ pts: newPts, lifetime_pts: newLifetime })
       .eq("id", card.id);
 
+    // --- MARAZ SUMMIT CLUB : ledger 24 mois glissants + reevaluation du statut (zero-regression) ---
+    try {
+      const { data: tiersExist } = await supabase.from("sargal_tiers").select("id").eq("merchant_id", card.merchant_id).limit(1);
+      if (tiersExist && tiersExist.length > 0) {
+        try { await supabase.from("sargal_points").insert({ merchant_id: card.merchant_id, card_id: card.id, delta: points, reason: note || "Scan partenaire", source: "scan", earned_at: new Date().toISOString() }); } catch (_) {}
+        try { await supabase.rpc("reevaluate_tier", { p_card_id: card.id }); } catch (_) {}
+      }
+    } catch (_) { /* jamais bloquant */ }
+
     // 5. Enregistrer la transaction
     await supabase.from("transactions").insert({
       merchant_id: card.merchant_id,

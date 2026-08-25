@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>MySargal Admin — Programme à statuts</title>
+<style>
+  :root{--bg:#0a1327;--pan:#111c34;--pan2:#16233f;--line:#23324f;--tx:#e8eefb;--tx2:#93a2c2;--gold:#e6c878;--gold2:#c9a24a;--grn:#22c55e;--red:#ef4444}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:'Segoe UI',-apple-system,Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  .wrap{max-width:960px;margin:0 auto;padding:22px 18px 80px}
+  h1{font-size:22px;margin:0 0 2px}
+  .sub{color:var(--tx2);font-size:13px;margin-bottom:20px}
+  .card{background:var(--pan);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+  .card h2{font-size:15px;margin:0 0 12px;color:var(--gold)}
+  label{display:block;font-size:12px;color:var(--tx2);margin:8px 0 3px}
+  input,select,textarea{width:100%;background:var(--pan2);border:1px solid var(--line);border-radius:9px;color:var(--tx);padding:9px 11px;font-size:14px;font-family:inherit;outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold2)}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:120px}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1327;border:0;border-radius:9px;padding:10px 16px;font-weight:700;font-size:13.5px;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--line)}
+  .btn.sm{padding:6px 11px;font-size:12px}
+  .btn.red{background:transparent;color:var(--red);border:1px solid #4a2330}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .switch{display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:14px}
+  .switch input{display:none}
+  .track{width:44px;height:25px;border-radius:20px;background:var(--line);position:relative;transition:.2s}
+  .track::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s}
+  .switch input:checked+.track{background:var(--grn)}
+  .switch input:checked+.track::after{transform:translateX(19px)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--tx2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:6px 8px;border-bottom:1px solid var(--line)}
+  td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+  td input,td select{padding:6px 8px;font-size:13px}
+  .fam{margin-top:14px}
+  .fam .ft{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold2);margin:14px 0 6px}
+  .pill{display:inline-block;background:var(--pan2);border:1px solid var(--line);border-radius:20px;padding:2px 9px;font-size:11px;color:var(--tx2)}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#0f1c33;border:1px solid var(--line);border-radius:10px;padding:11px 18px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+  .toast.on{opacity:1}
+  .toast.ok{border-color:#1f6b3f}.toast.err{border-color:#6b1f2a}
+  .muted{color:var(--tx2);font-size:12px}
+  .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  #gate{text-align:center;padding:60px 20px;color:var(--tx2)}
+  a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Programme à statuts</h1>
+  <div class="sub">Configurez les paliers et récompenses d'une boutique — sans SQL.</div>
+
+  <div id="gate" style="display:none">
+    Session admin introuvable.<br>Connecte-toi d'abord au <a href="/admin/">panneau admin</a>, puis reviens ici.
+  </div>
+
+  <div id="app" style="display:none">
+    <div class="card">
+      <label>Boutique</label>
+      <div class="row" style="align-items:flex-end">
+        <div style="flex:2"><select id="merchant"><option value="">— Choisir une boutique —</option></select></div>
+        <div style="flex:0"><button class="btn ghost" id="btn-template" disabled title="Crée les 3 statuts Membre / Ascension / Sommet">Modèle Summit Club</button></div>
+      </div>
+    </div>
+
+    <div id="panels" style="display:none">
+      <!-- CONFIG -->
+      <div class="card">
+        <h2>Réglage des points</h2>
+        <label class="switch"><input type="checkbox" id="cfg-enabled"><span class="track"></span> Programme à statuts activé</label>
+        <div class="row" style="margin-top:12px">
+          <div><label>1 point pour … (FCFA dépensés)</label><input type="number" id="cfg-ratio" placeholder="ex. 10000"></div>
+          <div><label>Arrondi</label><select id="cfg-round"><option value="none">Aucun</option><option value="floor_10k">À la dizaine de mille inférieure</option></select></div>
+        </div>
+        <label class="switch" style="margin-top:12px"><input type="checkbox" id="cfg-annual"><span class="track"></span> Réévaluation annuelle du statut</label>
+        <div style="margin-top:14px"><button class="btn" id="btn-cfg">Enregistrer le réglage</button></div>
+      </div>
+
+      <!-- NUMEROS MEMBRE -->
+      <div class="card">
+        <h2>Numéros de membre</h2>
+        <div class="muted" id="num-info">—</div>
+        <div class="row" style="align-items:flex-end;margin-top:10px">
+          <div style="flex:0;min-width:140px"><label>Préfixe</label><input id="num-prefix" maxlength="6" placeholder="ex. MRZ" style="text-transform:uppercase"></div>
+          <div style="flex:0"><button class="btn ghost" id="btn-num">Attribuer les manquants</button></div>
+        </div>
+      </div>
+
+      <!-- PALIERS -->
+      <div class="card">
+        <div class="head"><h2 style="margin:0">Paliers (statuts)</h2><button class="btn ghost sm" id="btn-add-tier">+ Ajouter un palier</button></div>
+        <div style="overflow-x:auto;margin-top:10px">
+          <table id="tiers">
+            <thead><tr><th>Nom</th><th>Points min</th><th>Points max</th><th>Dépense/an (F)</th><th>Couleur</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="muted" style="margin-top:8px">Le palier avec le plus de points requis = le plus élevé. Laisse « Points max » vide pour le palier supérieur.</div>
+      </div>
+
+      <!-- RECOMPENSES -->
+      <div class="card">
+        <div class="head"><h2 style="margin:0">Récompenses</h2><button class="btn ghost sm" id="btn-add-reward">+ Ajouter une récompense</button></div>
+        <div id="rewards"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB='https://iiocxlvcuoqafzlisqwd.supabase.co';
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlpb2N4bHZjdW9xYWZ6bGlzcXdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNTgwODIsImV4cCI6MjA5MDkzNDA4Mn0.o-dRdHDGc5_IwCGhK5Ri67CCtZRj6J4evsxgBkMgvao';
+const JWT=localStorage.getItem('adm_jwt')||'';
+const FAMILIES=[['cadeaux_exclusifs','Cadeaux exclusifs'],['evenements_exclusifs','Événements exclusifs'],['experiences_uniques','Expériences uniques'],['services_personnalises','Services personnalisés'],['points_echangeables','Points échangeables']];
+let MID='', STATE={tiers:[],rewards:[],config:{}};
+
+const $=s=>document.querySelector(s);
+function toast(m,ok){const t=$('#toast');t.textContent=m;t.className='toast on '+(ok?'ok':'err');setTimeout(()=>t.className='toast',2200);}
+async function api(action,extra){
+  const r=await fetch(SB+'/functions/v1/admin-tiers',{method:'POST',headers:{'Authorization':'Bearer '+JWT,'apikey':ANON,'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action},extra||{}))});
+  const d=await r.json().catch(()=>({error:'Réponse illisible'}));
+  if(!r.ok||d.error){throw new Error(d.error||('Erreur '+r.status));}
+  return d;
+}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+if(!JWT){$('#gate').style.display='block';}
+else{$('#app').style.display='block';init();}
+
+async function init(){
+  try{
+    const d=await api('merchants');
+    const sel=$('#merchant');
+    d.merchants.forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.name||m.id;sel.appendChild(o);});
+  }catch(e){toast(e.message);}
+  $('#merchant').onchange=e=>{MID=e.target.value;$('#btn-template').disabled=!MID;if(MID)load();else $('#panels').style.display='none';};
+  $('#btn-cfg').onclick=saveConfig;
+  $('#btn-num').onclick=assignNumbers;
+  $('#btn-add-tier').onclick=()=>addTierRow();
+  $('#btn-add-reward').onclick=()=>addRewardRow('points_echangeables');
+  $('#btn-template').onclick=applyTemplate;
+}
+
+async function load(){
+  try{
+    const d=await api('get',{merchant_id:MID});
+    STATE=d;
+    $('#panels').style.display='block';
+    $('#cfg-enabled').checked=!!d.config.enabled;
+    $('#cfg-ratio').value=d.config.point_ratio_fcfa||'';
+    $('#cfg-round').value=d.config.point_rounding||'none';
+    $('#cfg-annual').checked=!!d.config.annual_reset;
+    $('#num-info').textContent=d.cards_with_member_number+' / '+d.cards_total+' cartes ont un numéro de membre.';
+    renderTiers(); renderRewards();
+  }catch(e){toast(e.message);}
+}
+
+/* ---------- CONFIG ---------- */
+async function saveConfig(){
+  try{
+    await api('save_config',{merchant_id:MID,enabled:$('#cfg-enabled').checked,point_ratio_fcfa:parseInt($('#cfg-ratio').value||'0'),point_rounding:$('#cfg-round').value,annual_reset:$('#cfg-annual').checked});
+    toast('Réglage enregistré ✓',true);
+  }catch(e){toast(e.message);}
+}
+async function assignNumbers(){
+  try{
+    const d=await api('assign_member_numbers',{merchant_id:MID,prefix:$('#num-prefix').value||'MB'});
+    toast(d.assigned+' numéro(s) attribué(s) ✓',true); load();
+  }catch(e){toast(e.message);}
+}
+
+/* ---------- PALIERS ---------- */
+function tierRowHtml(t){
+  return `<tr data-id="${t.id||''}">
+    <td><input class="t-name" value="${esc(t.name||'')}" placeholder="Nom"></td>
+    <td><input class="t-min" type="number" value="${t.min_points??0}" style="width:90px"></td>
+    <td><input class="t-max" type="number" value="${t.max_points??''}" placeholder="∞" style="width:90px"></td>
+    <td><input class="t-spend" type="number" value="${t.min_spend_year??0}" style="width:120px"></td>
+    <td><input class="t-color" type="color" value="${/^#[0-9a-fA-F]{6}$/.test(t.color_hex||'')?t.color_hex:'#1e3a5f'}" style="width:44px;padding:2px;height:34px"></td>
+    <td style="white-space:nowrap">
+      <button class="btn sm t-save">Enreg.</button>
+      <button class="btn sm red t-del">✕</button>
+    </td></tr>`;
+}
+function renderTiers(){
+  const tb=$('#tiers tbody'); tb.innerHTML='';
+  STATE.tiers.forEach(t=>tb.insertAdjacentHTML('beforeend',tierRowHtml(t)));
+  bindTierRows();
+}
+function addTierRow(){ $('#tiers tbody').insertAdjacentHTML('beforeend',tierRowHtml({})); bindTierRows(); }
+function bindTierRows(){
+  $('#tiers tbody').querySelectorAll('tr').forEach(tr=>{
+    tr.querySelector('.t-save').onclick=async()=>{
+      const tier={id:tr.dataset.id||undefined,name:tr.querySelector('.t-name').value,min_points:tr.querySelector('.t-min').value,max_points:tr.querySelector('.t-max').value===''?null:tr.querySelector('.t-max').value,min_spend_year:tr.querySelector('.t-spend').value,color_hex:tr.querySelector('.t-color').value};
+      try{const d=await api('save_tier',{merchant_id:MID,tier});if(d.tier&&d.tier.id)tr.dataset.id=d.tier.id;toast('Palier enregistré ✓',true);load();}catch(e){toast(e.message);}
+    };
+    tr.querySelector('.t-del').onclick=async()=>{
+      if(!tr.dataset.id){tr.remove();return;}
+      if(!confirm('Supprimer ce palier ?'))return;
+      try{await api('delete_tier',{id:tr.dataset.id});toast('Palier supprimé',true);load();}catch(e){toast(e.message);}
+    };
+  });
+}
+
+/* ---------- RECOMPENSES ---------- */
+function tierOptions(sel){
+  let o='<option value="">Tous (aucun statut requis)</option>';
+  STATE.tiers.forEach(t=>{o+=`<option value="${t.id}" ${sel===t.id?'selected':''}>${esc(t.name)}</option>`;});
+  return o;
+}
+function rewardRowHtml(r){
+  return `<tr data-id="${r.id||''}">
+    <td><input class="r-name" value="${esc(r.name||'')}" placeholder="Nom"></td>
+    <td><input class="r-desc" value="${esc(r.description||'')}" placeholder="Description"></td>
+    <td><input class="r-cost" type="number" value="${r.points_cost??0}" style="width:80px"></td>
+    <td><select class="r-tier">${tierOptions(r.tier_required_id)}</select></td>
+    <td style="text-align:center"><input class="r-active" type="checkbox" ${r.active!==false?'checked':''}></td>
+    <td style="white-space:nowrap"><button class="btn sm r-save">Enreg.</button><button class="btn sm red r-del">✕</button></td></tr>`;
+}
+function renderRewards(){
+  const wrap=$('#rewards'); wrap.innerHTML='';
+  FAMILIES.forEach(([key,label])=>{
+    const list=STATE.rewards.filter(r=>r.family===key);
+    let html=`<div class="fam" data-fam="${key}"><div class="ft">${label} <span class="pill">${list.length}</span></div>
+      <div style="overflow-x:auto"><table><thead><tr><th>Nom</th><th>Description</th><th>Coût</th><th>Statut requis</th><th>Actif</th><th></th></tr></thead><tbody>`;
+    list.forEach(r=>html+=rewardRowHtml(r));
+    html+=`</tbody></table></div></div>`;
+    wrap.insertAdjacentHTML('beforeend',html);
+  });
+  bindRewardRows();
+}
+function addRewardRow(fam){
+  const tbody=$('#rewards .fam[data-fam="'+fam+'"] tbody');
+  tbody.insertAdjacentHTML('beforeend',rewardRowHtml({family:fam}));
+  tbody.closest('.fam').dataset.newfam=fam;
+  bindRewardRows();
+}
+function bindRewardRows(){
+  $('#rewards').querySelectorAll('tbody tr').forEach(tr=>{
+    if(tr._bound)return;
+    if(!tr.querySelector('.r-save')||!tr.querySelector('.r-del'))return;
+    tr._bound=true;
+    const fam=tr.closest('.fam').dataset.fam;
+    tr.querySelector('.r-save').onclick=async()=>{
+      const reward={id:tr.dataset.id||undefined,family:fam,name:tr.querySelector('.r-name').value,description:tr.querySelector('.r-desc').value,points_cost:tr.querySelector('.r-cost').value,tier_required_id:tr.querySelector('.r-tier').value||null,active:tr.querySelector('.r-active').checked};
+      try{const d=await api('save_reward',{merchant_id:MID,reward});if(d.reward&&d.reward.id)tr.dataset.id=d.reward.id;toast('Récompense enregistrée ✓',true);load();}catch(e){toast(e.message);}
+    };
+    tr.querySelector('.r-del').onclick=async()=>{
+      if(!tr.dataset.id){tr.remove();return;}
+      if(!confirm('Supprimer cette récompense ?'))return;
+      try{await api('delete_reward',{id:tr.dataset.id});toast('Récompense supprimée',true);load();}catch(e){toast(e.message);}
+    };
+  });
+}
+
+/* ---------- MODELE SUMMIT CLUB ---------- */
+async function applyTemplate(){
+  if(STATE.tiers.length && !confirm('Cette boutique a déjà des paliers. Ajouter quand même les 3 statuts Summit Club ?'))return;
+  const modele=[
+    {name:'Membre',min_points:0,max_points:99,min_spend_year:0,color_hex:'#1e3a5f'},
+    {name:'Ascension',min_points:100,max_points:199,min_spend_year:1000000,color_hex:'#c85a3e'},
+    {name:'Sommet',min_points:200,max_points:null,min_spend_year:2000000,color_hex:'#c9a24a'},
+  ];
+  try{
+    for(const t of modele){ await api('save_tier',{merchant_id:MID,tier:t}); }
+    if(!$('#cfg-ratio').value){$('#cfg-ratio').value=10000;$('#cfg-round').value='floor_10k';}
+    $('#cfg-enabled').checked=true;
+    await saveConfig();
+    toast('Modèle Summit Club appliqué ✓',true); load();
+  }catch(e){toast(e.message);}
+}
+</script>
+</body>
+</html>
