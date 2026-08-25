@@ -88,6 +88,7 @@ serve(async (req) => {
             if (!already || already.length === 0) {
               await sb.from("loyalty_cards").update({ pts: (c.pts || 0) + bdayBonus, lifetime_pts: (c.lifetime_pts || 0) + bdayBonus }).eq("id", c.id);
               await sb.from("transactions").insert({ card_id: c.id, merchant_id: m.id, pts: bdayBonus, type: "earn", note: "Bonus anniversaire 🎂", source: "birthday" });
+              try { const { data: tx } = await sb.from("sargal_tiers").select("id").eq("merchant_id", m.id).limit(1); if (tx && tx.length) { try { await sb.from("sargal_points").insert({ merchant_id: m.id, card_id: c.id, delta: bdayBonus, reason: "Bonus anniversaire", source: "birthday", earned_at: new Date().toISOString() }); } catch (_) {} try { await sb.rpc("reevaluate_tier", { p_card_id: c.id }); } catch (_) {} } } catch (_) {}
               try { fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/sync-google-pass?code=${encodeURIComponent(c.code)}`, { method: "POST" }).catch(() => {}); } catch (_) {}
             }
           }
@@ -119,6 +120,7 @@ serve(async (req) => {
           if (wbBonus > 0) {
             await sb.from("loyalty_cards").update({ pts: (c.pts || 0) + wbBonus, lifetime_pts: (c.lifetime_pts || 0) + wbBonus }).eq("id", c.id);
             await sb.from("transactions").insert({ card_id: c.id, merchant_id: m.id, pts: wbBonus, type: "earn", note: "Cadeau de retour 🎁", source: "winback" });
+            try { const { data: tx } = await sb.from("sargal_tiers").select("id").eq("merchant_id", m.id).limit(1); if (tx && tx.length) { try { await sb.from("sargal_points").insert({ merchant_id: m.id, card_id: c.id, delta: wbBonus, reason: "Cadeau de retour", source: "winback", earned_at: new Date().toISOString() }); } catch (_) {} try { await sb.rpc("reevaluate_tier", { p_card_id: c.id }); } catch (_) {} } } catch (_) {}
             try { fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/sync-google-pass?code=${encodeURIComponent(c.code)}`, { method: "POST" }).catch(() => {}); } catch (_) {}
             bonusLine = `\n\n🎁 On t'a offert *${wbBonus} point${wbBonus > 1 ? "s" : ""}* sur ta carte pour te revoir !`;
           }

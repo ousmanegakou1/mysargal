@@ -22,6 +22,8 @@ serve(async (req) => {
     if ((card.pts||0) < ptsCost) return bad(`Pas assez de points. Disponible: ${card.pts}, requis: ${ptsCost}`)
     await sb.from('loyalty_cards').update({ pts: (card.pts||0) - ptsCost }).eq('id', card.id)
     await sb.from('transactions').insert({ card_id: card.id, merchant_id, pts: -ptsCost, type: 'reward', note: reward?.name || merchant.reward_desc, source: 'manual' })
+    // Summit Club : le débit réduit aussi les points actifs (cohérent avec les autres chemins)
+    try { const { data: tx } = await sb.from('sargal_tiers').select('id').eq('merchant_id', merchant_id).limit(1); if (tx && tx.length) { try { await sb.from('sargal_points').insert({ merchant_id, card_id: card.id, delta: -ptsCost, reason: 'Redeem: ' + (reward?.name || merchant.reward_desc || 'Récompense'), source: 'redeem', earned_at: new Date().toISOString() }) } catch (_) {} try { await sb.rpc('reevaluate_tier', { p_card_id: card.id }) } catch (_) {} } } catch (_) {}
     if (reward_id) await sb.from('rewards').update({ redemptions: (reward.redemptions||0)+1 }).eq('id', reward_id)
     // Wallet : rafraîchit les cartes Google + Apple (fire-and-forget)
     try { fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/sync-google-pass?code=${encodeURIComponent(card_code)}`, { method: 'POST' }).catch(() => {}) } catch (_) {}

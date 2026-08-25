@@ -49,7 +49,11 @@ Deno.serve(async (req) => {
     const tier = welcome >= 50 ? 'silver' : 'bronze'
     const { data: ins, error } = await sb.from('loyalty_cards').insert({ merchant_id, code, client_name: name, client_phone: `+${phone}`, client_phone_raw: `+${phone}`, pts: welcome, lifetime_pts: welcome, tier, active: true, whatsapp_opt_in: true }).select('id,code').single()
     if (error || !ins) return json({ error: 'Création impossible: ' + (error?.message || '') }, 500)
-    if (welcome > 0) { await sb.from('transactions').insert({ card_id: ins.id, merchant_id, pts: welcome, type: 'earn', note: 'Bonus de bienvenue', source: 'welcome' }) }
+    if (welcome > 0) {
+      await sb.from('transactions').insert({ card_id: ins.id, merchant_id, pts: welcome, type: 'earn', note: 'Bonus de bienvenue', source: 'welcome' })
+      // Summit Club : le bonus de bienvenue compte aussi pour le statut (zero-regression)
+      try { const { data: tx } = await sb.from('sargal_tiers').select('id').eq('merchant_id', merchant_id).limit(1); if (tx && tx.length) { try { await sb.from('sargal_points').insert({ merchant_id, card_id: ins.id, delta: welcome, reason: 'Bonus de bienvenue', source: 'welcome', earned_at: new Date().toISOString() }) } catch (_) {} try { await sb.rpc('reevaluate_tier', { p_card_id: ins.id }) } catch (_) {} } } catch (_) {}
+    }
     const cardUrl = `https://mysargal.com/c/?code=${ins.code}`
     await sendWelcome(phone, name, merchant.name, cardUrl, welcome)
     return json({ success: true, already: false, card_code: ins.code, card_url: cardUrl, welcome, merchant: { name: merchant.name, emoji: merchant.emoji } })

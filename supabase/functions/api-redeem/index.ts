@@ -61,6 +61,14 @@ serve(async (req) => {
       card_id: card.id, merchant_id: partner.merchant_id, pts: -ptsCost, type: "reward",
       note: label + ` (via ${partner.name})`, source: "api",
     });
+    // Summit Club : le débit réduit aussi les points actifs (cohérent avec l'espace membre)
+    try {
+      const { data: tx } = await sb.from("sargal_tiers").select("id").eq("merchant_id", partner.merchant_id).limit(1);
+      if (tx && tx.length) {
+        try { await sb.from("sargal_points").insert({ merchant_id: partner.merchant_id, card_id: card.id, delta: -ptsCost, reason: "Redeem: " + label, source: "redeem", earned_at: new Date().toISOString() }); } catch (_) {}
+        try { await sb.rpc("reevaluate_tier", { p_card_id: card.id }); } catch (_) {}
+      }
+    } catch (_) {}
     if (reward_id) await sb.from("rewards").update({ redemptions: (reward.redemptions || 0) + 1 }).eq("id", reward_id);
 
     // Wallet à jour (fire-and-forget)

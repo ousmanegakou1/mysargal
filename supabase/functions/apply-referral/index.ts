@@ -52,6 +52,17 @@ serve(async (req) => {
       { card_id: referrer.id, merchant_id, pts: bonus, type: "earn", note: `Parrainage de ${referee.client_name || "un ami"} 🤝`, source: "referral" },
       { card_id: referee.id, merchant_id, pts: bonus, type: "earn", note: `Bienvenue — parrainé par ${referrer.client_name || "un ami"} 🤝`, source: "referral" },
     ]);
+    // Summit Club : le bonus de parrainage compte pour le statut des deux cartes (zero-regression)
+    try {
+      const { data: tx } = await sb.from("sargal_tiers").select("id").eq("merchant_id", merchant_id).limit(1);
+      if (tx && tx.length) {
+        const now = new Date().toISOString();
+        for (const cid of [referrer.id, referee.id]) {
+          try { await sb.from("sargal_points").insert({ merchant_id, card_id: cid, delta: bonus, reason: "Parrainage", source: "referral", earned_at: now }); } catch (_) {}
+          try { await sb.rpc("reevaluate_tier", { p_card_id: cid }); } catch (_) {}
+        }
+      }
+    } catch (_) {}
     for (const code of [referrer.code, referee.code]) {
       try { fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/sync-google-pass?code=${encodeURIComponent(code)}`, { method: "POST" }).catch(() => {}); } catch (_) {}
     }
