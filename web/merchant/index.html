@@ -1673,15 +1673,15 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
   <div class="page" id="page-summit">
     <div class="page-header">
       <div class="back-btn" onclick="goHome()">&larr;</div>
-      <div class="page-title"><svg class="pt-svg"><use href="#ic-diamond"/></svg>Summit Club</div>
+      <div class="page-title"><svg class="pt-svg"><use href="#ic-diamond"/></svg><span id="sc-page-title">Club Privilèges</span></div>
     </div>
     <div style="flex:1;overflow-y:auto;padding:0 20px 24px;display:flex;flex-direction:column;gap:14px">
 
       <!-- Reglages du programme (feature flag summit_club_enabled) -->
       <div id="sc-feature-row" style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
         <div style="min-width:0">
-          <div style="font-size:.85rem;font-weight:700;color:var(--tx)">Activer le programme fidelite en 3 tiers (Summit Club)</div>
-          <div style="font-size:.7rem;color:var(--tx3);margin-top:2px">Membre, Ascension, Sommet. Desactiver masque toutes les pages Summit Club a votre equipe et vos clients.</div>
+          <div style="font-size:.85rem;font-weight:700;color:var(--tx)">Activer le programme <span id="sc-feat-title">« Club Privilèges »</span></div>
+          <div style="font-size:.7rem;color:var(--tx3);margin-top:2px">Récompensez vos meilleurs clients avec des niveaux de fidélité. Désactiver masque tout le programme à votre équipe et à vos clients.</div>
         </div>
         <label style="display:inline-flex;align-items:center;gap:8px;flex-shrink:0;cursor:pointer">
           <input id="sc-feature-toggle" type="checkbox" onchange="scToggleFeature(this.checked)" style="width:20px;height:20px;accent-color:var(--green2);cursor:pointer"/>
@@ -1689,13 +1689,13 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
       </div>
 
       <!-- CTA lorsque la feature est desactivee -->
-      <div id="sc-disabled-cta" style="display:none;background:linear-gradient(135deg,#1e3a5f,#0f223b);border:1px solid #1e3a5f;border-radius:var(--r2);padding:22px;text-align:center;color:#f3ede0">
+      <div id="sc-disabled-cta" style="display:none;background:linear-gradient(135deg,var(--green),var(--green3));border:1px solid var(--green);border-radius:var(--r2);padding:22px;text-align:center;color:#fff">
         <div style="display:flex;justify-content:center;margin-bottom:10px">
-          <svg viewBox="0 0 24 24" style="width:44px;height:44px;stroke:#c85a3e;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-diamond"></use></svg>
+          <svg viewBox="0 0 24 24" style="width:44px;height:44px;stroke:var(--green2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-diamond"></use></svg>
         </div>
-        <div style="font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:6px">Le programme fidelite Summit Club est desactive</div>
+        <div id="sc-disabled-title" style="font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:6px">Programme désactivé</div>
         <div style="font-size:.78rem;opacity:.85;line-height:1.55;margin-bottom:14px">Cochez la case ci-dessus pour activer le programme et acceder aux niveaux, au catalogue, aux membres, aux imports VIP et aux campagnes email.</div>
-        <button class="btn btn-primary" style="background:linear-gradient(135deg,#c85a3e,#a04226);box-shadow:0 8px 22px rgba(200,90,62,.35)" onclick="scToggleFeature(true, true)">Activer le programme</button>
+        <button class="btn btn-primary" style="background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 8px 22px rgba(22,163,74,.35)" onclick="scToggleFeature(true, true)">Activer le programme</button>
       </div>
 
       <!-- Sub-tabs -->
@@ -1708,13 +1708,13 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
       </div>
 
       <!-- Empty-state activation (avant que les tiers ne soient crees) -->
-      <div id="sc-empty" style="display:none;background:linear-gradient(135deg,#1e3a5f,#0f223b);border:1px solid #1e3a5f;border-radius:var(--r2);padding:22px;text-align:center;color:#f3ede0">
+      <div id="sc-empty" style="display:none;background:linear-gradient(135deg,var(--green),var(--green3));border:1px solid var(--green);border-radius:var(--r2);padding:22px;text-align:center;color:#fff">
         <div style="display:flex;justify-content:center;margin-bottom:10px">
-          <svg viewBox="0 0 24 24" style="width:44px;height:44px;stroke:#c85a3e;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-diamond"></use></svg>
+          <svg viewBox="0 0 24 24" style="width:44px;height:44px;stroke:var(--green2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-diamond"></use></svg>
         </div>
-        <div style="font-family:'Montserrat',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:6px">Summit Club n'est pas encore actif</div>
-        <div style="font-size:.82rem;opacity:.85;line-height:1.55;margin-bottom:16px">Active le programme premium 3 niveaux : Membre, Ascension, Sommet. Les paliers et recompenses par defaut sont pre-remplis. Tu pourras tout modifier ensuite.</div>
-        <button class="btn btn-primary" style="background:linear-gradient(135deg,#c85a3e,#a04226);box-shadow:0 8px 22px rgba(200,90,62,.35)" onclick="activateSummitClub()">Activer le Summit Club</button>
+        <div id="sc-empty-title" style="font-family:'Montserrat',sans-serif;font-size:1.15rem;font-weight:800;margin-bottom:6px">Votre programme n'est pas encore actif</div>
+        <div style="font-size:.82rem;opacity:.85;line-height:1.55;margin-bottom:16px">Activez le programme et créez vos niveaux de fidélité. Des paliers et des récompenses par défaut sont pré-remplis : vous pourrez tout modifier ensuite.</div>
+        <button id="sc-activate-btn" class="btn btn-primary" style="background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 8px 22px rgba(22,163,74,.35)" onclick="activateSummitClub()">Activer le programme</button>
       </div>
 
       <!-- Tiers pane -->
@@ -1735,7 +1735,7 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
       <!-- Members pane -->
       <div id="sc-pane-members" style="display:none;flex-direction:column;gap:12px">
         <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between">
-          <div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px">Membres du Summit Club (<span id="sc-mem-count">0</span>)</div>
+          <div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px">Membres <span id="sc-mem-club">du Club Privilèges</span> (<span id="sc-mem-count">0</span>)</div>
           <button class="btn btn-sm btn-ghost" onclick="scLoadMembers(true)">Rafraichir</button>
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -1785,7 +1785,7 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
 
       <!-- Import VIP pane -->
       <div id="sc-pane-import" style="display:none;flex-direction:column;gap:12px">
-        <div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px">Importer ma liste VIP MARAZ Summit Club</div>
+        <div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px">Importer ma liste de clients VIP</div>
         <div id="sc-imp-drop" style="border:2px dashed var(--b1);border-radius:var(--r2);padding:26px;text-align:center;background:var(--s2);cursor:pointer" onclick="document.getElementById('sc-imp-file').click()">
           <div style="font-size:1rem;font-weight:800;color:var(--tx);margin-bottom:6px">Deposer votre fichier CSV ici</div>
           <div style="font-size:.78rem;color:var(--tx3);line-height:1.55;margin-bottom:10px">Colonnes attendues : <b>phone, first_name, last_name, email, lang</b>. Une ligne par membre. Le separateur peut etre virgule ou point-virgule.</div>
@@ -1878,13 +1878,10 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
   <div class="modal-bg" id="modal-sc-mail">
     <div class="modal" style="max-width:560px">
       <div class="modal-handle"></div>
-      <div class="modal-title">Envoyer une campagne Summit Club</div>
+      <div class="modal-title" id="sc-mail-title">Envoyer une campagne</div>
       <div class="field"><label>Destinataires</label>
         <select id="sc-mail-segment" onchange="scRefreshMailAudience()" style="width:100%;padding:12px 14px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:.85rem;color:var(--tx);outline:none">
-          <option value="all">Tous les membres du Summit Club</option>
-          <option value="tier:membre">Uniquement Membre</option>
-          <option value="tier:ascension">Uniquement Ascension</option>
-          <option value="tier:sommet">Uniquement Sommet</option>
+          <option value="all">Tous les membres</option>
           <option value="manual">Selection manuelle</option>
         </select>
         <div id="sc-mail-audience" style="font-size:.75rem;color:var(--tx3);margin-top:6px">—</div>
@@ -2056,7 +2053,7 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
     </div>
     <div class="field">
       <label>Couleur</label>
-      <input id="sc-tier-color" type="color" value="#1e3a5f" style="width:100%;height:44px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);padding:4px;cursor:pointer"/>
+      <input id="sc-tier-color" type="color" value="#16a34a" style="width:100%;height:44px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);padding:4px;cursor:pointer"/>
     </div>
     <div class="field">
       <label>Avantages (un par ligne)</label>
@@ -3906,6 +3903,10 @@ async function createClient(){
     renderClients();
   };
 
+  if(!mid){
+    toast('Boutique non chargée. Reconnecte-toi puis réessaie.','err');
+    btn.innerHTML='Créer la carte'; btn.disabled=false; return;
+  }
   try{
     // Générer le code
     let code;
@@ -3913,16 +3914,19 @@ async function createClient(){
       const r=await fetch(`${SB_URL}/rest/v1/rpc/generate_card_code`,{method:'POST',headers:authH(),body:JSON.stringify({})});
       code=(await r.text()).replace(/"/g,'').trim();
     }catch(e){code=genCode();}
+    if(!code) code=genCode();
 
-    // Créer dans Supabase
+    // Créer dans Supabase (active:true pour que la carte soit visible et que sa
+    // page publique / son envoi WhatsApp fonctionnent).
     const card=await sbPost('/rest/v1/loyalty_cards',{
       merchant_id:mid,code,client_name:name,
       client_phone:phone||null,
       client_phone_raw:phoneRaw||null,
       design_url:ncSelDesignUrl||null,
       design_name:ncSelDesign||'green',
-      pts:0,lifetime_pts:0,tier:'bronze'
+      pts:0,lifetime_pts:0,tier:'bronze',active:true,whatsapp_opt_in:true
     });
+    if(!card||!card.id){ throw new Error('La carte n\'a pas été enregistrée'); }
     finalize(card);
     try{ if(typeof msWelcomeBonus==='function') msWelcomeBonus(card.code); }catch(e){}
     // Parrainage : créditer parrain + filleul si un code a été saisi
@@ -3936,8 +3940,14 @@ async function createClient(){
       }
     }catch(e){}
   }catch(e){
-    // Fallback offline
-    finalize({id:uid(),code:genCode(),created_at:new Date().toISOString()});
+    if(!navigator.onLine){
+      finalize({id:uid(),code:genCode(),created_at:new Date().toISOString()});
+      toast('Hors ligne : carte gardée localement, resynchronise dès que tu as du réseau','warn');
+    } else {
+      console.error('createClient:',e);
+      toast('Création impossible : '+((e&&e.message)||'erreur'),'err');
+      btn.innerHTML='Créer la carte'; btn.disabled=false;
+    }
   }
 }
 
@@ -6571,7 +6581,7 @@ if(isLoggedIn()){
     <div class="mss-sec">Fidélité</div>
     <button class="mss-link" data-tab="clients" onclick="showPage('clients')"><svg viewBox="0 0 24 24"><use href="#ic-users"/></svg>Clients</button>
     <button class="mss-link" data-tab="rewards" onclick="showPage('rewards')"><svg viewBox="0 0 24 24"><use href="#ic-star"/></svg>Récompenses</button>
-    <button class="mss-link" data-tab="summit" onclick="showPage('summit')"><svg viewBox="0 0 24 24"><use href="#ic-diamond"/></svg>Summit Club</button>
+    <button class="mss-link" data-tab="summit" onclick="showPage('summit')"><svg viewBox="0 0 24 24"><use href="#ic-diamond"/></svg><span id="nav-summit-label">Club Privilèges</span></button>
     <button class="mss-link" data-tab="push" onclick="showPage('push')"><svg viewBox="0 0 24 24"><use href="#ic-mega"/></svg>Notifications<span class="mss-badge" id="mss-push-badge" style="display:none"></span></button>
 
     <div class="mss-sec">Ventes</div>
@@ -7107,7 +7117,7 @@ if(isLoggedIn()){
 <!-- ════════════════════════════════════════
      SUMMIT CLUB — merchant admin logic
      Tables : sargal_tiers, sargal_rewards
-     Charte : #1e3a5f / #c85a3e / #f3ede0
+     Charte : vert MySargal (variables CSS --green / --green2 / --green3)
      ════════════════════════════════════════ -->
 <script>
 (function(){
@@ -7123,6 +7133,19 @@ if(isLoggedIn()){
   var SC_ACTIVE_TAB = 'tiers';
 
   function _mid(){ try{ return (typeof MERCHANT!=='undefined' && MERCHANT && MERCHANT.id) || null; }catch(e){return null;} }
+  function programName(){ try{ return (MERCHANT && MERCHANT.reward_config && MERCHANT.reward_config.program_name) || 'Club Privilèges'; }catch(e){ return 'Club Privilèges'; } }
+  function scApplyBranding(){
+    var n = programName();
+    function setT(id,txt){ var el=document.getElementById(id); if(el) el.textContent=txt; }
+    setT('sc-page-title', n);
+    setT('nav-summit-label', n);
+    setT('sc-feat-title', '« '+n+' »');
+    setT('sc-empty-title', n+" n'est pas encore actif");
+    setT('sc-disabled-title', 'Programme '+n+' désactivé');
+    setT('sc-mem-club', 'du '+n);
+    setT('sc-mail-title', 'Envoyer une campagne '+n);
+    setT('sc-activate-btn', 'Activer '+n);
+  }
   function _esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function _famLabel(k){ for(var i=0;i<SC_FAMILIES.length;i++) if(SC_FAMILIES[i].key===k) return SC_FAMILIES[i].label; return k; }
   function _fmtFCFA(n){ n=Number(n||0); return n.toLocaleString('fr-FR').replace(/ /g,' ')+' F'; }
@@ -7163,6 +7186,7 @@ if(isLoggedIn()){
   }
 
   window.renderSummit = async function(){
+    try{ scApplyBranding(); }catch(e){}
     var mid=_mid();
     var empty=document.getElementById('sc-empty');
     var disabled=document.getElementById('sc-disabled-cta');
@@ -7250,6 +7274,15 @@ if(isLoggedIn()){
         return '<option value="'+t.id+'">'+_esc(t.name||'')+'</option>';
       }).join('');
     }
+    var selM = document.getElementById('sc-mail-segment');
+    if(selM){
+      var curM = selM.value;
+      var optsM = '<option value="all">Tous les membres</option>';
+      optsM += SC_TIERS.map(function(t){ var nm=String(t.name||''); return '<option value="tier:'+_esc(nm.toLowerCase())+'">Uniquement '+_esc(nm)+'</option>'; }).join('');
+      optsM += '<option value="manual">Selection manuelle</option>';
+      selM.innerHTML = optsM;
+      if(curM){ selM.value = curM; }
+    }
   }
 
   function scRenderTiers(){
@@ -7316,7 +7349,7 @@ if(isLoggedIn()){
     document.getElementById('sc-tier-max').value   = t && t.max_points!=null ? t.max_points : '';
     document.getElementById('sc-tier-spend').value = t ? (t.min_spend_year||0) : 0;
     document.getElementById('sc-tier-prio').value  = t ? (t.priority||0) : (SC_TIERS.length+1);
-    document.getElementById('sc-tier-color').value = t ? (t.color_hex||'#1e3a5f') : '#1e3a5f';
+    document.getElementById('sc-tier-color').value = t ? (t.color_hex||'#16a34a') : '#16a34a';
     var bens=[]; try{ bens=t?(Array.isArray(t.benefits_json)?t.benefits_json:JSON.parse(t.benefits_json||'[]')):[]; }catch(e){bens=[];}
     document.getElementById('sc-tier-benefits').value = bens.join('\n');
     document.getElementById('sc-tier-delete-btn').style.display = t ? 'block' : 'none';
@@ -7432,13 +7465,13 @@ if(isLoggedIn()){
     }catch(e){ toast(e.message||'Erreur','err'); }
   };
 
-  // Defaut MARAZ Summit Club — les paliers seront editables ensuite
+  // Paliers par defaut du programme — editables ensuite
   window.activateSummitClub = async function(){
     var mid=_mid(); if(!mid){ toast('Marchand introuvable','err'); return; }
     var defaults = [
-      { merchant_id:mid, name:'Membre',    min_points:0,   max_points:99,   min_spend_year:0,       color_hex:'#1e3a5f', priority:1, benefits_json:['Bienvenue dans le Club','Points sur chaque achat','Offres reservees membres'] },
-      { merchant_id:mid, name:'Ascension', min_points:100, max_points:199,  min_spend_year:1000000, color_hex:'#c85a3e', priority:2, benefits_json:['Cadeau anniversaire','Acces avant-premieres','Livraison offerte'] },
-      { merchant_id:mid, name:'Sommet',    min_points:200, max_points:null, min_spend_year:2000000, color_hex:'#f3ede0', priority:3, benefits_json:['Conciergerie dediee','Invitations evenements VIP','Experiences uniques','Cadeau de fin d\'annee'] }
+      { merchant_id:mid, name:'Membre',    min_points:0,   max_points:99,   min_spend_year:0,       color_hex:'#4ade80', priority:1, benefits_json:['Bienvenue dans le programme','Points sur chaque achat','Offres reservees membres'] },
+      { merchant_id:mid, name:'Privilège', min_points:100, max_points:199,  min_spend_year:1000000, color_hex:'#22c55e', priority:2, benefits_json:['Cadeau anniversaire','Acces avant-premieres','Livraison offerte'] },
+      { merchant_id:mid, name:'Prestige',  min_points:200, max_points:null, min_spend_year:2000000, color_hex:'#16a34a', priority:3, benefits_json:['Conciergerie dediee','Invitations evenements VIP','Experiences uniques','Cadeau de fin d\'annee'] }
     ];
     try{
       for(var i=0;i<defaults.length;i++){
@@ -7446,7 +7479,7 @@ if(isLoggedIn()){
       }
       // Active aussi le feature-flag
       try{ await scToggleFeature(true); }catch(e){}
-      toast('Summit Club active','ok');
+      toast('Programme active','ok');
       renderSummit();
     }catch(e){ toast(e.message||'Erreur activation','err'); }
   };
@@ -7847,10 +7880,11 @@ if(isLoggedIn()){
   function scRenderMailPreview(){
     var ifr = document.getElementById('sc-mail-preview');
     if(!ifr) return;
-    var NAVY='#1e3a5f', ORANGE='#c85a3e', CREAM='#f3ede0';
-    var brand = 'MARAZ';
-    try{ brand = (MERCHANT && MERCHANT.name) || 'MARAZ'; }catch(e){}
-    var html = '<!DOCTYPE html><html><body style="margin:0;padding:0;background:'+CREAM+';font-family:Georgia,serif;color:'+NAVY+'"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:20px 0"><tr><td align="center"><table role="presentation" width="480" cellspacing="0" cellpadding="0" style="max-width:480px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(30,58,95,.12)"><tr><td style="background:'+NAVY+';padding:28px 22px;text-align:center"><div style="color:'+CREAM+';font-size:.7rem;letter-spacing:.28em;text-transform:uppercase">'+brand+'</div><div style="color:#fff;font-size:1.6rem;font-weight:800;margin-top:8px">Summit Club</div><div style="color:'+ORANGE+';font-size:.8rem;margin-top:6px;letter-spacing:.14em;text-transform:uppercase">Votre ascension commence</div></td></tr><tr><td style="padding:26px 24px"><p style="font-size:1rem;line-height:1.7;margin:0 0 14px">Cher(e) client(e),</p><p style="font-size:.92rem;line-height:1.7;margin:0 0 14px">Vous faites partie des premiers membres VIP invites a rejoindre le <b>Summit Club</b>, notre nouveau programme premium.</p><div style="text-align:center;margin:20px 0"><div style="display:inline-block;background:'+NAVY+';color:#fff;padding:12px 26px;border-radius:99px;font-size:1rem;font-weight:800;text-transform:uppercase">Membre</div></div><div style="text-align:center;margin:24px 0 8px"><a href="#" style="display:inline-block;background:'+ORANGE+';color:#fff;padding:14px 30px;border-radius:10px;font-size:.95rem;font-weight:800;text-decoration:none">Decouvrir mon Summit Club</a></div></td></tr></table></td></tr></table></body></html>';
+    var GREEN='#16a34a', GREEN2='#22c55e', CREAM='#f6fbf6';
+    var brand = 'MySargal';
+    try{ brand = (MERCHANT && MERCHANT.name) || 'MySargal'; }catch(e){}
+    var prog = programName();
+    var html = '<!DOCTYPE html><html><body style="margin:0;padding:0;background:'+CREAM+';font-family:Georgia,serif;color:#12241a"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="padding:20px 0"><tr><td align="center"><table role="presentation" width="480" cellspacing="0" cellpadding="0" style="max-width:480px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(22,163,74,.12)"><tr><td style="background:'+GREEN+';padding:28px 22px;text-align:center"><div style="color:#dcfce7;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase">'+brand+'</div><div style="color:#fff;font-size:1.6rem;font-weight:800;margin-top:8px">'+prog+'</div><div style="color:#dcfce7;font-size:.8rem;margin-top:6px;letter-spacing:.14em;text-transform:uppercase">Votre programme de fidélité</div></td></tr><tr><td style="padding:26px 24px"><p style="font-size:1rem;line-height:1.7;margin:0 0 14px">Cher(e) client(e),</p><p style="font-size:.92rem;line-height:1.7;margin:0 0 14px">Vous faites partie des premiers membres VIP invités à rejoindre le <b>'+prog+'</b>, notre nouveau programme de fidélité.</p><div style="text-align:center;margin:20px 0"><div style="display:inline-block;background:'+GREEN+';color:#fff;padding:12px 26px;border-radius:99px;font-size:1rem;font-weight:800;text-transform:uppercase">Bienvenue</div></div><div style="text-align:center;margin:24px 0 8px"><a href="#" style="display:inline-block;background:'+GREEN2+';color:#fff;padding:14px 30px;border-radius:10px;font-size:.95rem;font-weight:800;text-decoration:none">Découvrir mon '+prog+'</a></div></td></tr></table></td></tr></table></body></html>';
     try{ ifr.srcdoc = html; }catch(e){ ifr.src = 'about:blank'; }
   }
 
@@ -7951,6 +7985,7 @@ if(isLoggedIn()){
       return r;
     };
   }
+  try{ if(document.readyState!=='loading'){ scApplyBranding(); } window.addEventListener('load', function(){ try{ scApplyBranding(); }catch(e){} }); }catch(e){}
 })();
 </script>
 </body>
