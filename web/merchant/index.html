@@ -2042,15 +2042,17 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
     <div class="modal-handle"></div>
     <div class="modal-title" id="sc-tier-title">Nouveau niveau</div>
     <input type="hidden" id="sc-tier-id"/>
-    <div class="field"><label>Nom du niveau</label><input id="sc-tier-name" placeholder="Membre / Ascension / Sommet"/></div>
+    <div class="field"><label>Nom du niveau</label><input id="sc-tier-name" placeholder="Silver / Gold / Platinum"/></div>
     <div style="display:flex;gap:8px;margin-bottom:14px">
       <div class="field" style="flex:1;margin:0"><label>Points min</label><input id="sc-tier-min" type="number" min="0" value="0"/></div>
       <div class="field" style="flex:1;margin:0"><label>Points max (vide = infini)</label><input id="sc-tier-max" type="number" min="0" placeholder="99"/></div>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:14px">
+    <div style="display:flex;gap:8px;margin-bottom:6px">
       <div class="field" style="flex:1;margin:0"><label>Depense annuelle min (FCFA)</label><input id="sc-tier-spend" type="number" min="0" value="0"/></div>
-      <div class="field" style="margin:0"><label>Ordre</label><input id="sc-tier-prio" type="number" min="0" value="1" style="width:80px"/></div>
+      <div class="field" style="width:120px;margin:0"><label>Multiplicateur</label><input id="sc-tier-mult" type="number" min="1" step="0.1" value="1" placeholder="1"/></div>
+      <div class="field" style="margin:0"><label>Ordre</label><input id="sc-tier-prio" type="number" min="0" value="1" style="width:70px"/></div>
     </div>
+    <div style="font-size:.72rem;color:var(--tx3);margin:0 0 14px">Multiplicateur = points gagnes a ce niveau. 1 = normal, 1,5 = +50%, 2 = double.</div>
     <div class="field">
       <label>Couleur</label>
       <input id="sc-tier-color" type="color" value="#16a34a" style="width:100%;height:44px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);padding:4px;cursor:pointer"/>
@@ -7341,6 +7343,7 @@ if(isLoggedIn()){
     document.getElementById('sc-tier-min').value   = t ? (t.min_points||0) : 0;
     document.getElementById('sc-tier-max').value   = t && t.max_points!=null ? t.max_points : '';
     document.getElementById('sc-tier-spend').value = t ? (t.min_spend_year||0) : 0;
+    document.getElementById('sc-tier-mult').value  = t ? (t.earn_multiplier||1) : 1;
     document.getElementById('sc-tier-prio').value  = t ? (t.priority||0) : (SC_TIERS.length+1);
     document.getElementById('sc-tier-color').value = t ? (t.color_hex||'#16a34a') : '#16a34a';
     var bens=[]; try{ bens=t?(Array.isArray(t.benefits_json)?t.benefits_json:JSON.parse(t.benefits_json||'[]')):[]; }catch(e){bens=[];}
@@ -7362,20 +7365,24 @@ if(isLoggedIn()){
       min_points: parseInt(document.getElementById('sc-tier-min').value||'0',10),
       max_points: (maxV===''||maxV==null) ? null : parseInt(maxV,10),
       min_spend_year: parseInt(document.getElementById('sc-tier-spend').value||'0',10),
-      color_hex: document.getElementById('sc-tier-color').value||'#1e3a5f',
+      earn_multiplier: (parseFloat((document.getElementById('sc-tier-mult').value||'1').replace(',','.'))||1),
+      color_hex: document.getElementById('sc-tier-color').value||'#16a34a',
       priority: parseInt(document.getElementById('sc-tier-prio').value||'0',10),
       benefits_json: bens
     };
+    if(body.earn_multiplier<1) body.earn_multiplier=1;
     try{
+      var r;
       if(id){
-        await fetch(SB_URL+'/rest/v1/sargal_tiers?id=eq.'+id,{method:'PATCH',headers:authH(),body:JSON.stringify(body)});
+        r=await fetch(SB_URL+'/rest/v1/sargal_tiers?id=eq.'+id,{method:'PATCH',headers:authH(),body:JSON.stringify(body)});
       } else {
-        await fetch(SB_URL+'/rest/v1/sargal_tiers',{method:'POST',headers:authH(),body:JSON.stringify(body)});
+        r=await fetch(SB_URL+'/rest/v1/sargal_tiers',{method:'POST',headers:authH(),body:JSON.stringify(body)});
       }
+      if(!r.ok){ var ed=await r.json().catch(function(){return {};}); throw new Error(ed.message||ed.error||'Enregistrement refuse'); }
       closeModal('modal-sc-tier');
       toast('Niveau enregistre','ok');
       renderSummit();
-    }catch(e){ toast(e.message||'Erreur','err'); }
+    }catch(e){ toast('Enregistrement impossible : '+(e.message||'erreur'),'err'); }
   };
 
   window.deleteSCTier = async function(){
