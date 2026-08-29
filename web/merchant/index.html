@@ -3849,7 +3849,7 @@ async function createClient(){
   const btn=document.getElementById('nc-btn');
   btn.innerHTML='<span class="spin"></span>'; btn.disabled=true;
 
-  const finalize=(card)=>{
+  const finalize=(card,opts)=>{
     // On garde le numéro masqué en mémoire, jamais le numéro complet :
     // sinon il resterait affichable sans passer par le journal.
     const newClient={id:card.id||uid(),code:card.code,name,
@@ -3864,7 +3864,7 @@ async function createClient(){
     // ── Envoi AUTO du message de bienvenue via WhatsApp (WaSender) dès qu'il y a un numéro ──
     // notify-whatsapp envoie via WaSender si configuré, sinon Twilio, sinon journalise seulement.
     try{
-      if(phone && navigator.onLine){
+      if(!(opts&&opts.serverWa) && phone && navigator.onLine){
         const shopName=(MERCHANT&&MERCHANT.name)||'MySargal';
         waTpl(phone,'carte_fidelite',[name,shopName,cardUrl]).then(function(okk){
           if(okk){ toast('Carte envoyée sur WhatsApp ✓','ok'); }
@@ -3916,29 +3916,22 @@ async function createClient(){
     }catch(e){code=genCode();}
     if(!code) code=genCode();
 
-    // Créer dans Supabase (active:true pour que la carte soit visible et que sa
-    // page publique / son envoi WhatsApp fonctionnent).
-    const card=await sbPost('/rest/v1/loyalty_cards',{
-      merchant_id:mid,code,client_name:name,
-      client_phone:phone||null,
-      client_phone_raw:phoneRaw||null,
+    // Création CÔTÉ SERVEUR (service role) : la carte est insérée avec les droits
+    // serveur, donc plus jamais de « permission denied » RLS, et le WhatsApp de
+    // bienvenue part côté serveur de façon fiable.
+    const refCode=(document.getElementById('nc-referrer')?.value||'').trim().toUpperCase();
+    const resp=await sbEdge('merchant-create-card',{
+      merchant_id:mid, name,
+      phone:phone||null,
       design_url:ncSelDesignUrl||null,
       design_name:ncSelDesign||'green',
-      pts:0,lifetime_pts:0,tier:'bronze',active:true,whatsapp_opt_in:true
+      referrer_code:refCode||null
     });
-    if(!card||!card.id){ throw new Error('La carte n\'a pas été enregistrée'); }
-    finalize(card);
-    try{ if(typeof msWelcomeBonus==='function') msWelcomeBonus(card.code); }catch(e){}
-    // Parrainage : créditer parrain + filleul si un code a été saisi
-    try{
-      const refCode=(document.getElementById('nc-referrer')?.value||'').trim().toUpperCase();
-      if(refCode){
-        document.getElementById('nc-referrer').value='';
-        sbEdge('apply-referral',{merchant_id:mid,referrer_code:refCode,referee_code:card.code})
-          .then(d=>toast('🤝 Parrainage appliqué : +'+d.bonus+' pts pour les deux !','ok'))
-          .catch(err=>toast('Parrainage : '+(err.message||'erreur'),'warn'));
-      }
-    }catch(e){}
+    if(!resp||!resp.success||!resp.card||!resp.card.id){
+      throw new Error((resp&&resp.error)||'La carte n\'a pas été enregistrée');
+    }
+    if(document.getElementById('nc-referrer')) document.getElementById('nc-referrer').value='';
+    finalize(resp.card,{serverWa:true});
   }catch(e){
     if(!navigator.onLine){
       finalize({id:uid(),code:genCode(),created_at:new Date().toISOString()});
