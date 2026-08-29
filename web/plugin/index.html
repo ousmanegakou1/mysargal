@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plugin WooCommerce MySargal - Installation</title>
+<link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+<link rel="canonical" href="https://mysargal.com/plugin/"/>
+<meta name="description" content="Telechargez le plugin WooCommerce MySargal et connectez votre boutique en 5 minutes : points de fidelite, recompenses et cartes cadeaux automatiques.">
+<meta property="og:title" content="Plugin WooCommerce MySargal">
+<meta property="og:description" content="Points de fidelite, recompenses et cartes cadeaux automatiques sur votre boutique WooCommerce. Installation en 5 minutes.">
+<meta property="og:url" content="https://mysargal.com/plugin/">
+<style>
+  :root{
+    --green:#16a34a; --green-d:#0f7a37; --ink:#0b1f14; --ink2:#3f5a4a;
+    --ink3:#7d9284; --bg:#f4f8f5; --card:#ffffff; --line:#e3ece6; --soft:#eef5f0;
+    --dark:#060d06; --logo-box:#0a1b10; --logo-ink:#ffffff;
+  }
+  .ms-logo{height:40px;width:auto;display:block}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:840px;margin:0 auto;padding:38px 24px 60px}
+  a{color:inherit}
+
+  .hero{background:linear-gradient(135deg,#0c1f12,#08160c);border-radius:24px;padding:34px 32px;color:#fff;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;
+    background:radial-gradient(circle,rgba(22,163,74,.45),transparent 70%)}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .logo{width:44px;height:44px;border-radius:13px;background:var(--green);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 22px rgba(22,163,74,.4)}
+  .logo svg{width:24px;height:24px}
+  .brand b{font-size:16px;letter-spacing:.2px}
+  .hero h1{font-size:27px;line-height:1.2;letter-spacing:-.4px;position:relative;z-index:1}
+  .hero p{color:#b9d6c4;margin-top:8px;font-size:14.5px;position:relative;z-index:1;max-width:560px}
+  .cta{display:inline-flex;align-items:center;gap:10px;background:var(--green);color:#fff;text-decoration:none;
+    font-weight:800;font-size:15px;padding:14px 22px;border-radius:14px;margin-top:20px;position:relative;z-index:1;
+    box-shadow:0 10px 26px rgba(22,163,74,.4)}
+  .cta svg{width:19px;height:19px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .ver{position:relative;z-index:1;display:block;margin-top:11px;font-size:12px;color:#87a795}
+
+  .steps{margin-top:26px;display:flex;flex-direction:column;gap:16px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 24px;
+    display:grid;grid-template-columns:52px 1fr;gap:18px;box-shadow:0 2px 14px rgba(11,31,20,.04)}
+  .num{width:42px;height:42px;border-radius:14px;background:var(--soft);color:var(--green-d);
+    font-weight:800;font-size:19px;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:16.5px;letter-spacing:-.2px}
+  .where{display:inline-block;font-size:12px;color:var(--green-d);background:var(--soft);
+    padding:3px 9px;border-radius:7px;margin:7px 0 10px;font-weight:600}
+  .step p{color:var(--ink2);font-size:14px}
+  .step p b{color:var(--ink)}
+  .mock{margin-top:14px}
+
+  .browser{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  .bbar{background:#f0f4f1;padding:8px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}
+  .bbar span{width:9px;height:9px;border-radius:50%;background:#cfdcd4}
+  .burl{margin-left:8px;font-size:11px;color:var(--ink3);background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:3px 9px;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .bbody{padding:14px 16px}
+  .menuline{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink2);padding:8px 10px;border-radius:8px;flex-wrap:wrap}
+  .chev{color:var(--ink3);margin:0 2px}
+
+  .phone{width:190px;border:1px solid var(--line);border-radius:22px;background:#fff;overflow:hidden;margin:0 auto}
+  .ptop{background:var(--dark);color:#fff;padding:12px 14px;font-size:12.5px;font-weight:700}
+  .ptabs{display:flex;gap:6px;padding:10px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .ptab{font-size:10px;padding:5px 9px;border-radius:999px;background:#f1f5f2;color:var(--ink3)}
+  .ptab.on{background:var(--green);color:#fff;font-weight:700}
+  .pbody{padding:14px}
+  .keybox{border:1px dashed var(--green);background:var(--soft);border-radius:9px;padding:9px 11px;
+    font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--green-d);word-break:break-all}
+  .btng{margin-top:10px;background:var(--green);color:#fff;text-align:center;padding:9px;border-radius:10px;font-size:12px;font-weight:700}
+
+  .field{margin-bottom:10px}
+  .field label{display:block;font-size:11px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .input{border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:12.5px;color:var(--ink2);background:#fafbfa}
+  .input.mono{font-family:ui-monospace,Menlo,monospace;color:var(--green-d)}
+  .input.locked{color:var(--ink3);background:#f2f5f3}
+  .hintlock{font-size:11px;color:var(--ink3);margin-top:3px}
+  .toggles{display:flex;flex-direction:column;gap:8px}
+  .tg{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--ink)}
+  .sw{width:36px;height:20px;border-radius:999px;background:var(--green);position:relative;flex:0 0 auto}
+  .sw:after{content:"";position:absolute;right:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff}
+  .save{margin-top:12px;background:var(--green);color:#fff;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13.5px}
+  .co{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff}
+  .coline{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);padding:5px 0}
+  .coline.red{color:var(--green-d);font-weight:700}
+  .gcrow{display:flex;gap:8px;margin-top:8px}
+  .gcrow .input{flex:1}
+  .gcbtn{background:var(--dark);color:#fff;border-radius:9px;padding:9px 14px;font-size:12px;font-weight:700}
+
+  .dl{margin-top:26px;background:linear-gradient(135deg,#0c1f12,#08160c);border-radius:20px;padding:26px 28px;color:#fff;text-align:center}
+  .dl h3{font-size:18px}
+  .dl p{color:#a9cbb8;font-size:13.5px;margin-top:6px}
+
+  .foot{margin-top:22px;background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:18px 22px;font-size:13px;color:var(--ink2)}
+  .foot b{color:var(--ink)}
+  .foot .row{display:flex;gap:10px;align-items:flex-start;margin-top:8px}
+  .check{color:var(--green);font-weight:800;flex:0 0 auto}
+  .tiny{margin-top:20px;text-align:center;font-size:12px;color:var(--ink3)}
+  .tiny a{color:var(--green-d);font-weight:600;text-decoration:none}
+  @media(max-width:560px){.step{grid-template-columns:1fr}.num{width:38px;height:38px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="brand">
+      <svg class="ms-logo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="236 50 812 972"><defs><style>.lg-grn{fill:#00be5c}.lg-box{fill:var(--logo-box)}.lg-ink{fill:var(--logo-ink)}.lg-my{fill:#fff}.lg-ink.t1{font-family:'Montserrat',Helvetica,Arial;font-weight:700;font-size:189.42px}.lg-my{font-family:'Montserrat',Helvetica,Arial;font-style:italic;font-weight:600;font-size:189.42px}</style></defs><g><path class="lg-grn" d="M1010.02,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM735.69,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM593.63,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM477.46,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM989.43,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><path class="lg-box" d="M1026.71,321.8l-215.92,34.46c41.3-26.96,64.67-64.27,62.47-100.62-1.89-31.14-22.66-55.29-51.69-60.07-14.66-2.41-50.38-2.28-89.87,41.17,3.92-12.35,7.41-24.68,10.29-36.75,16.4-68.91,2.75-121.07-37.44-143.12-33.12-18.17-78.93-11.13-113.99,17.5-42.39,34.6-59.71,91.94-46.33,153.38,2.15,9.84,5.05,20.17,8.29,30.72-36.3-23.7-68.33-13.47-82.01-6.86-29.03,14.05-49.81,44.82-51.7,76.58-2.21,37.05,21.17,66.9,62.45,80.68l-241.61,38.56c-11.37,1.81-20.59,12.5-20.59,23.88v133.74c0,11.37,9.22,19.12,20.59,17.31l35.03-5.59v391.61c0,11.37,9.22,19.12,20.59,17.31l317.8-50.72,40.23-6.42,317.79-50.72c11.37-1.82,20.59-12.5,20.59-23.88v-391.61l35.03-5.59c11.37-1.81,20.59-12.5,20.59-23.88v-133.74c0-11.37-9.22-19.12-20.59-17.31ZM752.38,296.54c16.8-15.95,29.48-22.32,37.33-23.57,4.04-.64,6.81.06,8.2,1.52,4.46,4.67,2.34,20.26-13.18,36.23-20.98,21.6-53.59,44.31-91.45,64.29l-5.45.87c17.53-25.38,41.51-57.45,64.54-79.33ZM610.32,200.07c2.26-30.65,18.32-51.43,32.24-53.65.27-.04.54-.08.8-.11,13.79-1.49,28.06,18.19,26.77,64.93-.26,9.51-1.06,19.58-2.27,29.94-.09.8-.21,1.61-.31,2.41-.32,2.66-.65,5.33-1.03,8.03-.25,1.79-.54,3.6-.8,5.4-.26,1.71-.49,3.42-.77,5.14-6.18,38.89-16.6,79.22-24.73,107.64,0-.01-.01-.02-.01-.04-1.97-5.36-3.82-10.62-5.56-15.78-11.51-34.27-17.87-63.92-21.3-88.33-4.33-30.84-3.94-53.28-3.03-65.58ZM494.15,322.97c1.39-1.9,4.16-3.49,8.2-4.14,7.85-1.25,20.52,1.07,37.31,11.66,22.97,14.5,47.02,38.96,64.57,58.73l-5.43.87c-37.86-7.89-70.47-20.19-91.46-35.1-15.52-11.01-17.65-25.92-13.18-32.02ZM1006.12,458.82l-35.03,5.59-66.24,10.57v41.18l45.64-7.28v371.02l-276.61,44.14v-62.4l-81.41,12.87v62.53l-276.62,44.14v-371.01l46.88-7.48v-41.18l-67.47,10.77-35.03,5.59v-92.55l332.24-53.02v62.83l81.41-12.87v-62.96l332.23-53.02v92.56Z"/><polygon class="lg-box" points="260.24 485.3 1026.71 321.8 1026.71 496.72 979.58 483.86 973.63 896.07 311.76 1002.55 294.22 602.61 245.42 596.55 260.24 485.3"/></g><path class="lg-grn" d="M895.07,485.4c-20.95,9.08-26.24,15.01-32.76,36.76-6.52-20.15-11.81-24.8-32.76-28.76,20.95-9.08,26.24-15.01,32.76-36.76,6.52,20.15,11.81,24.8,32.76,28.76Z"/><text class="lg-ink t1" transform="translate(356.51 848.05) rotate(-7.08)"><tspan x="0" y="0">Sargal</tspan></text><ellipse class="lg-grn" cx="665.28" cy="626.04" rx="164.9" ry="114.73" transform="translate(-72.07 86.74) rotate(-7.08)"/><text class="lg-my" transform="translate(536.37 710.35) rotate(-7.08)"><tspan x="0" y="0">My</tspan></text><path class="lg-ink" d="M495.14,568.25c-23.95,10.38-30,17.17-37.46,42.03-7.46-23.04-13.51-28.35-37.46-32.89,23.95-10.38,30-17.17,37.46-42.03,7.46,23.04,13.51,28.35,37.46,32.89Z"/><path class="lg-grn" d="M878.69,837.45c-10.47,4.54-13.12,7.51-16.38,18.38-3.26-10.08-5.91-12.4-16.38-14.38,10.47-4.54,13.12-7.51,16.38-18.38,3.26,10.08,5.91,12.4,16.38,14.38Z"/></svg>
+    </div>
+    <h1>Plugin WooCommerce MySargal</h1>
+    <p>Points de fidelite, recompenses et cartes cadeaux automatiques sur votre boutique. Prerequis : WooCommerce installe et active. Installation en 5 minutes.</p>
+    <a class="cta" href="mysargal-loyalty.zip" download>
+      <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+      Telecharger le plugin
+    </a>
+    <span class="ver">Version 1.3.0 - MySargal &bull; Fidelite &amp; Cartes cadeaux</span>
+  </div>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="num">1</div>
+      <div>
+        <h3>Recuperer votre cle API dans l'application MySargal</h3>
+        <span class="where">App MySargal &rsaquo; Reglages &rsaquo; Integrations</span>
+        <p>Ouvrez <b>Reglages</b>, onglet <b>Integrations</b>, puis appuyez sur <b>Generer la cle API</b>. Appuyez ensuite sur la cle pour la copier. Gardez la de cote pour l'etape 3.</p>
+        <div class="mock">
+          <div class="phone">
+            <div class="ptop">Reglages</div>
+            <div class="ptabs">
+              <span class="ptab">Boutique</span>
+              <span class="ptab">Fidelite</span>
+              <span class="ptab on">Integrations</span>
+            </div>
+            <div class="pbody">
+              <div style="font-size:11px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Votre cle</div>
+              <div class="keybox">msk_live_9f3a2c8b71e4...</div>
+              <div class="btng">Appuyez pour copier</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div>
+        <h3>Installer le plugin sur WordPress</h3>
+        <span class="where">WordPress &rsaquo; Extensions &rsaquo; Ajouter</span>
+        <p>Allez dans <b>Extensions &rsaquo; Ajouter &rsaquo; Televerser une extension</b>, choisissez le fichier <b>mysargal-loyalty.zip</b> telecharge ci-dessus, cliquez <b>Installer maintenant</b> puis <b>Activer</b>.</p>
+        <div class="mock">
+          <div class="browser">
+            <div class="bbar"><span></span><span></span><span></span><div class="burl">votre-site.com/wp-admin/plugin-install.php</div></div>
+            <div class="bbody">
+              <div class="menuline"><b style="color:var(--ink)">Extensions</b> <span class="chev">&rsaquo;</span> Ajouter <span class="chev">&rsaquo;</span> Televerser</div>
+              <div style="border:1px dashed var(--green);border-radius:10px;padding:12px;margin-top:8px;background:var(--soft);font-size:12.5px;color:var(--green-d)">
+                Fichier selectionne : <b>mysargal-loyalty.zip</b>
+              </div>
+              <div class="btng" style="margin-top:10px;display:inline-block;padding:8px 16px">Installer maintenant</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div>
+        <h3>Coller la cle API dans le plugin</h3>
+        <span class="where">WooCommerce &rsaquo; MySargal</span>
+        <p>Dans le menu <b>WooCommerce &rsaquo; MySargal</b>, collez votre cle dans le champ <b>Cle API (x-api-key)</b>. L'<b>URL de base</b> est deja pre-remplie, ne la modifiez pas.</p>
+        <div class="mock">
+          <div class="browser">
+            <div class="bbar"><span></span><span></span><span></span><div class="burl">votre-site.com/wp-admin &rsaquo; WooCommerce &rsaquo; MySargal</div></div>
+            <div class="bbody">
+              <div class="field">
+                <label>Cle API (x-api-key)</label>
+                <div class="input mono">msk_live_9f3a2c8b71e4...</div>
+              </div>
+              <div class="field">
+                <label>URL de base de l'API</label>
+                <div class="input locked">https://...supabase.co/functions/v1</div>
+                <div class="hintlock">Deja rempli, ne pas toucher</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">4</div>
+      <div>
+        <h3>Activer les options et enregistrer</h3>
+        <span class="where">Meme page WooCommerce &rsaquo; MySargal</span>
+        <p>Verifiez que les trois options sont activees (elles le sont par defaut), puis cliquez <b>Enregistrer</b>.</p>
+        <div class="mock">
+          <div class="browser">
+            <div class="bbody">
+              <div class="toggles">
+                <div class="tg">Points de fidelite <span class="sw"></span></div>
+                <div class="tg">Carte cadeau au checkout <span class="sw"></span></div>
+                <div class="tg">Recompenses fidelite au checkout <span class="sw"></span></div>
+              </div>
+              <div class="save">Enregistrer les modifications</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <div>
+        <h3>Tester une commande et une carte cadeau</h3>
+        <span class="where">Sur votre boutique</span>
+        <p>Passez une commande test : les points se creditent au paiement et la carte du client part sur WhatsApp. Puis testez une carte cadeau <b>GC-XXXXXX</b> directement au checkout.</p>
+        <div class="mock">
+          <div class="co">
+            <div class="coline">Sous total <span>25 000 FCFA</span></div>
+            <div class="coline red">Recompense fidelite <span>- 5 000 FCFA</span></div>
+            <div class="coline red">Carte cadeau GC-4B7K2P <span>- 10 000 FCFA</span></div>
+            <div class="coline" style="border-top:1px solid var(--line);margin-top:6px;padding-top:9px;font-weight:800;color:var(--ink)">Total a payer <span>10 000 FCFA</span></div>
+            <div class="gcrow">
+              <div class="input mono" style="flex:1">GC-XXXXXX</div>
+              <div class="gcbtn">Appliquer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dl">
+    <h3>Pret a demarrer ?</h3>
+    <p>Telechargez le plugin et suivez les 5 etapes ci-dessus.</p>
+    <a class="cta" href="mysargal-loyalty.zip" download>
+      <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+      Telecharger mysargal-loyalty.zip
+    </a>
+  </div>
+
+  <div class="foot">
+    <b>Bon a savoir</b>
+    <div class="row"><span class="check">&check;</span><div>Aucune donnee sensible n'est stockee sur votre site : tout passe par l'API MySargal via la cle x-api-key.</div></div>
+    <div class="row"><span class="check">&check;</span><div>Chaque commande ne credite les points qu'une seule fois, et une carte cadeau n'est debitee qu'une fois, meme en cas de rechargement de la page.</div></div>
+    <div class="row"><span class="check">&check;</span><div>En cas de remboursement ou d'annulation d'une commande, la carte cadeau est automatiquement recreditee.</div></div>
+  </div>
+
+  <p class="tiny">Besoin d'aide ? Ecrivez a MySargal ou consultez la page <a href="/developers.html">Developpeurs</a>.</p>
+
+</div>
+</body>
+</html>
