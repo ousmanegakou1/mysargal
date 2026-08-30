@@ -1,0 +1,691 @@
+// ============================================================
+// MySargal Caisse - Reglages
+// Boutique, logo, conversion montant/points, expiration, marque, automations
+// WhatsApp, securite (PIN), boutiques/branches, equipe, abonnement, hook API,
+// theme et deconnexion. Parite avec l'onglet "Mon compte" du web.
+// ============================================================
+
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Switch, Modal, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { Screen } from '../components/Screen';
+import { Card } from '../components/Card';
+import { Field } from '../components/Field';
+import { Button } from '../components/Button';
+import { PinPad } from '../components/PinPad';
+import { Segmented } from '../components/Segmented';
+import { StatusBadge } from '../components/StatusBadge';
+import { useToast } from '../components/Toast';
+import { colors, fonts, radius, spacing } from '../theme';
+
+import { useAuth } from '../auth/AuthContext';
+import { useNetwork } from '../offline/NetworkProvider';
+import { isPinEnabled, setPin, disablePin } from '../auth/pin';
+import {
+  updateMerchant,
+  fetchBranches,
+  createBranch,
+  fetchCashiers,
+  addCashier,
+  removeCashier,
+  getOrCreatePartnerKey,
+  regeneratePartnerKey,
+  getLandingSettings,
+} from '../api/endpoints';
+import { storageUpload } from '../api/client';
+import { FUNCTIONS_BASE } from '../config';
+import { Merchant, Cashier } from '../api/types';
+import { fmtMoney, fmtPts, maskLabel, jwtDaysLeft } from '../utils/format';
+import { fmtAmount, deviseInfo } from '../utils/currency';
+import { BRAND_PRESETS } from '../utils/brand';
+import { pickImage, readAsBytes } from '../utils/image';
+import { openUrl, openWhatsApp, copyText } from '../utils/wa';
+import { notifyError } from '../utils/haptics';
+
+const CURRENCIES = ['XOF', 'XAF', 'EUR', 'USD', 'MAD', 'GNF', 'NGN', 'GHS'];
+const LANGS = [
+  { key: 'fr', label: 'Francais' },
+  { key: 'en', label: 'English' },
+  { key: 'es', label: 'Espanol' },
+];
+
+export function SettingsScreen() {
+  const navigation = useNavigation<any>();
+  const { merchant, phone, logout, lock, refreshMerchant, switchMerchant } = useAuth();
+  const { toast } = useToast();
+  const { online, pendingCount, syncing, syncNow } = useNetwork();
+  const m = merchant as Merchant | null;
+
+  // Boutique
+  const [name, setName] = useState(m?.name || '');
+  const [threshold, setThreshold] = useState(String(m?.threshold ?? 10));
+  const [rewardDesc, setRewardDesc] = useState(m?.reward_desc || '');
+  const [whatsapp, setWhatsapp] = useState(m?.whatsapp || '');
+  const [website, setWebsite] = useState(m?.website || '');
+  const [emailOn, setEmailOn] = useState<boolean>(!!(m as any)?.email_enabled);
+  const [currency, setCurrency] = useState(m?.currency || 'XOF');
+  const [lang, setLang] = useState(m?.language || 'fr');
+  const [savingShop, setSavingShop] = useState(false);
+
+  // Conversion
+  const [amountMode, setAmountMode] = useState<boolean>(!!m?.pts_amount_mode);
+  const [ratio, setRatio] = useState(String(m?.pts_fcfa_per_point || deviseInfo(m?.currency).ratio));
+  const [savingConv, setSavingConv] = useState(false);
+
+  // Expiration
+  const [expiryOn, setExpiryOn] = useState<boolean>(!!(m as any)?.pts_expiry_enabled);
+  const [expiryMonths, setExpiryMonths] = useState(String((m as any)?.pts_expiry_months || 12));
+  const [savingExp, setSavingExp] = useState(false);
+
+  // Marque
+  const [bg1, setBg1] = useState((m?.brand as any)?.bg1 || BRAND_PRESETS[0].bg1);
+  const [bg2, setBg2] = useState((m?.brand as any)?.bg2 || BRAND_PRESETS[0].bg2);
+  const [accent, setAccent] = useState((m?.brand as any)?.accent || BRAND_PRESETS[0].accent);
+  const [savingBrand, setSavingBrand] = useState(false);
+
+  // Automations
+  const rc = (m?.reward_config as any) || {};
+  const [winback, setWinback] = useState<boolean>(!!rc.winback_enabled);
+  const [winbackDays, setWinbackDays] = useState(String(rc.winback_days || 30));
+  const [birthday, setBirthday] = useState<boolean>(!!rc.birthday_greet);
+  const [notifyPoints, setNotifyPoints] = useState<boolean>(rc.notify_points !== false);
+  const [referralBonus, setReferralBonus] = useState(String(rc.referral_bonus || 0));
+  const [savingAuto, setSavingAuto] = useState(false);
+
+  // Logo
+  const [logoUrl, setLogoUrl] = useState(m?.logo_url || '');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  // Securite (PIN app)
+  const [pinOn, setPinOn] = useState(false);
+  const [pinModal, setPinModal] = useState(false);
+  const [pinStep, setPinStep] = useState<'set' | 'confirm'>('set');
+  const [pinFirst, setPinFirst] = useState('');
+  const [pinValue, setPinValue] = useState('');
+  const [pinError, setPinError] = useState(false);
+
+  // Branches / equipe
+  const [branches, setBranches] = useState<Merchant[]>([]);
+  const [cashiers, setCashiers] = useState<Cashier[]>([]);
+  const [branchModal, setBranchModal] = useState(false);
+  const [cashierModal, setCashierModal] = useState(false);
+  const [bName, setBName] = useState('');
+  const [cName, setCName] = useState('');
+  const [cPin, setCPin] = useState('');
+  const [branchBusy, setBranchBusy] = useState(false);
+
+  // API hook
+  const [apiKey, setApiKey] = useState('');
+  const [apiBusy, setApiBusy] = useState(false);
+
+  // Facturation
+  const [billing, setBilling] = useState<{ wave_link: string; pro_price: number }>({ wave_link: 'https://pay.wave.com/m/M_sn_1n3_7fYSI-Io/c/sn/', pro_price: 25000 });
+
+  // Theme (preference)
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    isPinEnabled().then(setPinOn);
+    AsyncStorage.getItem('ms_theme').then((v) => v && setTheme(v));
+  }, []);
+
+  const loadExtras = useCallback(async () => {
+    if (!m || !online) return;
+    fetchBranches(m.parent_id || m.id).then(setBranches).catch(() => {});
+    fetchCashiers(m.id).then(setCashiers).catch(() => {});
+    getLandingSettings().then((rows) => {
+      const row = rows.find((r: any) => r.key === 'landing_billing');
+      if (row && row.value) setBilling({ wave_link: row.value.wave_link || billing.wave_link, pro_price: row.value.pro_price || billing.pro_price });
+    }).catch(() => {});
+  }, [m, online]);
+
+  useEffect(() => {
+    loadExtras();
+  }, [loadExtras]);
+
+  const version = (Constants as any)?.expoConfig?.version || '1.0.0';
+  const planDays = m?.plan_expires ? Math.ceil((new Date(m.plan_expires).getTime() - Date.now()) / 86400000) : null;
+
+  // ---- Sauvegardes ----
+  const saveShop = async () => {
+    if (!m) return;
+    setSavingShop(true);
+    try {
+      let site = website.trim();
+      if (site && !/^https?:\/\//i.test(site)) site = 'https://' + site;
+      await updateMerchant(m.id, {
+        name: name.trim(),
+        threshold: parseInt(threshold || '10', 10),
+        reward_desc: rewardDesc.trim(),
+        whatsapp: whatsapp.trim(),
+        website: site,
+        email_enabled: emailOn,
+        currency,
+        language: lang,
+      });
+      await refreshMerchant();
+      toast('Boutique enregistree.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setSavingShop(false);
+    }
+  };
+
+  const saveConv = async () => {
+    if (!m) return;
+    const r = parseInt(ratio || '0', 10);
+    if (amountMode && r < deviseInfo(currency).ratioMin) {
+      toast(`Ratio minimum : ${deviseInfo(currency).ratioMin}`, 'warn');
+      return;
+    }
+    setSavingConv(true);
+    try {
+      await updateMerchant(m.id, { pts_amount_mode: amountMode, pts_fcfa_per_point: r });
+      await refreshMerchant();
+      toast('Conversion enregistree.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setSavingConv(false);
+    }
+  };
+
+  const saveExpiry = async () => {
+    if (!m) return;
+    setSavingExp(true);
+    try {
+      await updateMerchant(m.id, { pts_expiry_enabled: expiryOn, pts_expiry_months: parseInt(expiryMonths || '12', 10) });
+      await refreshMerchant();
+      toast('Expiration enregistree.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setSavingExp(false);
+    }
+  };
+
+  const saveBrand = async () => {
+    if (!m) return;
+    setSavingBrand(true);
+    try {
+      await updateMerchant(m.id, { brand: { bg1, bg2, accent, text: '#ffffff' } });
+      await refreshMerchant();
+      toast('Couleurs enregistrees.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Marque non enregistree (colonne absente ?)', 'warn');
+    } finally {
+      setSavingBrand(false);
+    }
+  };
+
+  const saveAuto = async () => {
+    if (!m) return;
+    setSavingAuto(true);
+    try {
+      const cfg = {
+        ...((m.reward_config as any) || {}),
+        winback_enabled: winback,
+        winback_days: parseInt(winbackDays || '30', 10),
+        birthday_greet: birthday,
+        notify_points: notifyPoints,
+        referral_bonus: parseInt(referralBonus || '0', 10),
+      };
+      await updateMerchant(m.id, { reward_config: cfg });
+      await refreshMerchant();
+      toast('Automations enregistrees.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setSavingAuto(false);
+    }
+  };
+
+  const uploadLogo = async () => {
+    if (!m) return;
+    setUploadingLogo(true);
+    try {
+      const img = await pickImage(600);
+      if (!img) return;
+      const { bytes, contentType } = await readAsBytes(img.uri);
+      const url = await storageUpload(`merchants/logos/${m.id}.jpg`, bytes, contentType || 'image/jpeg');
+      const bust = `${url}?v=${Date.now()}`;
+      await updateMerchant(m.id, { logo_url: url });
+      setLogoUrl(bust);
+      await refreshMerchant();
+      toast('Logo mis a jour.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Logo impossible', 'error');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  // ---- PIN ----
+  const onTogglePin = async (val: boolean) => {
+    if (val) {
+      setPinStep('set');
+      setPinFirst('');
+      setPinValue('');
+      setPinError(false);
+      setPinModal(true);
+    } else {
+      await disablePin();
+      setPinOn(false);
+      toast('Code PIN desactive.', 'info');
+    }
+  };
+  useEffect(() => {
+    if (!pinModal || pinValue.length !== 4) return;
+    (async () => {
+      if (pinStep === 'set') {
+        setPinFirst(pinValue);
+        setPinValue('');
+        setPinStep('confirm');
+      } else {
+        if (pinValue === pinFirst) {
+          await setPin(pinValue);
+          setPinOn(true);
+          setPinModal(false);
+          toast('Code PIN active.', 'success');
+        } else {
+          setPinError(true);
+          notifyError();
+          setTimeout(() => { setPinError(false); setPinValue(''); setPinFirst(''); setPinStep('set'); }, 700);
+        }
+      }
+    })();
+  }, [pinValue, pinModal, pinStep, pinFirst]);
+
+  // ---- Branches ----
+  const doCreateBranch = async () => {
+    if (!m || !bName.trim()) return;
+    setBranchBusy(true);
+    try {
+      await createBranch({
+        name: bName.trim(),
+        parent_id: m.parent_id || m.id,
+        phone: m.phone + '_branch_' + Date.now(),
+        threshold: parseInt(threshold || '10', 10),
+        reward_desc: rewardDesc.trim(),
+        country_code: (m as any).country_code || null,
+        currency,
+        language: lang,
+        plan: 'free',
+        created_at: new Date().toISOString(),
+      });
+      toast('Boutique creee.', 'success');
+      setBranchModal(false);
+      setBName('');
+      await loadExtras();
+    } catch (e: any) {
+      toast(e?.message || 'Creation impossible', 'error');
+    } finally {
+      setBranchBusy(false);
+    }
+  };
+
+  const doSwitchBranch = async (id: string) => {
+    await switchMerchant(id);
+    toast('Boutique active changee.', 'success');
+  };
+
+  // ---- Cashiers ----
+  const doAddCashier = async () => {
+    if (!m || !cName.trim()) return;
+    setBranchBusy(true);
+    try {
+      const c = await addCashier(m.id, cName.trim(), cPin.trim());
+      setCashiers((prev) => [...prev, c]);
+      toast('Caissier ajoute.', 'success');
+      setCashierModal(false);
+      setCName('');
+      setCPin('');
+    } catch (e: any) {
+      toast(e?.message || 'Ajout impossible', 'error');
+    } finally {
+      setBranchBusy(false);
+    }
+  };
+  const doRemoveCashier = async (id: string) => {
+    try {
+      await removeCashier(id);
+      setCashiers((prev) => prev.filter((c) => c.id !== id));
+    } catch (e: any) {
+      toast(e?.message || 'Suppression impossible', 'error');
+    }
+  };
+
+  // ---- API key ----
+  const loadApiKey = async () => {
+    setApiBusy(true);
+    try {
+      setApiKey(await getOrCreatePartnerKey());
+    } catch (e: any) {
+      toast(e?.message || 'Cle indisponible', 'error');
+    } finally {
+      setApiBusy(false);
+    }
+  };
+  const regenApiKey = async () => {
+    setApiBusy(true);
+    try {
+      setApiKey(await regeneratePartnerKey());
+      toast('Nouvelle cle generee.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Regeneration impossible', 'error');
+    } finally {
+      setApiBusy(false);
+    }
+  };
+
+  const setThemePref = async (t: string) => {
+    setTheme(t);
+    await AsyncStorage.setItem('ms_theme', t);
+  };
+
+  return (
+    <Screen scroll padded keyboardAvoiding contentStyle={styles.content}>
+      {navigation.canGoBack() ? (
+        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backTxt}>‹ Retour</Text>
+        </Pressable>
+      ) : null}
+      <View>
+        <Text style={styles.title}>Reglages</Text>
+        <Text style={styles.subtitle}>Boutique, marque, equipe et abonnement.</Text>
+      </View>
+
+      {/* Abonnement */}
+      <Card style={styles.card}>
+        <View style={styles.rowBetween}>
+          <Text style={styles.sectionTitle}>Abonnement</Text>
+          <StatusBadge label={String(m?.plan || 'free').toUpperCase()} tone={planDays != null && planDays < 0 ? 'red' : 'green'} small />
+        </View>
+        <Text style={styles.help}>
+          {planDays == null
+            ? 'Acces illimite.'
+            : planDays < 0
+            ? 'Abonnement expire. Renouvelez pour continuer.'
+            : `Il reste ${planDays} jour(s).`}
+        </Text>
+        <Button label={`Payer / renouveler (${fmtMoney(billing.pro_price, deviseInfo(currency).symbol)})`} icon="💳" onPress={() => openUrl(billing.wave_link)} />
+        <Button label="Contacter le support" icon="💬" variant="ghost" onPress={() => openWhatsApp('221777608983', 'Bonjour, je souhaite renouveler mon abonnement MySargal.')} />
+      </Card>
+
+      {/* Logo */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Logo de la boutique</Text>
+        <View style={styles.logoRow}>
+          {logoUrl ? <Image source={{ uri: logoUrl }} style={styles.logo} /> : <View style={[styles.logo, styles.logoEmpty]}><Text style={{ fontSize: 26 }}>{m?.emoji || '🏪'}</Text></View>}
+          <Button label="Changer le logo" icon="🖼️" variant="secondary" full={false} onPress={uploadLogo} loading={uploadingLogo} style={{ flex: 1 }} />
+        </View>
+      </Card>
+
+      {/* Boutique */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Boutique</Text>
+        <Field label="Nom" value={name} onChangeText={setName} />
+        <Field label="Palier recompense (points)" value={threshold} onChangeText={(t) => setThreshold(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+        <Field label="Recompense" value={rewardDesc} onChangeText={setRewardDesc} placeholder="Ex : 1 cafe offert" />
+        <Field label="WhatsApp boutique" value={whatsapp} onChangeText={setWhatsapp} keyboardType="phone-pad" />
+        <Field label="Site web" value={website} onChangeText={setWebsite} autoCapitalize="none" />
+        <View style={styles.rowBetween}>
+          <Text style={styles.switchLabel}>Emails clients actives</Text>
+          <Switch value={emailOn} onValueChange={setEmailOn} trackColor={{ false: colors.s4, true: colors.green }} thumbColor={emailOn ? colors.green3 : '#888'} />
+        </View>
+        <Text style={styles.label}>Devise</Text>
+        <Segmented scroll items={CURRENCIES.map((c) => ({ key: c, label: c }))} value={currency} onChange={setCurrency} />
+        <Text style={styles.label}>Langue</Text>
+        <Segmented items={LANGS} value={lang} onChange={setLang} />
+        <Button label="Enregistrer la boutique" onPress={saveShop} loading={savingShop} />
+      </Card>
+
+      {/* Conversion */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Points</Text>
+        <View style={styles.rowBetween}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.switchLabel}>Mode montant</Text>
+            <Text style={styles.help}>Convertir un montant d'achat en points automatiquement.</Text>
+          </View>
+          <Switch value={amountMode} onValueChange={setAmountMode} trackColor={{ false: colors.s4, true: colors.green }} thumbColor={amountMode ? colors.green3 : '#888'} />
+        </View>
+        {amountMode ? (
+          <>
+            <Field label={`Montant pour 1 point (${deviseInfo(currency).symbol})`} value={ratio} onChangeText={(t) => setRatio(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+            <Text style={styles.help}>1 point pour {fmtAmount(parseInt(ratio || '0', 10) || deviseInfo(currency).ratio, currency)} depenses.</Text>
+          </>
+        ) : (
+          <Text style={styles.help}>La caisse saisit directement le nombre de points.</Text>
+        )}
+        <Button label="Enregistrer les points" onPress={saveConv} loading={savingConv} variant="secondary" />
+      </Card>
+
+      {/* Expiration */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Expiration des points</Text>
+        <View style={styles.rowBetween}>
+          <Text style={styles.switchLabel}>Points expirables</Text>
+          <Switch value={expiryOn} onValueChange={setExpiryOn} trackColor={{ false: colors.s4, true: colors.green }} thumbColor={expiryOn ? colors.green3 : '#888'} />
+        </View>
+        {expiryOn ? (
+          <Field label="Duree de validite (mois)" value={expiryMonths} onChangeText={(t) => setExpiryMonths(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+        ) : null}
+        <Button label="Enregistrer l'expiration" onPress={saveExpiry} loading={savingExp} variant="secondary" />
+      </Card>
+
+      {/* Marque */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Couleurs de la carte</Text>
+        <View style={styles.presetRow}>
+          {BRAND_PRESETS.map((p) => (
+            <Pressable key={p.name} style={styles.preset} onPress={() => { setBg1(p.bg1); setBg2(p.bg2); setAccent(p.accent); }}>
+              <View style={[styles.presetSwatch, { backgroundColor: p.bg2 }]} />
+              <Text style={styles.presetName}>{p.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+        <View style={styles.brandPreviewRow}>
+          <View style={[styles.brandDot, { backgroundColor: bg1 }]} />
+          <View style={[styles.brandDot, { backgroundColor: bg2 }]} />
+          <View style={[styles.brandDot, { backgroundColor: accent }]} />
+          <Text style={styles.help}>Apercu des couleurs choisies</Text>
+        </View>
+        <Button label="Enregistrer les couleurs" onPress={saveBrand} loading={savingBrand} variant="secondary" />
+      </Card>
+
+      {/* Automations */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Automations WhatsApp</Text>
+        <ToggleRow label="Notifier les points credites" value={notifyPoints} onChange={setNotifyPoints} />
+        <ToggleRow label="Relance clients inactifs (winback)" value={winback} onChange={setWinback} />
+        {winback ? <Field label="Jours d'inactivite" value={winbackDays} onChangeText={(t) => setWinbackDays(t.replace(/\D/g, ''))} keyboardType="number-pad" /> : null}
+        <ToggleRow label="Message d'anniversaire" value={birthday} onChange={setBirthday} />
+        <Field label="Bonus de parrainage (points)" value={referralBonus} onChangeText={(t) => setReferralBonus(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+        <Button label="Enregistrer les automations" onPress={saveAuto} loading={savingAuto} variant="secondary" />
+      </Card>
+
+      {/* Boutiques / branches */}
+      <Card style={styles.card}>
+        <View style={styles.rowBetween}>
+          <Text style={styles.sectionTitle}>Boutiques</Text>
+          <Pressable onPress={() => setBranchModal(true)}><Text style={styles.addLink}>＋ Ajouter</Text></Pressable>
+        </View>
+        {branches.map((b) => (
+          <View key={b.id} style={styles.branchRow}>
+            <Text style={[styles.branchName, b.id === m?.id && { color: colors.green2 }]}>{b.name}{b.id === m?.id ? ' · active' : ''}</Text>
+            {b.id !== m?.id ? (
+              <Pressable onPress={() => doSwitchBranch(b.id)}><Text style={styles.branchSwitch}>Activer</Text></Pressable>
+            ) : null}
+          </View>
+        ))}
+        {!branches.length ? <Text style={styles.help}>Boutique unique.</Text> : null}
+      </Card>
+
+      {/* Equipe */}
+      <Card style={styles.card}>
+        <View style={styles.rowBetween}>
+          <Text style={styles.sectionTitle}>Equipe (caissiers)</Text>
+          <Pressable onPress={() => setCashierModal(true)}><Text style={styles.addLink}>＋ Ajouter</Text></Pressable>
+        </View>
+        {cashiers.map((c) => (
+          <View key={c.id} style={styles.branchRow}>
+            <Text style={styles.branchName}>{c.name}</Text>
+            <Pressable onPress={() => doRemoveCashier(c.id)}><Text style={[styles.branchSwitch, { color: colors.red }]}>Retirer</Text></Pressable>
+          </View>
+        ))}
+        {!cashiers.length ? <Text style={styles.help}>Aucun caissier enregistre.</Text> : null}
+      </Card>
+
+      {/* Hook API */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Integration (hook API)</Text>
+        <Text style={styles.help}>Cle pour connecter WooCommerce ou votre caisse externe.</Text>
+        {apiKey ? (
+          <>
+            <Pressable onPress={() => { copyText(apiKey); toast('Cle copiee.', 'success'); }} style={styles.keyBox}>
+              <Text style={styles.keyTxt} numberOfLines={1}>{apiKey}</Text>
+            </Pressable>
+            <Pressable onPress={() => { copyText(`${FUNCTIONS_BASE}/api-order?key=${apiKey}`); toast('URL copiee.', 'success'); }}>
+              <Text style={styles.webhook} numberOfLines={1}>{FUNCTIONS_BASE}/api-order?key=...</Text>
+            </Pressable>
+            <Button label="Regenerer la cle" variant="ghost" onPress={regenApiKey} loading={apiBusy} />
+          </>
+        ) : (
+          <Button label="Generer la cle API" icon="🔑" variant="secondary" onPress={loadApiKey} loading={apiBusy} />
+        )}
+      </Card>
+
+      {/* Securite */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Securite</Text>
+        <View style={styles.rowBetween}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.switchLabel}>Code PIN local</Text>
+            <Text style={styles.help}>Verrouille l'app entre vendeurs.</Text>
+          </View>
+          <Switch value={pinOn} onValueChange={onTogglePin} trackColor={{ false: colors.s4, true: colors.green }} thumbColor={pinOn ? colors.green3 : '#888'} />
+        </View>
+        {pinOn ? <Button label="Verrouiller maintenant" icon="🔒" variant="secondary" onPress={() => lock()} /> : null}
+      </Card>
+
+      {/* Theme */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Theme</Text>
+        <Segmented items={[{ key: 'dark', label: 'Sombre' }, { key: 'light', label: 'Clair' }]} value={theme} onChange={setThemePref} />
+        <Text style={styles.help}>La caisse est optimisee pour le theme sombre. La preference est enregistree.</Text>
+      </Card>
+
+      {/* Synchronisation */}
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>Synchronisation</Text>
+        <View style={styles.rowBetween}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.switchLabel}>
+              {pendingCount > 0 ? `${pendingCount} operation(s) en attente` : 'Tout est synchronise'}
+            </Text>
+            <Text style={styles.help}>{online ? 'Reseau disponible' : 'Hors ligne'}</Text>
+          </View>
+          <View style={[styles.dot, { backgroundColor: online ? colors.green2 : colors.red }]} />
+        </View>
+        {pendingCount > 0 ? <Button label="Synchroniser maintenant" icon="↻" variant="secondary" loading={syncing} disabled={!online} onPress={syncNow} /> : null}
+      </Card>
+
+      {/* Compte */}
+      <Card style={styles.card}>
+        {m?.phone ? <Text style={styles.help}>Compte : {maskLabel(m.phone)}</Text> : null}
+        <Button label="Se deconnecter" icon="⏻" variant="danger" onPress={logout} />
+        <Text style={styles.version}>MySargal Caisse v{version}</Text>
+      </Card>
+
+      {/* Modal PIN */}
+      <Modal visible={pinModal} animationType="slide" transparent onRequestClose={() => setPinModal(false)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCardCenter}>
+            <Text style={styles.modalTitle}>{pinStep === 'set' ? 'Choisis un code PIN' : 'Confirme le code'}</Text>
+            <Text style={styles.modalSub}>{pinStep === 'set' ? 'Un code a 4 chiffres.' : 'Saisis a nouveau le meme code.'}</Text>
+            <PinPad value={pinValue} onChange={setPinValue} error={pinError} />
+            <Pressable onPress={() => setPinModal(false)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal branche */}
+      <Modal visible={branchModal} animationType="slide" transparent onRequestClose={() => setBranchModal(false)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Nouvelle boutique</Text>
+            <Field label="Nom de la boutique" value={bName} onChangeText={setBName} containerStyle={{ marginTop: 12 }} />
+            <Button label="Creer" onPress={doCreateBranch} loading={branchBusy} style={{ marginTop: 12 }} />
+            <Pressable onPress={() => setBranchModal(false)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal caissier */}
+      <Modal visible={cashierModal} animationType="slide" transparent onRequestClose={() => setCashierModal(false)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Nouveau caissier</Text>
+            <Field label="Nom" value={cName} onChangeText={setCName} containerStyle={{ marginTop: 12 }} />
+            <Field label="Code PIN (4 chiffres)" value={cPin} onChangeText={(t) => setCPin(t.replace(/\D/g, '').slice(0, 4))} keyboardType="number-pad" containerStyle={{ marginTop: 12 }} />
+            <Button label="Ajouter" onPress={doAddCashier} loading={branchBusy} style={{ marginTop: 12 }} />
+            <Pressable onPress={() => setCashierModal(false)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
+          </View>
+        </View>
+      </Modal>
+    </Screen>
+  );
+}
+
+function ToggleRow({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <View style={styles.rowBetween}>
+      <Text style={styles.switchLabel}>{label}</Text>
+      <Switch value={value} onValueChange={onChange} trackColor={{ false: colors.s4, true: colors.green }} thumbColor={value ? colors.green3 : '#888'} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+  backBtn: { alignSelf: 'flex-start', paddingVertical: 4 },
+  backTxt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.green2 },
+  title: { fontFamily: fonts.heading, fontSize: 26, color: colors.tx, letterSpacing: -0.5, marginTop: 4 },
+  subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2, marginTop: 2 },
+  card: { gap: 12 },
+  sectionTitle: { fontFamily: fonts.headingBold, fontSize: 16, color: colors.tx },
+  rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  help: { fontFamily: fonts.body, fontSize: 12, color: colors.tx3, lineHeight: 18 },
+  label: { fontFamily: fonts.bodySemi, fontSize: 11, color: colors.tx3, letterSpacing: 0.6, textTransform: 'uppercase' },
+  switchLabel: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx },
+  logoRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  logo: { width: 64, height: 64, borderRadius: 16, backgroundColor: colors.s3 },
+  logoEmpty: { alignItems: 'center', justifyContent: 'center' },
+  presetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  preset: { alignItems: 'center', gap: 4, width: '21%' },
+  presetSwatch: { width: 40, height: 40, borderRadius: 12, borderWidth: 1, borderColor: colors.b2 },
+  presetName: { fontFamily: fonts.body, fontSize: 10, color: colors.tx3 },
+  brandPreviewRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  brandDot: { width: 22, height: 22, borderRadius: 11, borderWidth: 1, borderColor: colors.b2 },
+  addLink: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.green2 },
+  branchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderTopWidth: 1, borderTopColor: colors.b1 },
+  branchName: { fontFamily: fonts.bodySemi, fontSize: 14, color: colors.tx },
+  branchSwitch: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.green2 },
+  keyBox: { backgroundColor: colors.s3, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b2, padding: 12 },
+  keyTxt: { fontFamily: fonts.mono, fontSize: 12, color: colors.green3 },
+  webhook: { fontFamily: fonts.mono, fontSize: 11, color: colors.tx3 },
+  dot: { width: 10, height: 10, borderRadius: 5 },
+  version: { fontFamily: fonts.mono, fontSize: 11, color: colors.tx3, textAlign: 'center', marginTop: 4 },
+  modalWrap: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalCard: { backgroundColor: colors.s1, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.xl, paddingBottom: 34, borderTopWidth: 1, borderColor: colors.b2 },
+  modalCardCenter: { backgroundColor: colors.s1, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.xl, paddingBottom: 40, alignItems: 'center', gap: 10, borderTopWidth: 1, borderColor: colors.b2 },
+  modalTitle: { fontFamily: fonts.heading, fontSize: 20, color: colors.tx },
+  modalSub: { fontFamily: fonts.body, fontSize: 13.5, color: colors.tx2, textAlign: 'center', marginBottom: 18 },
+  cancel: { alignItems: 'center', paddingVertical: 12, marginTop: 4 },
+  cancelTxt: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx3 },
+});

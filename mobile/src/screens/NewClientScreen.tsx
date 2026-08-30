@@ -1,0 +1,247 @@
+// ============================================================
+// MySargal Caisse - Nouvelle carte client (creation a la volee)
+// Genere un numero de carte (serveur), cree la carte, envoie la carte au
+// client par WhatsApp et gere le parrainage. Choix d'un design de carte.
+// ============================================================
+
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AppBackground } from '../components/AppBackground';
+
+import { RootStackParamList } from '../navigation/types';
+import { Card } from '../components/Card';
+import { Field } from '../components/Field';
+import { Button } from '../components/Button';
+import { Icon } from '../components/Icon';
+import { PageHeader } from '../components/PageHeader';
+import { useToast } from '../components/Toast';
+import { colors, fonts, radius, spacing } from '../theme';
+import { useTheme } from '../theme/ThemeProvider';
+
+import { useAuth } from '../auth/AuthContext';
+import { useNetwork } from '../offline/NetworkProvider';
+import { generateCardCode, createCard, applyReferral } from '../api/endpoints';
+import { COUNTRIES, DEFAULT_COUNTRY, Country } from '../utils/phone';
+import { onlyDigits } from '../utils/format';
+import { WA_MESSAGES, openWhatsApp, openSMS, copyText, cardUrl, firstName } from '../utils/wa';
+import { GIFT_GRADIENTS } from '../utils/brand';
+import { notifySuccess, tapLight } from '../utils/haptics';
+
+type Nav = NativeStackNavigationProp<RootStackParamList, 'NewClient'>;
+type Rt = RouteProp<RootStackParamList, 'NewClient'>;
+
+const DESIGNS: { key: string; label: string }[] = [
+  { key: 'green', label: 'Vert' },
+  { key: 'violet', label: 'Violet' },
+  { key: 'gold', label: 'Or' },
+  { key: 'teal', label: 'Teal' },
+  { key: 'rose', label: 'Rose' },
+  { key: 'blue', label: 'Bleu' },
+  { key: 'noir', label: 'Noir' },
+  { key: 'foret', label: 'Foret' },
+];
+
+export function NewClientScreen() {
+  const navigation = useNavigation<Nav>();
+  const route = useRoute<Rt>();
+  const { merchant } = useAuth();
+  const { online } = useNetwork();
+  const { toast } = useToast();
+  const theme = useTheme();
+
+  const [name, setName] = useState('');
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
+  const [showCountries, setShowCountries] = useState(false);
+  const [local, setLocal] = useState('');
+  const [referrer, setReferrer] = useState('');
+  const [design, setDesign] = useState('green');
+  const [busy, setBusy] = useState(false);
+  const [created, setCreated] = useState<{ code: string; name: string; phone: string } | null>(null);
+
+  const create = async () => {
+    if (!merchant) return;
+    if (!name.trim()) {
+      toast('Entre le nom du client.', 'warn');
+      return;
+    }
+    if (!online) {
+      toast('Reseau requis pour creer une carte.', 'warn');
+      return;
+    }
+    const digits = onlyDigits(local).replace(/^0+/, '');
+    const fullPhone = digits ? country.code + digits : '';
+    if (digits && (digits.length < 6 || digits.length > 15)) {
+      toast('Numero de telephone invalide.', 'warn');
+      return;
+    }
+    setBusy(true);
+    try {
+      const code = await generateCardCode();
+      await createCard({
+        merchant_id: merchant.id,
+        code,
+        client_name: name.trim(),
+        client_phone: fullPhone || null,
+        client_phone_raw: digits || null,
+        design_name: design,
+      });
+      notifySuccess();
+      // Envoi automatique de la carte au client par WhatsApp.
+      if (fullPhone) {
+        openWhatsApp(fullPhone, WA_MESSAGES.bienvenue(firstName(name), merchant.name, cardUrl(code)));
+      }
+      // Parrainage eventuel.
+      const ref = referrer.trim().toUpperCase();
+      if (ref) {
+        try {
+          const r = await applyReferral(merchant.id, ref, code);
+          if (r.bonus) toast(`Parrainage applique : +${r.bonus} pts.`, 'success');
+        } catch (e: any) {
+          toast(e?.message || 'Parrainage refuse', 'warn');
+        }
+      }
+      setCreated({ code, name: name.trim(), phone: fullPhone });
+    } catch (e: any) {
+      toast(e?.message || 'Creation impossible', 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (created) {
+    const url = cardUrl(created.code);
+    return (
+      <View style={styles.root}>
+        <AppBackground />
+        <SafeAreaView style={styles.flex} edges={['top']}>
+          <View style={styles.doneWrap}>
+            <View style={[styles.doneIconWrap, { backgroundColor: theme.accentSoftBg, borderColor: theme.accentBorder }]}>
+              <Icon name="check" size={32} color={theme.accentDark} />
+            </View>
+            <Text style={styles.doneTitle}>Carte creee</Text>
+            <Text style={styles.doneName}>{created.name}</Text>
+            <Text style={[styles.doneCode, { color: theme.accentDark }]}>{created.code}</Text>
+
+            <View style={styles.doneActions}>
+              {created.phone ? (
+                <Button
+                  label="Envoyer par WhatsApp"
+                  icon="message-circle"
+                  onPress={() =>
+                    openWhatsApp(created.phone, WA_MESSAGES.bienvenue(firstName(created.name), merchant?.name || '', url))
+                  }
+                />
+              ) : null}
+              {created.phone ? (
+                <Button
+                  label="Envoyer par SMS"
+                  icon="mail"
+                  variant="secondary"
+                  onPress={() => openSMS(created.phone, WA_MESSAGES.carte(firstName(created.name), merchant?.name || '', url))}
+                />
+              ) : null}
+              <Button label="Copier le lien de la carte" icon="link" variant="secondary" onPress={() => { copyText(url); toast('Lien copie.', 'success'); }} />
+              <Button
+                label="Encaisser maintenant"
+                icon="plus"
+                onPress={() => navigation.replace('Client', { code: created.code })}
+              />
+              <Button label="Terminer" variant="ghost" onPress={() => navigation.goBack()} />
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.root}>
+      <AppBackground />
+      <SafeAreaView style={styles.flex} edges={['top']}>
+        <PageHeader style={styles.navBar} title="Nouvelle carte" />
+
+        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          <Card style={styles.card}>
+            <Field label="Nom du client" value={name} onChangeText={setName} placeholder="Ex : Awa Diop" autoCapitalize="words" />
+
+            <View>
+              <Text style={styles.label}>Telephone (optionnel)</Text>
+              <View style={styles.phoneRow}>
+                <Pressable style={styles.country} onPress={() => setShowCountries((v) => !v)}>
+                  <Text style={styles.code}>{country.code}</Text>
+                </Pressable>
+                <View style={{ flex: 1 }}>
+                  <Field value={local} onChangeText={(t) => setLocal(t.replace(/[^\d ]/g, ''))} placeholder="77 123 45 67" keyboardType="phone-pad" />
+                </View>
+              </View>
+              {showCountries ? (
+                <View style={styles.countryList}>
+                  {COUNTRIES.map((c) => (
+                    <Pressable key={c.iso} style={styles.countryItem} onPress={() => { setCountry(c); setShowCountries(false); }}>
+                      <Text style={styles.countryName}>{c.name}</Text>
+                      <Text style={styles.code}>{c.code}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
+            </View>
+
+            <Field label="Code parrain (optionnel)" value={referrer} onChangeText={(t) => setReferrer(t.toUpperCase())} placeholder="LC-XXXXXX" autoCapitalize="characters" />
+          </Card>
+
+          <Card style={styles.card}>
+            <Text style={styles.label}>Design de la carte</Text>
+            <View style={styles.designGrid}>
+              {DESIGNS.map((d) => {
+                const g = GIFT_GRADIENTS[d.key] || GIFT_GRADIENTS.green;
+                const on = design === d.key;
+                return (
+                  <Pressable key={d.key} onPress={() => { tapLight(); setDesign(d.key); }} style={[styles.designCell, on && [styles.designOn, { borderColor: theme.accentBorder, backgroundColor: theme.accentSoftBg }]]}>
+                    <LinearGradient colors={g} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.designSwatch} />
+                    <Text style={[styles.designLbl, on && { color: theme.accentDark }]}>{d.label}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Card>
+
+          <Button label="Creer la carte" icon="credit-card" onPress={create} loading={busy} large />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+  flex: { flex: 1 },
+  navBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.lg, paddingVertical: 10 },
+  backBtn: { paddingVertical: 6, width: 60 },
+  backTxt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.tx },
+  navTitle: { fontFamily: fonts.headingBold, fontSize: 17, color: colors.tx },
+  scroll: { padding: spacing.lg, gap: spacing.lg, paddingBottom: spacing.xxxl },
+  card: { gap: 14 },
+  label: { fontFamily: fonts.bodySemi, fontSize: 11, color: colors.tx3, letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: 6 },
+  phoneRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  country: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.s3, borderWidth: 1.5, borderColor: colors.b1, borderRadius: radius.md, paddingHorizontal: 12, height: 52 },
+  flag: { fontSize: 18 },
+  code: { fontFamily: fonts.mono, fontSize: 13, color: colors.tx },
+  countryList: { backgroundColor: colors.s2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b2, overflow: 'hidden', marginTop: 8 },
+  countryItem: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.b1 },
+  countryName: { flex: 1, fontFamily: fonts.bodySemi, fontSize: 14, color: colors.tx },
+  designGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  designCell: { width: '22%', alignItems: 'center', gap: 6, padding: 6, borderRadius: radius.md, borderWidth: 1.5, borderColor: 'transparent' },
+  designOn: { borderColor: colors.b3, backgroundColor: colors.s4 },
+  designSwatch: { width: 44, height: 44, borderRadius: 12 },
+  designLbl: { fontFamily: fonts.bodySemi, fontSize: 11, color: colors.tx2 },
+  doneWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: 6 },
+  doneIconWrap: { width: 76, height: 76, borderRadius: 38, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.s4, borderWidth: 1.5, borderColor: colors.b3 },
+  doneTitle: { fontFamily: fonts.heading, fontSize: 24, color: colors.tx },
+  doneName: { fontFamily: fonts.bodyBold, fontSize: 17, color: colors.tx, marginTop: 6 },
+  doneCode: { fontFamily: fonts.mono, fontSize: 14, color: colors.tx, marginBottom: 20 },
+  doneActions: { alignSelf: 'stretch', gap: 10 },
+});

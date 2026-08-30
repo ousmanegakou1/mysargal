@@ -1,0 +1,85 @@
+{
+  "expo": {
+    "name": "MySargal",
+    "slug": "mysargal-caisse",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "mysargalcaisse",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#f6f8f7",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#060d06"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/0b66d0c7-929b-4242-ae1b-376e2464e9de",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mysargal.app",
+      "buildNumber": "4",
+      "infoPlist": {
+        "NSCameraUsageDescription": "MySargal utilise la camera pour scanner les cartes de fidelite des clients.",
+        "NSPhotoLibraryUsageDescription": "MySargal accede a vos photos pour le logo de la boutique et les images de campagnes.",
+        "UIBackgroundModes": [
+          "remote-notification",
+          "remote-notification"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.mysargal.app",
+      "versionCode": 5,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#30c25c"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MySargal utilise la camera pour scanner les cartes de fidelite."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#22c55e"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "MySargal accede a vos photos pour le logo de la boutique et les images de campagnes."
+        }
+      ],
+      "expo-secure-store",
+      "expo-font",
+      "./plugins/withGradleMemory"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0b66d0c7-929b-4242-ae1b-376e2464e9de"
+      }
+    },
+    "owner": "ousmaneg"
+  }
+}

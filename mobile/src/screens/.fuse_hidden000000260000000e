@@ -1,0 +1,305 @@
+// ============================================================
+// MySargal Caisse - Recompenses
+// Catalogue des recompenses : liste, ajout, edition, suppression. Compteur de
+// clients prets et historique des remises.
+// ============================================================
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Modal, ScrollView, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { RootStackParamList } from '../navigation/types';
+import { Screen } from '../components/Screen';
+import { Card } from '../components/Card';
+import { Field } from '../components/Field';
+import { Button } from '../components/Button';
+import { Segmented } from '../components/Segmented';
+import { EmptyState } from '../components/EmptyState';
+import { OfflineBanner } from '../components/OfflineBanner';
+import { useToast } from '../components/Toast';
+import { colors, fonts, radius, spacing } from '../theme';
+
+import { useAuth } from '../auth/AuthContext';
+import { useNetwork } from '../offline/NetworkProvider';
+import {
+  fetchRewards,
+  fetchCards,
+  fetchRewardHistory,
+  createReward,
+  updateReward,
+  deleteReward,
+} from '../api/endpoints';
+import { Reward, LoyaltyCardRow, Transaction } from '../api/types';
+import { fmtPts, isToday } from '../utils/format';
+import { tapLight } from '../utils/haptics';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+const TYPES = [
+  { key: 'free_item', label: 'Cadeau' },
+  { key: 'discount', label: 'Remise' },
+  { key: 'cashback', label: 'Cashback' },
+];
+
+export function RewardsScreen() {
+  const navigation = useNavigation<Nav>();
+  const { merchant } = useAuth();
+  const { online } = useNetwork();
+  const { toast } = useToast();
+
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [cards, setCards] = useState<LoyaltyCardRow[]>([]);
+  const [history, setHistory] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [editing, setEditing] = useState<Reward | null>(null);
+  const [modal, setModal] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const [name, setName] = useState('');
+  const [emoji, setEmoji] = useState('🎁');
+  const [desc, setDesc] = useState('');
+  const [cost, setCost] = useState('10');
+  const [type, setType] = useState('free_item');
+  const [discountType, setDiscountType] = useState('percent');
+  const [discountValue, setDiscountValue] = useState('10');
+
+  const load = useCallback(async () => {
+    if (!merchant || !online) return;
+    try {
+      const [r, c] = await Promise.all([fetchRewards(merchant.id), fetchCards(merchant.id)]);
+      setRewards(r);
+      setCards(c);
+      fetchRewardHistory(merchant.id).then(setHistory).catch(() => {});
+    } catch {
+      /* garde l'existant */
+    }
+  }, [merchant, online]);
+
+  useEffect(() => {
+    setLoading(true);
+    load().finally(() => setLoading(false));
+  }, [load]);
+
+  const threshold = merchant?.threshold || 10;
+  const readyCount = useMemo(() => cards.filter((c) => (c.pts || 0) >= threshold).length, [cards, threshold]);
+  const histMonth = useMemo(() => history.length, [history]);
+  const histToday = useMemo(() => history.filter((h) => isToday(h.created_at)).length, [history]);
+
+  const openNew = () => {
+    setEditing(null);
+    setName('');
+    setEmoji('🎁');
+    setDesc('');
+    setCost(String(threshold));
+    setType('free_item');
+    setDiscountType('percent');
+    setDiscountValue('10');
+    setModal(true);
+  };
+
+  const openEdit = (r: Reward) => {
+    setEditing(r);
+    setName(r.name || '');
+    setEmoji(r.emoji || '🎁');
+    setDesc((r as any).description || (r as any).desc || '');
+    setCost(String(r.pts_cost || threshold));
+    setType((r as any).type || 'free_item');
+    setDiscountType((r as any).discount_type || 'percent');
+    setDiscountValue(String((r as any).discount_value || 10));
+    setModal(true);
+  };
+
+  const save = async () => {
+    if (!merchant) return;
+    if (!name.trim()) {
+      toast('Entre le nom de la recompense.', 'warn');
+      return;
+    }
+    const dv = parseInt(discountValue || '0', 10);
+    if (type === 'discount' && discountType === 'percent' && (dv < 1 || dv > 100)) {
+      toast('Le pourcentage doit etre entre 1 et 100.', 'warn');
+      return;
+    }
+    setBusy(true);
+    try {
+      const payload = {
+        name: name.trim(),
+        description: desc.trim(),
+        emoji,
+        pts_cost: parseInt(cost || '0', 10) || threshold,
+        type,
+        discount_type: discountType,
+        discount_value: dv,
+        merchant_id: merchant.id,
+      };
+      if (editing) {
+        await updateReward(String(editing.id), payload);
+        setRewards((prev) => prev.map((r) => (r.id === editing.id ? { ...r, ...payload } as Reward : r)));
+        toast('Recompense mise a jour.', 'success');
+      } else {
+        const created = await createReward(payload);
+        setRewards((prev) => [...prev, created]);
+        toast('Recompense ajoutee.', 'success');
+      }
+      setModal(false);
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async () => {
+    if (!editing) return;
+    setBusy(true);
+    try {
+      await deleteReward(String(editing.id));
+      setRewards((prev) => prev.filter((r) => r.id !== editing.id));
+      toast('Recompense supprimee.', 'success');
+      setModal(false);
+    } catch (e: any) {
+      toast(e?.message || 'Suppression impossible', 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Screen scroll padded contentStyle={styles.content}>
+      <View style={styles.head}>
+        <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Text style={styles.backTxt}>‹ Retour</Text>
+        </Pressable>
+      </View>
+      <View>
+        <Text style={styles.title}>Recompenses</Text>
+        <Text style={styles.subtitle}>Ce que vos clients peuvent debloquer.</Text>
+      </View>
+
+      <OfflineBanner />
+
+      <View style={styles.statsRow}>
+        <Stat value={String(readyCount)} label="Clients prets" accent />
+        <View style={styles.vsep} />
+        <Stat value={String(histToday)} label="Remises aujourd'hui" />
+        <View style={styles.vsep} />
+        <Stat value={String(histMonth)} label="Total remises" />
+      </View>
+
+      <Button label="Ajouter une recompense" icon="＋" onPress={openNew} />
+
+      {loading && !rewards.length ? (
+        <ActivityIndicator color={colors.green2} style={{ marginVertical: 24 }} />
+      ) : rewards.length ? (
+        <View style={styles.list}>
+          {rewards.map((r) => (
+            <Pressable key={String(r.id)} style={styles.item} onPress={() => { tapLight(); openEdit(r); }}>
+              <Text style={styles.itemEmoji}>{r.emoji || '🎁'}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.itemName}>{r.name}</Text>
+                {(r as any).description ? (
+                  <Text style={styles.itemDesc} numberOfLines={1}>{(r as any).description}</Text>
+                ) : null}
+              </View>
+              <View style={styles.itemCost}>
+                <Text style={styles.itemCostVal}>{fmtPts(r.pts_cost)}</Text>
+                <Text style={styles.itemCostLbl}>pts</Text>
+              </View>
+              <Text style={styles.edit}>Modifier ›</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : (
+        <EmptyState icon="🎁" title="Aucune recompense" message="Ajoute la premiere recompense de ta boutique." actionLabel="Ajouter" onAction={openNew} />
+      )}
+
+      <Modal visible={modal} transparent animationType="slide" onRequestClose={() => setModal(false)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCard}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 14 }} keyboardShouldPersistTaps="handled">
+              <Text style={styles.modalTitle}>{editing ? 'Modifier la recompense' : 'Nouvelle recompense'}</Text>
+              <View style={styles.emojiRow}>
+                {['🎁', '☕', '🍰', '🥤', '💇', '🛍️', '⭐', '💎'].map((e) => (
+                  <Pressable key={e} onPress={() => setEmoji(e)} style={[styles.emojiCell, emoji === e && styles.emojiOn]}>
+                    <Text style={styles.emojiTxt}>{e}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              <Field label="Nom" value={name} onChangeText={setName} placeholder="Ex : Cafe offert" />
+              <Field label="Description" value={desc} onChangeText={setDesc} placeholder="Detail (optionnel)" />
+              <Field label="Cout en points" value={cost} onChangeText={(t) => setCost(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+              <View>
+                <Text style={styles.label}>Type</Text>
+                <Segmented items={TYPES} value={type} onChange={setType} />
+              </View>
+              {type === 'discount' ? (
+                <View style={{ gap: 10 }}>
+                  <Segmented
+                    items={[{ key: 'percent', label: 'Pourcentage' }, { key: 'amount', label: 'Montant' }]}
+                    value={discountType}
+                    onChange={setDiscountType}
+                  />
+                  <Field
+                    label={discountType === 'percent' ? 'Pourcentage (%)' : 'Montant'}
+                    value={discountValue}
+                    onChangeText={(t) => setDiscountValue(t.replace(/\D/g, ''))}
+                    keyboardType="number-pad"
+                  />
+                </View>
+              ) : null}
+              <Button label={editing ? 'Enregistrer' : 'Ajouter'} onPress={save} loading={busy} />
+              {editing ? <Button label="Supprimer" variant="danger" onPress={remove} loading={busy} /> : null}
+              <Pressable onPress={() => setModal(false)} style={styles.cancel}>
+                <Text style={styles.cancelTxt}>Annuler</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </Screen>
+  );
+}
+
+function Stat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
+  return (
+    <View style={styles.stat}>
+      <Text style={[styles.statVal, accent && { color: colors.green2 }]}>{value}</Text>
+      <Text style={styles.statLbl}>{label}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+  head: { marginTop: 2 },
+  backBtn: { alignSelf: 'flex-start', paddingVertical: 4 },
+  backTxt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.green2 },
+  title: { fontFamily: fonts.heading, fontSize: 26, color: colors.tx, letterSpacing: -0.5 },
+  subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2, marginTop: 2 },
+  statsRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.s2, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.b1, paddingVertical: 16 },
+  stat: { flex: 1, alignItems: 'center', gap: 3 },
+  statVal: { fontFamily: fonts.heading, fontSize: 22, color: colors.tx },
+  statLbl: { fontFamily: fonts.body, fontSize: 11, color: colors.tx3, textAlign: 'center' },
+  vsep: { width: 1, height: 34, backgroundColor: colors.b1 },
+  list: { gap: 10 },
+  item: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.s2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b1, padding: 14 },
+  itemEmoji: { fontSize: 26 },
+  itemName: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.tx },
+  itemDesc: { fontFamily: fonts.body, fontSize: 12, color: colors.tx3, marginTop: 2 },
+  itemCost: { alignItems: 'center', minWidth: 40 },
+  itemCostVal: { fontFamily: fonts.heading, fontSize: 17, color: colors.gold },
+  itemCostLbl: { fontFamily: fonts.mono, fontSize: 9, color: colors.tx3 },
+  edit: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.tx3 },
+  modalWrap: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalCard: { backgroundColor: colors.s1, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.xl, paddingBottom: 34, borderTopWidth: 1, borderColor: colors.b2, maxHeight: '90%' },
+  modalTitle: { fontFamily: fonts.heading, fontSize: 20, color: colors.tx },
+  emojiRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  emojiCell: { width: 46, height: 46, borderRadius: 12, backgroundColor: colors.s3, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: 'transparent' },
+  emojiOn: { borderColor: colors.b3, backgroundColor: colors.greenSoft },
+  emojiTxt: { fontSize: 22 },
+  label: { fontFamily: fonts.bodySemi, fontSize: 11, color: colors.tx3, letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: 6 },
+  cancel: { alignItems: 'center', paddingVertical: 10 },
+  cancelTxt: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx3 },
+});

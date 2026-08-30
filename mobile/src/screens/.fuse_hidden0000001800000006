@@ -1,0 +1,373 @@
+// ============================================================
+// MySargal Caisse - Accueil / Caisse
+// Resume de la journee, gros bouton Scanner, recherche client par numero de
+// membre ou telephone, acces rapide aux derniers clients scannes.
+// ============================================================
+
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
+
+import { Screen } from '../components/Screen';
+import { Card } from '../components/Card';
+import { Field } from '../components/Field';
+import { Button } from '../components/Button';
+import { Avatar } from '../components/Avatar';
+import { OfflineBanner } from '../components/OfflineBanner';
+import { EmptyState } from '../components/EmptyState';
+import { useToast } from '../components/Toast';
+import { colors, fonts, radius, spacing, shadow } from '../theme';
+
+import { RootStackParamList } from '../navigation/types';
+import { useAuth } from '../auth/AuthContext';
+import { useAppStore } from '../store/appStore';
+import { useNetwork } from '../offline/NetworkProvider';
+import { fetchTransactions, findCardsByPhone, getPoints } from '../api/endpoints';
+import { Transaction, CardLookup, ApiError } from '../api/types';
+import { isToday, fmtPts, onlyDigits } from '../utils/format';
+import { isAmountMode, fcfaPerPoint } from '../utils/points';
+import { fmtAmount } from '../utils/currency';
+import { tapMedium } from '../utils/haptics';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+export function HomeScreen() {
+  const navigation = useNavigation<Nav>();
+  const { merchant } = useAuth();
+  const { toast } = useToast();
+  const { online } = useNetwork();
+  const clients = useAppStore((s) => s.clients);
+  const recentCodes = useAppStore((s) => s.recentCodes);
+  const cacheClient = useAppStore((s) => s.cacheClient);
+  const localOps = useAppStore((s) => s.localOps);
+
+  const [txs, setTxs] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+
+  const load = useCallback(async () => {
+    if (!merchant) return;
+    try {
+      const rows = await fetchTransactions(merchant.id, 80);
+      setTxs(rows);
+    } catch {
+      /* hors ligne : on garde ce qu'on a */
+    }
+  }, [merchant]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      load().finally(() => setLoading(false));
+    }, [load])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  };
+
+  // Resume du jour : credits et recompenses du jour (serveur) + ops locales.
+  const today = useMemo(() => {
+    const serverToday = txs.filter((t) => isToday(t.created_at));
+    let earns = serverToday.filter((t) => t.type === 'earn');
+    let rewards = serverToday.filter((t) => t.type === 'reward');
+    const ptsGiven = earns.reduce((s, t) => s + (t.pts || 0), 0);
+    // Operations locales (hors ligne) du jour non encore comptees.
+    const localToday = localOps.filter((o) => isToday(new Date(o.at).toISOString()));
+    const localCredits = localToday.filter((o) => o.type === 'credit').length;
+    const localRewards = localToday.filter((o) => o.type === 'reward').length;
+    return {
+      credits: earns.length + localCredits,
+      rewards: rewards.length + localRewards,
+      ptsGiven,
+    };
+  }, [txs, localOps]);
+
+  const recent = useMemo(
+    () => recentCodes.map((c) => clients[c]).filter(Boolean).slice(0, 6) as CardLookup[],
+    [recentCodes, clients]
+  );
+
+  const doSearch = async () => {
+    const q = query.trim();
+    if (!q || !merchant) return;
+    setSearching(true);
+    try {
+      // 1) Code de carte direct ? get-points (aussi hors ligne via cache).
+      const looksLikeCode = /^[A-Za-z0-9\-]{5,}$/.test(q) && onlyDigits(q).length < q.length;
+      if (!online) {
+        const cached = clients[q.toUpperCase()];
+        if (cached) {
+          navigation.navigate('Client', { card: cached });
+          return;
+        }
+        toast('Hors ligne : client non trouve dans le cache.', 'warn');
+        return;
+      }
+      if (looksLikeCode) {
+        try {
+          const card = await getPoints(q.toUpperCase(), merchant.id);
+          cacheClient(card);
+          navigation.navigate('Client', { card });
+          return;
+        } catch {
+          /* pas un code, on tente par telephone */
+        }
+      }
+      // 2) Telephone ou numero de membre.
+      const cards = await findCardsByPhone(q, merchant.id);
+      if (!cards.length) {
+        toast('Aucun client pour cette recherche.', 'warn');
+        return;
+      }
+      if (cards.length === 1) {
+        const card = await getPoints(cards[0].code, merchant.id);
+        cacheClient(card);
+        navigation.navigate('Client', { card });
+      } else {
+        // Plusieurs resultats : on ouvre le premier (nom identique rare).
+        const card = await getPoints(cards[0].code, merchant.id);
+        cacheClient(card);
+        navigation.navigate('Client', { card });
+        toast(`${cards.length} clients trouves, premier ouvert.`, 'info');
+      }
+    } catch (e) {
+      const err = e as ApiError;
+      toast(err.message || 'Recherche impossible', 'error');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const openScan = () => {
+    tapMedium();
+    navigation.navigate('Scan');
+  };
+
+  const amountMode = isAmountMode(merchant);
+
+  return (
+    <Screen scroll padded refreshing={refreshing} onRefresh={onRefresh} contentStyle={styles.content}>
+      {/* En-tete */}
+      <View style={styles.header}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.hello}>Bonjour</Text>
+          <Text style={styles.shop} numberOfLines={1}>
+            {merchant?.name || 'Ma boutique'}
+          </Text>
+          <View style={styles.statusRow}>
+            <View style={[styles.dot, { backgroundColor: online ? colors.green2 : colors.red }]} />
+            <Text style={styles.statusTxt}>{online ? 'EN LIGNE' : 'HORS LIGNE'}</Text>
+            {merchant?.emoji ? <Text style={styles.shopEmoji}>{merchant.emoji}</Text> : null}
+          </View>
+        </View>
+      </View>
+
+      <OfflineBanner />
+
+      {/* Resume du jour */}
+      <Card elevated style={styles.summaryCard}>
+        <Text style={styles.summaryTitle}>Aujourd'hui</Text>
+        {loading && !txs.length ? (
+          <ActivityIndicator color={colors.green2} style={{ marginVertical: 12 }} />
+        ) : (
+          <View style={styles.summaryRow}>
+            <Summary value={String(today.credits)} label="Achats credites" />
+            <View style={styles.vsep} />
+            <Summary value={fmtPts(today.ptsGiven)} label="Points donnes" accent />
+            <View style={styles.vsep} />
+            <Summary value={String(today.rewards)} label="Recompenses" />
+          </View>
+        )}
+      </Card>
+
+      {/* Gros bouton Scanner */}
+      <Pressable onPress={openScan} style={({ pressed }) => [pressed && { opacity: 0.9 }]}>
+        <LinearGradient
+          colors={[colors.green2, colors.green]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.scanBtn, shadow.green]}
+        >
+          <Text style={styles.scanIcon}>⟐</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.scanTitle}>Scanner une carte</Text>
+            <Text style={styles.scanSub}>Camera QR - credit immediat</Text>
+          </View>
+          <Text style={styles.scanArrow}>→</Text>
+        </LinearGradient>
+      </Pressable>
+
+      {/* Actions rapides */}
+      <View style={styles.quickGrid}>
+        <QuickTile icon="🆕" label="Nouveau client" onPress={() => navigation.navigate('NewClient')} />
+        <QuickTile icon="🛎️" label="Mode kiosque" onPress={() => navigation.navigate('Kiosk')} />
+        <QuickTile icon="🎁" label="Cartes cadeaux" onPress={() => navigation.navigate('Tabs', { screen: 'GiftCards' } as any)} />
+        <QuickTile icon="👑" label="Summit Club" onPress={() => navigation.navigate('Summit')} />
+      </View>
+
+      {/* Indicateur mode points */}
+      <View style={styles.modePill}>
+        <Text style={styles.modeTxt}>
+          {amountMode
+            ? `Mode montant · 1 point pour ${fmtAmount(fcfaPerPoint(merchant), merchant?.currency)}`
+            : 'Mode points directs · 1 scan = points saisis'}
+        </Text>
+      </View>
+
+      {/* Recherche client */}
+      <Card style={styles.searchCard}>
+        <Text style={styles.blockLabel}>Rechercher un client</Text>
+        <Field
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Telephone, numero de membre ou code"
+          keyboardType="default"
+          autoCapitalize="characters"
+          returnKeyType="search"
+          onSubmitEditing={doSearch}
+          containerStyle={{ marginTop: 8 }}
+        />
+        <Button
+          label="Rechercher"
+          icon="🔍"
+          onPress={doSearch}
+          loading={searching}
+          disabled={!query.trim()}
+          variant="secondary"
+          style={{ marginTop: 12 }}
+        />
+      </Card>
+
+      {/* Derniers clients */}
+      <View style={styles.recentBlock}>
+        <Text style={styles.blockLabel}>Derniers clients</Text>
+        {recent.length ? (
+          <View style={styles.recentList}>
+            {recent.map((c) => (
+              <Pressable
+                key={c.code}
+                style={styles.recentItem}
+                onPress={() => navigation.navigate('Client', { card: c })}
+              >
+                <Avatar name={c.client_name} size={44} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.recentName} numberOfLines={1}>
+                    {c.client_name || 'Client'}
+                  </Text>
+                  <Text style={styles.recentCode}>{c.code}</Text>
+                </View>
+                <View style={styles.recentPts}>
+                  <Text style={styles.recentPtsVal}>{fmtPts(c.pts)}</Text>
+                  <Text style={styles.recentPtsLbl}>pts</Text>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        ) : (
+          <EmptyState
+            icon="👥"
+            title="Aucun client recent"
+            message="Scanne une carte ou recherche un client pour commencer."
+          />
+        )}
+      </View>
+    </Screen>
+  );
+}
+
+function Summary({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
+  return (
+    <View style={styles.summaryItem}>
+      <Text style={[styles.summaryVal, accent && { color: colors.green2 }]}>{value}</Text>
+      <Text style={styles.summaryLbl}>{label}</Text>
+    </View>
+  );
+}
+
+function QuickTile({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) {
+  return (
+    <Pressable style={styles.quickTile} onPress={onPress}>
+      <Text style={styles.quickIcon}>{icon}</Text>
+      <Text style={styles.quickLbl}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+  header: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 4 },
+  hello: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2 },
+  shop: { fontFamily: fonts.heading, fontSize: 28, color: colors.tx, letterSpacing: -0.6, marginTop: 1 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
+  dot: { width: 7, height: 7, borderRadius: 4 },
+  statusTxt: { fontFamily: fonts.mono, fontSize: 10.5, color: colors.tx3, letterSpacing: 0.6 },
+  shopEmoji: { fontSize: 14, marginLeft: 2 },
+  summaryCard: { paddingVertical: spacing.lg },
+  summaryTitle: { fontFamily: fonts.mono, fontSize: 11, color: colors.tx3, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 14 },
+  summaryRow: { flexDirection: 'row', alignItems: 'center' },
+  summaryItem: { flex: 1, alignItems: 'center', gap: 4 },
+  summaryVal: { fontFamily: fonts.heading, fontSize: 24, color: colors.tx },
+  summaryLbl: { fontFamily: fonts.body, fontSize: 11, color: colors.tx3, textAlign: 'center' },
+  vsep: { width: 1, height: 38, backgroundColor: colors.b1 },
+  scanBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderRadius: radius.xl,
+    paddingVertical: 24,
+    paddingHorizontal: 22,
+  },
+  scanIcon: { fontSize: 34, color: '#04170a' },
+  scanTitle: { fontFamily: fonts.heading, fontSize: 19, color: '#04170a' },
+  scanSub: { fontFamily: fonts.bodySemi, fontSize: 12.5, color: 'rgba(4,23,10,0.75)', marginTop: 2 },
+  scanArrow: { fontSize: 22, color: '#04170a' },
+  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  quickTile: {
+    flexGrow: 1,
+    flexBasis: '47%',
+    backgroundColor: colors.s2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.b1,
+    paddingVertical: 18,
+    alignItems: 'center',
+    gap: 6,
+  },
+  quickIcon: { fontSize: 26 },
+  quickLbl: { fontFamily: fonts.bodySemi, fontSize: 13, color: colors.tx },
+  modePill: {
+    backgroundColor: colors.greenSoft,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.b3,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  modeTxt: { fontFamily: fonts.bodySemi, fontSize: 12.5, color: colors.green3, textAlign: 'center' },
+  searchCard: {},
+  blockLabel: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.tx },
+  recentBlock: { gap: 12 },
+  recentList: { gap: 8 },
+  recentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.s2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.b1,
+    padding: 12,
+  },
+  recentName: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.tx },
+  recentCode: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.tx3, marginTop: 2 },
+  recentPts: { alignItems: 'center' },
+  recentPtsVal: { fontFamily: fonts.heading, fontSize: 18, color: colors.green2 },
+  recentPtsLbl: { fontFamily: fonts.mono, fontSize: 9, color: colors.tx3 },
+});

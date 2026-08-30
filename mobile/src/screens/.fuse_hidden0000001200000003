@@ -1,0 +1,393 @@
+// ============================================================
+// MySargal Caisse - Tableau de bord
+// Statistiques par periode (7 / 30 / 90 j), activite par jour, top clients,
+// carte Boost (points x2), journal d'activite serveur, cout WhatsApp,
+// export CSV des operations. Reproduit renderDashboard() de l'app web.
+// ============================================================
+
+import React, { useCallback, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
+import { Screen } from '../components/Screen';
+import { Card } from '../components/Card';
+import { Button } from '../components/Button';
+import { Segmented } from '../components/Segmented';
+import { EmptyState } from '../components/EmptyState';
+import { OfflineBanner } from '../components/OfflineBanner';
+import { useToast } from '../components/Toast';
+import { colors, fonts, radius, spacing } from '../theme';
+
+import { useAuth } from '../auth/AuthContext';
+import { useNetwork } from '../offline/NetworkProvider';
+import {
+  fetchTransactions,
+  fetchCards,
+  fetchGiftCards,
+  fetchJournal,
+  fetchWaUsage,
+  updateMerchant,
+} from '../api/endpoints';
+import { Transaction, LoyaltyCardRow, GiftCardRow, JournalRow, WaUsageRow } from '../api/types';
+import { fmtPts, fmtDate } from '../utils/format';
+import { fmtAmount } from '../utils/currency';
+import { WA_TARIF, WA_USD_FCFA } from '../utils/push';
+import { WA_MESSAGES, openWhatsApp } from '../utils/wa';
+import { buildCSV, exportCSV } from '../utils/csv';
+
+const PERIODS = [
+  { key: '7', label: '7 jours' },
+  { key: '30', label: '30 jours' },
+  { key: '90', label: '90 jours' },
+];
+
+export function DashboardScreen() {
+  const { merchant, refreshMerchant } = useAuth();
+  const { online } = useNetwork();
+  const { toast } = useToast();
+
+  const [period, setPeriod] = useState('7');
+  const [txs, setTxs] = useState<Transaction[]>([]);
+  const [cards, setCards] = useState<LoyaltyCardRow[]>([]);
+  const [gifts, setGifts] = useState<GiftCardRow[]>([]);
+  const [journal, setJournal] = useState<JournalRow[]>([]);
+  const [wa, setWa] = useState<WaUsageRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [boostBusy, setBoostBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    if (!merchant || !online) return;
+    try {
+      const [t, c, g] = await Promise.all([
+        fetchTransactions(merchant.id, 1000),
+        fetchCards(merchant.id),
+        fetchGiftCards(merchant.id),
+      ]);
+      setTxs(t);
+      setCards(c);
+      setGifts(g);
+      fetchJournal(merchant.id, 30, 200).then(setJournal).catch(() => {});
+      fetchWaUsage(merchant.id, 6).then(setWa).catch(() => {});
+    } catch {
+      /* garde l'existant */
+    }
+  }, [merchant, online]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      load().finally(() => setLoading(false));
+    }, [load])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  };
+
+  const days = parseInt(period, 10);
+
+  const stats = useMemo(() => {
+    const now = Date.now();
+    const cutoff = now - days * 86400000;
+    const prevCutoff = cutoff - days * 86400000;
+    const ms = (iso?: string | null) => (iso ? new Date(iso).getTime() : 0);
+    const periodTxs = txs.filter((t) => ms(t.created_at) >= cutoff);
+    const prevTxs = txs.filter((t) => ms(t.created_at) >= prevCutoff && ms(t.created_at) < cutoff);
+    const earn = periodTxs.filter((t) => t.type === 'earn');
+    const prevEarn = prevTxs.filter((t) => t.type === 'earn');
+    const clientsSet = new Set(periodTxs.map((t) => t.card_id).filter(Boolean));
+    const ptsSum = earn.reduce((s, t) => s + (t.pts || 0), 0);
+    const rewards = periodTxs.filter((t) => t.type === 'reward').length;
+    const delta = prevEarn.length ? Math.round(((earn.length - prevEarn.length) / prevEarn.length) * 100) : null;
+    // Activite par jour (buckets).
+    const buckets: number[] = Array.from({ length: days > 30 ? 12 : days }, () => 0);
+    const span = days > 30 ? Math.ceil(days / 12) : 1;
+    earn.forEach((t) => {
+      const d = Math.floor((now - ms(t.created_at)) / 86400000);
+      const idx = buckets.length - 1 - Math.min(buckets.length - 1, Math.floor(d / span));
+      if (idx >= 0 && idx < buckets.length) buckets[idx]++;
+    });
+    // Top clients par nombre de scans.
+    const byClient: Record<string, number> = {};
+    earn.forEach((t) => {
+      if (t.card_id) byClient[t.card_id] = (byClient[t.card_id] || 0) + 1;
+    });
+    const top = Object.entries(byClient)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([cid, n]) => {
+        const card = cards.find((c) => c.id === cid);
+        return { name: card?.client_name || 'Client', code: card?.code || '', n };
+      });
+    const activeGifts = gifts.filter((g) => g.status === 'active').length;
+    return { scans: earn.length, clients: clientsSet.size, ptsSum, rewards, delta, buckets, top, activeGifts };
+  }, [txs, cards, gifts, days]);
+
+  const waCost = useMemo(() => {
+    const month = new Date().toISOString().slice(0, 7);
+    let cost = 0;
+    let count = 0;
+    wa.forEach((r) => {
+      if (r.statut !== 'sent') return;
+      if (r.mois && !String(r.mois).startsWith(month)) return;
+      const tarif = WA_TARIF[String(r.categorie || 'autre')] ?? WA_TARIF.autre;
+      cost += (r.n || 0) * tarif;
+      count += r.n || 0;
+    });
+    return { fcfa: Math.round(cost * WA_USD_FCFA), count };
+  }, [wa]);
+
+  const boost = useMemo(() => {
+    const cfg = (merchant?.reward_config || {}) as any;
+    const until = cfg.boost_until ? new Date(cfg.boost_until).getTime() : 0;
+    const active = until > Date.now();
+    return { active, until, x: cfg.boost_x || 2 };
+  }, [merchant]);
+
+  const setBoost = async (nDays: number) => {
+    if (!merchant) return;
+    setBoostBusy(true);
+    try {
+      const cfg = { ...((merchant.reward_config || {}) as any) };
+      if (nDays <= 0) {
+        delete cfg.boost_until;
+        delete cfg.boost_x;
+      } else {
+        cfg.boost_x = 2;
+        cfg.boost_until = new Date(Date.now() + nDays * 86400000).toISOString();
+      }
+      await updateMerchant(merchant.id, { reward_config: cfg });
+      await refreshMerchant();
+      toast(nDays <= 0 ? 'Boost arrete.' : `Boost points x2 active ${nDays === 1 ? '24 h' : nDays + ' jours'}.`, 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Boost impossible', 'error');
+    } finally {
+      setBoostBusy(false);
+    }
+  };
+
+  const announceBoost = () => {
+    const date = boost.until ? fmtDate(new Date(boost.until).toISOString()) : '';
+    openWhatsApp(null, WA_MESSAGES.boost(merchant?.name || 'notre boutique', boost.x, date));
+  };
+
+  const doExport = async () => {
+    const now = Date.now();
+    const cutoff = now - days * 86400000;
+    const rows = txs
+      .filter((t) => (t.created_at ? new Date(t.created_at).getTime() >= cutoff : false))
+      .map((t) => {
+        const card = cards.find((c) => c.id === t.card_id);
+        return [
+          t.created_at || '',
+          t.type === 'earn' ? 'Credit' : t.type === 'reward' ? 'Recompense' : t.type,
+          card?.client_name || '',
+          card?.code || '',
+          t.pts ?? 0,
+          t.note || '',
+        ];
+      });
+    if (!rows.length) {
+      toast('Aucune operation a exporter sur la periode.', 'warn');
+      return;
+    }
+    try {
+      const csv = buildCSV(['Date', 'Type', 'Client', 'Code', 'Points', 'Note'], rows);
+      const name = `${(merchant?.name || 'boutique').replace(/\s+/g, '_')}_operations_${period}j.csv`;
+      await exportCSV(name, csv);
+    } catch (e: any) {
+      toast(e?.message || 'Export impossible', 'error');
+    }
+  };
+
+  const maxBucket = Math.max(1, ...stats.buckets);
+
+  return (
+    <Screen scroll padded refreshing={refreshing} onRefresh={onRefresh} contentStyle={styles.content}>
+      <View>
+        <Text style={styles.title}>Tableau de bord</Text>
+        <Text style={styles.subtitle}>Activite de la boutique.</Text>
+      </View>
+
+      <OfflineBanner />
+
+      <Segmented items={PERIODS} value={period} onChange={setPeriod} />
+
+      {loading && !txs.length ? (
+        <ActivityIndicator color={colors.green2} style={{ marginVertical: 30 }} />
+      ) : (
+        <>
+          {/* KPI */}
+          <View style={styles.kpiGrid}>
+            <Kpi value={String(stats.scans)} label="Achats credites" delta={stats.delta} />
+            <Kpi value={String(stats.clients)} label="Clients actifs" />
+            <Kpi value={fmtPts(stats.ptsSum)} label="Points donnes" accent />
+            <Kpi value={String(stats.rewards)} label="Recompenses" />
+          </View>
+
+          {/* Activite par jour */}
+          <Card style={styles.card}>
+            <Text style={styles.cardTitle}>Activite</Text>
+            <View style={styles.chart}>
+              {stats.buckets.map((v, i) => (
+                <View key={i} style={styles.barCol}>
+                  <View style={[styles.bar, { height: 6 + (v / maxBucket) * 90 }]} />
+                </View>
+              ))}
+            </View>
+            <Text style={styles.chartHint}>Achats credites sur la periode</Text>
+          </Card>
+
+          {/* Boost */}
+          <Card style={[styles.card, boost.active && styles.boostOn]}>
+            <View style={styles.boostHead}>
+              <Text style={styles.cardTitle}>Boost points x2</Text>
+              {boost.active ? (
+                <Text style={styles.boostBadge}>
+                  Actif jusqu'au {fmtDate(new Date(boost.until).toISOString())}
+                </Text>
+              ) : null}
+            </View>
+            <Text style={styles.boostSub}>
+              Doublez les points pendant quelques jours pour dynamiser la boutique.
+            </Text>
+            <View style={styles.boostRow}>
+              <Pressable style={styles.boostBtn} disabled={boostBusy} onPress={() => setBoost(1)}>
+                <Text style={styles.boostBtnTxt}>24 h</Text>
+              </Pressable>
+              <Pressable style={styles.boostBtn} disabled={boostBusy} onPress={() => setBoost(3)}>
+                <Text style={styles.boostBtnTxt}>3 jours</Text>
+              </Pressable>
+              <Pressable style={styles.boostBtn} disabled={boostBusy} onPress={() => setBoost(7)}>
+                <Text style={styles.boostBtnTxt}>7 jours</Text>
+              </Pressable>
+            </View>
+            {boost.active ? (
+              <View style={{ gap: 8 }}>
+                <Button label="Annoncer le boost par WhatsApp" icon="📣" variant="secondary" onPress={announceBoost} />
+                <Button label="Arreter le boost" variant="ghost" onPress={() => setBoost(0)} loading={boostBusy} />
+              </View>
+            ) : null}
+          </Card>
+
+          {/* Top clients */}
+          <Card style={styles.card}>
+            <Text style={styles.cardTitle}>Meilleurs clients</Text>
+            {stats.top.length ? (
+              stats.top.map((c, i) => (
+                <View key={c.code + i} style={styles.topRow}>
+                  <Text style={styles.topRank}>{i + 1}</Text>
+                  <Text style={styles.topName} numberOfLines={1}>
+                    {c.name}
+                  </Text>
+                  <Text style={styles.topN}>{c.n} achats</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.emptyLine}>Aucune activite sur la periode.</Text>
+            )}
+          </Card>
+
+          {/* Cartes cadeaux + WhatsApp */}
+          <View style={styles.kpiGrid}>
+            <Kpi value={String(stats.activeGifts)} label="Cartes cadeaux actives" />
+            <Kpi value={fmtAmount(waCost.fcfa, merchant?.currency)} label={`Cout WhatsApp (${waCost.count})`} />
+          </View>
+
+          <Button label="Exporter les operations (CSV)" icon="⬇️" variant="secondary" onPress={doExport} />
+
+          {/* Journal */}
+          <Card style={styles.card}>
+            <Text style={styles.cardTitle}>Journal d'activite</Text>
+            {journal.length ? (
+              journal.slice(0, 40).map((j, i) => (
+                <View key={i} style={styles.jrnRow}>
+                  <View style={[styles.jrnDot, jrnColor(j.categorie)]} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.jrnDetail} numberOfLines={1}>
+                      {j.detail || j.categorie || 'Operation'}
+                    </Text>
+                    <Text style={styles.jrnMeta}>
+                      {j.qui || 'Caisse'}
+                      {j.quand ? ` · ${fmtDate(j.quand)}` : ''}
+                    </Text>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <EmptyState icon="🧾" title="Journal vide" message="Les operations apparaitront ici." />
+            )}
+          </Card>
+        </>
+      )}
+    </Screen>
+  );
+}
+
+function Kpi({ value, label, accent, delta }: { value: string; label: string; accent?: boolean; delta?: number | null }) {
+  return (
+    <View style={styles.kpi}>
+      <Text style={[styles.kpiVal, accent && { color: colors.green2 }]} numberOfLines={1}>
+        {value}
+      </Text>
+      <Text style={styles.kpiLbl}>{label}</Text>
+      {delta != null ? (
+        <Text style={[styles.kpiDelta, { color: delta >= 0 ? colors.green3 : colors.red }]}>
+          {delta >= 0 ? '▲' : '▼'} {Math.abs(delta)}%
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function jrnColor(cat?: string | null) {
+  const c = String(cat || '');
+  if (/recompense|récompense/i.test(c)) return { backgroundColor: colors.gold };
+  if (/numero|numéro/i.test(c)) return { backgroundColor: colors.violet2 };
+  return { backgroundColor: colors.green2 };
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+  title: { fontFamily: fonts.heading, fontSize: 26, color: colors.tx, letterSpacing: -0.5, marginTop: 4 },
+  subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2, marginTop: 2 },
+  kpiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  kpi: {
+    flexGrow: 1,
+    flexBasis: '47%',
+    backgroundColor: colors.s2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.b1,
+    padding: 16,
+    gap: 3,
+  },
+  kpiVal: { fontFamily: fonts.heading, fontSize: 24, color: colors.tx },
+  kpiLbl: { fontFamily: fonts.body, fontSize: 12, color: colors.tx3 },
+  kpiDelta: { fontFamily: fonts.bodyBold, fontSize: 11, marginTop: 2 },
+  card: { gap: 12 },
+  cardTitle: { fontFamily: fonts.headingBold, fontSize: 16, color: colors.tx },
+  chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 4, height: 100 },
+  barCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end' },
+  bar: { width: '80%', backgroundColor: colors.green2, borderRadius: 4, minHeight: 6 },
+  chartHint: { fontFamily: fonts.body, fontSize: 11.5, color: colors.tx3 },
+  boostOn: { borderColor: colors.b3, backgroundColor: colors.greenSoft },
+  boostHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  boostBadge: { fontFamily: fonts.bodySemi, fontSize: 11, color: colors.green3 },
+  boostSub: { fontFamily: fonts.body, fontSize: 13, color: colors.tx2, lineHeight: 19 },
+  boostRow: { flexDirection: 'row', gap: 8 },
+  boostBtn: { flex: 1, backgroundColor: colors.s3, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b2, paddingVertical: 14, alignItems: 'center' },
+  boostBtnTxt: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx },
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.b1 },
+  topRank: { fontFamily: fonts.heading, fontSize: 16, color: colors.green2, width: 20 },
+  topName: { flex: 1, fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx },
+  topN: { fontFamily: fonts.mono, fontSize: 12, color: colors.tx2 },
+  emptyLine: { fontFamily: fonts.body, fontSize: 13, color: colors.tx3 },
+  jrnRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 7 },
+  jrnDot: { width: 8, height: 8, borderRadius: 4 },
+  jrnDetail: { fontFamily: fonts.bodySemi, fontSize: 13.5, color: colors.tx },
+  jrnMeta: { fontFamily: fonts.mono, fontSize: 10.5, color: colors.tx3, marginTop: 2 },
+});

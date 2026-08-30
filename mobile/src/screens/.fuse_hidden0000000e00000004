@@ -1,0 +1,730 @@
+// ============================================================
+// MySargal Caisse - Accueil (Espace commercant)
+// Reproduit fidelement l'accueil du web mobile MySargal :
+// en-tete logo + actions, salutation + statut, orbe "Scanner une carte" avec
+// anneaux pulses, points credites du jour, trois stats, carte impact verte,
+// carte relance, caisse rapide, grille d'actions, activite recente.
+// Aucune modif d'endpoint : on rebranche les memes appels (transactions,
+// cartes, cartes cadeaux) dans cette nouvelle presentation.
+// ============================================================
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, TextInput } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withDelay,
+  Easing,
+} from 'react-native-reanimated';
+
+import { Screen } from '../components/Screen';
+import { Icon, IconName } from '../components/Icon';
+import { Avatar } from '../components/Avatar';
+import { OfflineBanner } from '../components/OfflineBanner';
+import { useToast } from '../components/Toast';
+import { PressableScale } from '../components/PressableScale';
+import { AnimatedListItem } from '../components/AnimatedListItem';
+import { AnimatedCounter } from '../components/AnimatedCounter';
+import { colors, fonts, radius, spacing, shadow } from '../theme';
+
+import { RootStackParamList } from '../navigation/types';
+import { useAuth } from '../auth/AuthContext';
+import { useAppStore } from '../store/appStore';
+import { useNetwork } from '../offline/NetworkProvider';
+import {
+  fetchTransactions,
+  fetchCards,
+  fetchGiftCards,
+  findCardsByPhone,
+  getPoints,
+} from '../api/endpoints';
+import { Transaction, CardLookup, LoyaltyCardRow, GiftCardRow, ApiError } from '../api/types';
+import { isToday, fmtPts, fmtTime, onlyDigits } from '../utils/format';
+import { useReduceMotion } from '../utils/motion';
+import { shareText } from '../utils/wa';
+import { tapLight } from '../utils/haptics';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+const DAY = 86400000;
+
+export function HomeScreen() {
+  const navigation = useNavigation<Nav>();
+  // Bascule vers un onglet frere (Clients, Recompenses, Compte) depuis l'accueil.
+  const goTab = (screen: 'Home' | 'Clients' | 'Rewards' | 'Account') =>
+    (navigation as any).navigate('Tabs', { screen });
+  const { merchant } = useAuth();
+  const { toast } = useToast();
+  const { online } = useNetwork();
+  const clients = useAppStore((s) => s.clients);
+  const cacheClient = useAppStore((s) => s.cacheClient);
+  const localOps = useAppStore((s) => s.localOps);
+
+  const [txs, setTxs] = useState<Transaction[]>([]);
+  const [cards, setCards] = useState<LoyaltyCardRow[]>([]);
+  const [gifts, setGifts] = useState<GiftCardRow[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+  const [themeLight, setThemeLight] = useState(true);
+
+  useEffect(() => {
+    AsyncStorage.getItem('ms_theme').then((v) => setThemeLight(v !== 'dark'));
+  }, []);
+
+  const load = useCallback(async () => {
+    if (!merchant) return;
+    try {
+      const rows = await fetchTransactions(merchant.id, 1000);
+      setTxs(rows);
+    } catch {
+      /* hors ligne : on garde ce qu'on a */
+    }
+    if (online) {
+      fetchCards(merchant.id).then(setCards).catch(() => {});
+      fetchGiftCards(merchant.id).then(setGifts).catch(() => {});
+    }
+  }, [merchant, online]);
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [load])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await load();
+    setRefreshing(false);
+  };
+
+  const threshold = merchant?.threshold || 10;
+
+  // Statistiques du jour + agregats, a partir des memes appels que Dashboard.
+  const stats = useMemo(() => {
+    const ms = (iso?: string | null) => (iso ? new Date(iso).getTime() : 0);
+    const serverToday = txs.filter((t) => isToday(t.created_at));
+    const earnsToday = serverToday.filter((t) => t.type === 'earn');
+    const ptsToday = earnsToday.reduce((s, t) => s + (t.pts || 0), 0);
+    const localToday = localOps.filter((o) => isToday(new Date(o.at).toISOString()));
+    const localCredits = localToday.filter((o) => o.type === 'credit');
+    const localPts = localCredits.reduce((s, o) => s + (o.pts || 0), 0);
+
+    const totalClients = cards.length;
+    const readyCount = cards.filter((c) => (c.pts || 0) >= threshold).length;
+    const activeGifts = gifts.filter((g) => g.status === 'active').length;
+
+    // Derniere activite par carte, pour estimer les clients a relancer (30j+).
+    const lastSeen: Record<string, number> = {};
+    const visitsByCard: Record<string, number> = {};
+    txs.filter((t) => t.type === 'earn').forEach((t) => {
+      const id = t.card_id || '';
+      if (!id) return;
+      const at = ms(t.created_at);
+      if (at > (lastSeen[id] || 0)) lastSeen[id] = at;
+      visitsByCard[id] = (visitsByCard[id] || 0) + 1;
+    });
+    const cutoff = Date.now() - 30 * DAY;
+    const relance = cards.filter((c) => lastSeen[c.id] && lastSeen[c.id] < cutoff).length;
+
+    // Impact : clients fidelises, visites cumulees, clients revenus 2 fois +.
+    const totalVisits = txs.filter((t) => t.type === 'earn').length;
+    const repeat = Object.values(visitsByCard).filter((n) => n >= 2).length;
+
+    return {
+      credits: earnsToday.length + localCredits.length,
+      ptsGiven: ptsToday + localPts,
+      totalClients,
+      readyCount,
+      activeGifts,
+      relance,
+      totalVisits,
+      repeat,
+    };
+  }, [txs, cards, gifts, localOps, threshold]);
+
+  // Activite recente (serveur), enrichie du nom via le cache de cartes.
+  const nameByCard = useMemo(() => {
+    const map: Record<string, string> = {};
+    cards.forEach((c) => {
+      if (c.id) map[c.id] = c.client_name || 'Client';
+    });
+    return map;
+  }, [cards]);
+
+  const recentActivity = useMemo(() => txs.slice(0, 8), [txs]);
+
+  const doSearch = async () => {
+    const q = query.trim();
+    if (!q || !merchant) return;
+    setSearching(true);
+    try {
+      const looksLikeCode = /^[A-Za-z0-9-]{5,}$/.test(q) && onlyDigits(q).length < q.length;
+      if (!online) {
+        const cached = clients[q.toUpperCase()];
+        if (cached) {
+          navigation.navigate('Client', { card: cached });
+          return;
+        }
+        toast('Hors ligne : client non trouve dans le cache.', 'warn');
+        return;
+      }
+      if (looksLikeCode) {
+        try {
+          const card = await getPoints(q.toUpperCase(), merchant.id);
+          cacheClient(card);
+          navigation.navigate('Client', { card });
+          return;
+        } catch {
+          /* pas un code, on tente par telephone */
+        }
+      }
+      const found = await findCardsByPhone(q, merchant.id);
+      if (!found.length) {
+        toast('Aucun client pour cette recherche.', 'warn');
+        return;
+      }
+      const card = await getPoints(found[0].code, merchant.id);
+      cacheClient(card);
+      navigation.navigate('Client', { card });
+      if (found.length > 1) toast(`${found.length} clients trouves, premier ouvert.`, 'info');
+    } catch (e) {
+      const err = e as ApiError;
+      toast(err.message || 'Recherche impossible', 'error');
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const toggleTheme = async () => {
+    tapLight();
+    const next = !themeLight;
+    setThemeLight(next);
+    await AsyncStorage.setItem('ms_theme', next ? 'light' : 'dark');
+    toast(next ? 'Theme clair.' : 'Preference sombre enregistree.', 'info');
+  };
+
+  const shareBuyLink = async () => {
+    const boutique = merchant?.name || 'notre boutique';
+    await shareText(
+      `Gagnez des points de fidelite chez ${boutique} avec MySargal. Presentez votre carte a chaque achat.`,
+      boutique
+    );
+  };
+
+  const planLabel = String(merchant?.plan || 'gratuit').toUpperCase();
+
+  return (
+    <Screen scroll padded refreshing={refreshing} onRefresh={onRefresh} contentStyle={styles.content}>
+      {/* En-tete : logo + espace commercant + actions rondes */}
+      <View style={styles.brandBar}>
+        <View style={styles.brandLeft}>
+          <View style={styles.logoMark}>
+            <Text style={styles.logoMarkTxt}>M</Text>
+          </View>
+          <Text style={styles.brandName}>MySargal</Text>
+          <View style={styles.brandDivider} />
+          <Text style={styles.brandTag}>ESPACE{'\n'}COMMERCANT</Text>
+        </View>
+        <View style={styles.topActions}>
+          <Pressable style={styles.roundBtn} onPress={toggleTheme} accessibilityLabel="Basculer le theme">
+            <Icon name={themeLight ? 'sun' : 'moon'} size={18} color={colors.tx2} />
+          </Pressable>
+          <Pressable
+            style={styles.roundBtn}
+            onPress={() => navigation.navigate('Tabs' as never, { screen: 'Account' } as never)}
+            accessibilityLabel="Reglages"
+          >
+            <Icon name="settings" size={18} color={colors.tx2} />
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Salutation + statut */}
+      <View style={styles.greetBlock}>
+        <Text style={styles.greetHello}>Bonjour</Text>
+        <Text style={styles.shopName} numberOfLines={1}>
+          {merchant?.name || 'Ma boutique'}
+        </Text>
+        <View style={styles.statusRow}>
+          <View style={[styles.statusDot, { backgroundColor: online ? colors.green2 : colors.red }]} />
+          <Text style={styles.statusTxt}>
+            {online ? 'ACTIF' : 'HORS LIGNE'} · PLAN {planLabel}
+          </Text>
+        </View>
+      </View>
+
+      <OfflineBanner />
+
+      {/* Orbe Scanner une carte */}
+      <View style={styles.hero}>
+        <PressableScale onPress={() => navigation.navigate('Scan')} haptic="medium" scaleTo={0.94} accessibilityLabel="Scanner une carte">
+          <PulseOrb />
+        </PressableScale>
+        <Text style={styles.heroTitle}>Scanner une carte</Text>
+        <Text style={styles.heroSub}>Encaissez et creditez en 2 secondes</Text>
+        <AnimatedCounter value={stats.ptsGiven} style={styles.heroNum} group />
+        <Text style={styles.heroLbl}>POINTS CREDITES AUJOURD'HUI</Text>
+      </View>
+
+      {/* Trois stats */}
+      <View style={styles.pills}>
+        <StatPill value={stats.credits} label="Scans" onPress={() => navigation.navigate('Dashboard')} />
+        <StatPill value={stats.totalClients} label="Clients" onPress={() => navigation.navigate('Tabs' as never, { screen: 'Clients' } as never)} />
+        <StatPill value={stats.activeGifts} label="Cartes cadeaux" violet onPress={() => navigation.navigate('GiftCards')} />
+      </View>
+
+      {/* Carte impact verte (si des clients existent) */}
+      {stats.totalClients > 0 ? (
+        <LinearGradient colors={['#0b5c3a', '#0f7a4d']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.impactCard}>
+          <Text style={styles.impactEyebrow}>TON IMPACT AVEC MYSARGAL</Text>
+          <View style={styles.impactRow}>
+            <ImpactStat n={stats.totalClients} label="clients fidelises" />
+            <ImpactStat n={stats.totalVisits} label="visites cumulees" />
+            <ImpactStat n={stats.repeat} label="revenus 2 fois +" />
+          </View>
+          <Text style={styles.impactSentence}>
+            Encaisse via l'app pour suivre le chiffre d'affaires genere.
+          </Text>
+        </LinearGradient>
+      ) : null}
+
+      {/* Carte relance */}
+      {stats.relance > 0 ? (
+        <View style={styles.relanceCard}>
+          <View style={styles.relanceIco}>
+            <Icon name="clock" size={22} color={colors.green3} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.relanceTitle}>
+              {stats.relance} client{stats.relance > 1 ? 's' : ''} a relancer
+            </Text>
+            <Text style={styles.relanceSub}>Pas revenus depuis 30j, un message WhatsApp ?</Text>
+          </View>
+          <PressableScale style={styles.ghostBtn} onPress={() => navigation.navigate('Push')} accessibilityLabel="Relancer">
+            <Text style={styles.ghostBtnTxt}>Relancer</Text>
+          </PressableScale>
+        </View>
+      ) : null}
+
+      {/* Caisse rapide, USB ou saisie */}
+      <View style={styles.kioskBar}>
+        <Text style={styles.kioskEyebrow}>CAISSE RAPIDE, USB OU SAISIE</Text>
+        <View style={styles.kioskRow}>
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Code carte (LC-XXXX ou GC-XXXX)"
+            placeholderTextColor={colors.tx3}
+            autoCapitalize="characters"
+            returnKeyType="search"
+            onSubmitEditing={doSearch}
+            selectionColor={colors.green2}
+            style={styles.kioskInput}
+          />
+          <PressableScale style={styles.kioskScan} onPress={doSearch} haptic="light" accessibilityLabel="Scan">
+            <Icon name="zap" size={16} color={colors.onColor} />
+            <Text style={styles.kioskScanTxt}>{searching ? '...' : 'Scan'}</Text>
+          </PressableScale>
+          <PressableScale style={styles.kioskSec} onPress={() => navigation.navigate('Kiosk')} accessibilityLabel="Mode kiosque">
+            <Icon name="monitor" size={18} color={colors.tx2} />
+          </PressableScale>
+        </View>
+      </View>
+
+      {/* Grille d'actions rapides */}
+      <View style={styles.grid}>
+        <ActionTile
+          icon="users"
+          label="Clients"
+          sub={`${stats.totalClients} fidele${stats.totalClients > 1 ? 's' : ''}`}
+          onPress={() => navigation.navigate('Tabs' as never, { screen: 'Clients' } as never)}
+        />
+        <ActionTile
+          icon="star"
+          label="Recompenses"
+          sub={`${stats.readyCount} pret${stats.readyCount > 1 ? 's' : ''}`}
+          badge={stats.readyCount}
+          onPress={() => navigation.navigate('Tabs' as never, { screen: 'Rewards' } as never)}
+        />
+        <ActionTile
+          icon="gift"
+          label="Cartes cadeaux"
+          sub={`${stats.activeGifts} active${stats.activeGifts > 1 ? 's' : ''}`}
+          violet
+          onPress={() => navigation.navigate('GiftCards')}
+        />
+        <ActionTile icon="shopping-cart" label="Lien d'achat" sub="Partager aux clients" onPress={shareBuyLink} />
+        <ActionTile icon="bar-chart-2" label="Dashboard" sub="Stats & analytics" onPress={() => navigation.navigate('Dashboard')} />
+      </View>
+
+      {/* Activite recente */}
+      <View style={styles.recentBlock}>
+        <Text style={styles.secTitle}>Activite recente</Text>
+        {recentActivity.length ? (
+          <View style={styles.recentList}>
+            {recentActivity.map((t, i) => {
+              const reward = t.type === 'reward';
+              const name = nameByCard[t.card_id || ''] || 'Client';
+              return (
+                <AnimatedListItem key={t.id || i} index={i}>
+                  <View style={styles.hi}>
+                    <View style={[styles.hiIco, reward ? styles.hiIcoGold : styles.hiIcoGreen]}>
+                      <Icon name={reward ? 'gift' : 'star'} size={16} color={reward ? colors.goldDeep : colors.green3} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.hiName} numberOfLines={1}>
+                        {name}
+                      </Text>
+                      <Text style={styles.hiNote} numberOfLines={1}>
+                        {reward ? 'Recompense utilisee' : 'Points credites'} · {fmtTime(t.created_at)}
+                      </Text>
+                    </View>
+                    <Text style={[styles.hiPts, reward ? styles.hiPtsGold : styles.hiPtsGreen]}>
+                      {reward ? '-' : '+'}
+                      {fmtPts(Math.abs(t.pts || 0))}
+                    </Text>
+                  </View>
+                </AnimatedListItem>
+              );
+            })}
+          </View>
+        ) : (
+          <View style={styles.empty}>
+            <View style={styles.emptyIco}>
+              <Icon name="clipboard" size={26} color={colors.tx3} />
+            </View>
+            <Text style={styles.emptyTitle}>Aucune activite</Text>
+            <Text style={styles.emptySub}>Les scans et points de tes clients apparaitront ici.</Text>
+            <PressableScale style={styles.emptyBtn} onPress={() => navigation.navigate('Scan')} haptic="medium" accessibilityLabel="Scanner un client">
+              <Icon name="camera" size={18} color={colors.onColor} />
+              <Text style={styles.emptyBtnTxt}>Scanner un client</Text>
+            </PressableScale>
+          </View>
+        )}
+      </View>
+    </Screen>
+  );
+}
+
+// Orbe anime : deux anneaux concentriques qui pulsent + noyau vert.
+function PulseOrb() {
+  const reduce = useReduceMotion();
+  const r1 = useSharedValue(0);
+  const r2 = useSharedValue(0);
+
+  useEffect(() => {
+    if (reduce) return;
+    r1.value = withRepeat(withTiming(1, { duration: 2400, easing: Easing.out(Easing.ease) }), -1, false);
+    r2.value = withDelay(1200, withRepeat(withTiming(1, { duration: 2400, easing: Easing.out(Easing.ease) }), -1, false));
+  }, [reduce, r1, r2]);
+
+  const ring1 = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 + r1.value * 0.45 }],
+    opacity: 0.5 * (1 - r1.value),
+  }));
+  const ring2 = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 + r2.value * 0.45 }],
+    opacity: 0.5 * (1 - r2.value),
+  }));
+
+  return (
+    <View style={styles.orbWrap}>
+      <Animated.View style={[styles.orbRing, ring1]} />
+      <Animated.View style={[styles.orbRing, ring2]} />
+      <LinearGradient colors={[colors.green2, colors.green3]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.orb, shadow.green]}>
+        <View style={styles.orbInner}>
+          <Icon name="camera" size={34} color={colors.green} />
+        </View>
+      </LinearGradient>
+    </View>
+  );
+}
+
+function StatPill({ value, label, violet, onPress }: { value: number; label: string; violet?: boolean; onPress: () => void }) {
+  return (
+    <PressableScale style={styles.pill} onPress={onPress} accessibilityLabel={label}>
+      <AnimatedCounter value={value} style={[styles.pillVal, violet && { color: colors.violet }]} group />
+      <Text style={styles.pillLbl}>{label}</Text>
+    </PressableScale>
+  );
+}
+
+function ImpactStat({ n, label }: { n: number; label: string }) {
+  return (
+    <View style={styles.impactStat}>
+      <AnimatedCounter value={n} style={styles.impactNum} group />
+      <Text style={styles.impactSub}>{label}</Text>
+    </View>
+  );
+}
+
+function ActionTile({
+  icon,
+  label,
+  sub,
+  badge,
+  violet,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  sub: string;
+  badge?: number;
+  violet?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <PressableScale style={[styles.tile, violet && styles.tileViolet]} onPress={onPress} accessibilityLabel={label}>
+      <View style={[styles.tileIco, violet && styles.tileIcoViolet]}>
+        <Icon name={icon} size={26} color={violet ? colors.violet : colors.green3} />
+      </View>
+      {badge && badge > 0 ? (
+        <View style={styles.tileBadge}>
+          <Text style={styles.tileBadgeTxt}>{badge > 9 ? '9+' : badge}</Text>
+        </View>
+      ) : null}
+      <Text style={[styles.tileLbl, violet && { color: colors.violet }]}>{label}</Text>
+      <Text style={[styles.tileSub, violet && { color: colors.violet2 }]}>{sub}</Text>
+    </PressableScale>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+
+  // En-tete
+  brandBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 2 },
+  brandLeft: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  logoMark: { width: 30, height: 30, borderRadius: 9, backgroundColor: colors.green, alignItems: 'center', justifyContent: 'center' },
+  logoMarkTxt: { fontFamily: fonts.heading, fontSize: 17, color: colors.onColor },
+  brandName: { fontFamily: fonts.heading, fontSize: 18, color: colors.tx, letterSpacing: -0.3 },
+  brandDivider: { width: 1, height: 22, backgroundColor: colors.b2, marginHorizontal: 4 },
+  brandTag: { fontFamily: fonts.mono, fontSize: 8.5, color: colors.tx3, letterSpacing: 1.4, lineHeight: 11 },
+  topActions: { flexDirection: 'row', gap: 8 },
+  roundBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.s2,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.soft,
+  },
+
+  // Salutation
+  greetBlock: { marginTop: 2 },
+  greetHello: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2 },
+  shopName: { fontFamily: fonts.heading, fontSize: 30, color: colors.tx, letterSpacing: -0.7, marginTop: 1 },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 },
+  statusDot: { width: 7, height: 7, borderRadius: 4 },
+  statusTxt: { fontFamily: fonts.mono, fontSize: 10.5, color: colors.tx3, letterSpacing: 0.6 },
+
+  // Orbe
+  hero: { alignItems: 'center', gap: 4, paddingVertical: 6 },
+  orbWrap: { width: 132, height: 132, alignItems: 'center', justifyContent: 'center' },
+  orbRing: { position: 'absolute', width: 108, height: 108, borderRadius: 54, borderWidth: 1.5, borderColor: colors.green2 },
+  orb: { width: 104, height: 104, borderRadius: 52, alignItems: 'center', justifyContent: 'center' },
+  orbInner: { width: 92, height: 92, borderRadius: 46, backgroundColor: colors.s1, alignItems: 'center', justifyContent: 'center' },
+  heroTitle: { fontFamily: fonts.heading, fontSize: 18, color: colors.tx, marginTop: 10 },
+  heroSub: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3 },
+  heroNum: { fontFamily: fonts.heading, fontSize: 46, color: colors.green, letterSpacing: -1, marginTop: 8 },
+  heroLbl: { fontFamily: fonts.mono, fontSize: 9.5, color: colors.tx3, letterSpacing: 1.6 },
+
+  // Stats pills
+  pills: { flexDirection: 'row', gap: 10 },
+  pill: {
+    flex: 1,
+    backgroundColor: colors.s2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    paddingVertical: 14,
+    alignItems: 'center',
+    gap: 3,
+    ...shadow.soft,
+  },
+  pillVal: { fontFamily: fonts.heading, fontSize: 22, color: colors.tx },
+  pillLbl: { fontFamily: fonts.body, fontSize: 11, color: colors.tx3, textAlign: 'center' },
+
+  // Impact
+  impactCard: { borderRadius: radius.lg, padding: 18, gap: 12 },
+  impactEyebrow: { fontFamily: fonts.bodyBold, fontSize: 10.5, color: '#bfe3cd', letterSpacing: 1.4 },
+  impactRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  impactStat: { flex: 1, gap: 2 },
+  impactNum: { fontFamily: fonts.heading, fontSize: 24, color: colors.white },
+  impactSub: { fontFamily: fonts.body, fontSize: 10.5, color: '#cfe9d9' },
+  impactSentence: { fontFamily: fonts.body, fontSize: 12.5, color: '#eaf6f0', lineHeight: 18 },
+
+  // Relance
+  relanceCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.s2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    padding: 14,
+    ...shadow.soft,
+  },
+  relanceIco: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.md,
+    backgroundColor: colors.greenSoft,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  relanceTitle: { fontFamily: fonts.bodyBold, fontSize: 14.5, color: colors.tx },
+  relanceSub: { fontFamily: fonts.body, fontSize: 12, color: colors.tx3, marginTop: 2 },
+  ghostBtn: { borderWidth: 1.5, borderColor: colors.green, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 8 },
+  ghostBtnTxt: { fontFamily: fonts.bodyBold, fontSize: 13, color: colors.green3 },
+
+  // Caisse rapide
+  kioskBar: {
+    backgroundColor: colors.s2,
+    borderRadius: radius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.green2,
+    padding: 14,
+    gap: 10,
+    ...shadow.soft,
+  },
+  kioskEyebrow: { fontFamily: fonts.mono, fontSize: 9.5, color: colors.green3, letterSpacing: 1, textTransform: 'uppercase' },
+  kioskRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  kioskInput: {
+    flex: 1,
+    fontFamily: fonts.mono,
+    fontSize: 13,
+    color: colors.tx,
+    backgroundColor: colors.s3,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+  },
+  kioskScan: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: colors.green,
+    borderRadius: radius.md,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+  },
+  kioskScanTxt: { fontFamily: fonts.bodyBold, fontSize: 13.5, color: colors.onColor },
+  kioskSec: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.md,
+    backgroundColor: colors.s3,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Grille actions
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  tile: {
+    flexGrow: 1,
+    flexBasis: '47%',
+    backgroundColor: colors.s2,
+    borderRadius: radius.lg,
+    borderWidth: 1.5,
+    borderColor: colors.b2,
+    padding: 16,
+    gap: 8,
+    ...shadow.soft,
+  },
+  tileViolet: { borderColor: 'rgba(124,58,237,0.3)', backgroundColor: 'rgba(124,58,237,0.05)' },
+  tileIco: {
+    width: 50,
+    height: 50,
+    borderRadius: radius.md,
+    backgroundColor: colors.greenSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tileIcoViolet: { backgroundColor: 'rgba(124,58,237,0.12)' },
+  tileBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    minWidth: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.red,
+    borderWidth: 2,
+    borderColor: colors.s2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+  },
+  tileBadgeTxt: { fontFamily: fonts.bodyBold, fontSize: 11, color: colors.white },
+  tileLbl: { fontFamily: fonts.headingBold, fontSize: 15.5, color: colors.tx },
+  tileSub: { fontFamily: fonts.body, fontSize: 12, color: colors.tx3 },
+
+  // Activite recente
+  recentBlock: { gap: 12 },
+  secTitle: { fontFamily: fonts.headingBold, fontSize: 17, color: colors.tx },
+  recentList: { gap: 8 },
+  hi: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.s2,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.b1,
+    padding: 12,
+  },
+  hiIco: { width: 36, height: 36, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  hiIcoGreen: { backgroundColor: colors.greenSoft },
+  hiIcoGold: { backgroundColor: colors.goldSoft },
+  hiName: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx },
+  hiNote: { fontFamily: fonts.body, fontSize: 11.5, color: colors.tx3, marginTop: 2 },
+  hiPts: { fontFamily: fonts.heading, fontSize: 16 },
+  hiPtsGreen: { color: colors.green3 },
+  hiPtsGold: { color: colors.goldDeep },
+
+  // Etat vide
+  empty: { alignItems: 'center', paddingVertical: 32, paddingHorizontal: 24, gap: 8 },
+  emptyIco: {
+    width: 60,
+    height: 60,
+    borderRadius: radius.lg,
+    backgroundColor: colors.s3,
+    borderWidth: 1,
+    borderColor: colors.b2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+  },
+  emptyTitle: { fontFamily: fonts.headingBold, fontSize: 16, color: colors.tx2 },
+  emptySub: { fontFamily: fonts.body, fontSize: 13, color: colors.tx3, textAlign: 'center', maxWidth: 240, lineHeight: 19 },
+  emptyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.green,
+    borderRadius: radius.md,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginTop: 10,
+    ...shadow.green,
+  },
+  emptyBtnTxt: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.onColor },
+});

@@ -1,0 +1,780 @@
+// ============================================================
+// MySargal Caisse - Summit Club
+// Programme de statut : activation, gestion des niveaux (tiers), catalogue de
+// recompenses par famille, membres (numeros, statut, historique), import CSV
+// des membres, export CSV, email de lancement.
+// ============================================================
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, Pressable, Modal, ScrollView, Switch, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { RootStackParamList } from '../navigation/types';
+import { Screen } from '../components/Screen';
+import { PageHeader } from '../components/PageHeader';
+import { Card } from '../components/Card';
+import { Icon } from '../components/Icon';
+import { Field } from '../components/Field';
+import { Button } from '../components/Button';
+import { Segmented } from '../components/Segmented';
+import { EmptyState } from '../components/EmptyState';
+import { OfflineBanner } from '../components/OfflineBanner';
+import { useToast } from '../components/Toast';
+import { colors, fonts, radius, spacing } from '../theme';
+import { useTheme } from '../theme/ThemeProvider';
+
+import { useAuth } from '../auth/AuthContext';
+import { useNetwork } from '../offline/NetworkProvider';
+import {
+  fetchTiers,
+  createTier,
+  updateTier,
+  deleteTier,
+  fetchSargalRewards,
+  createSargalReward,
+  updateSargalReward,
+  deleteSargalReward,
+  fetchSummitMembers,
+  updateMember,
+  fetchMemberHistory,
+  findCardByPhoneExact,
+  createCard,
+  updateMerchant,
+  sendLaunchEmail,
+} from '../api/endpoints';
+import { SargalTier, SargalReward, SummitMember } from '../api/types';
+import { SC_FAMILIES, SC_DEFAULT_TIERS, genMemberNumber, maskLast4, programName } from '../utils/member';
+import { fmtPts, fmtDate, onlyDigits } from '../utils/format';
+import { buildCSV, exportCSV, pickCSVText, parseCSV, normHeader } from '../utils/csv';
+import { tapLight } from '../utils/haptics';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+type Sub = 'tiers' | 'rewards' | 'members';
+
+export function SummitScreen() {
+  const navigation = useNavigation<Nav>();
+  const theme = useTheme();
+  const { merchant, refreshMerchant } = useAuth();
+  const { online } = useNetwork();
+  const { toast } = useToast();
+
+  const enabled = !!((merchant?.reward_config as any) || {}).summit_club_enabled;
+  const program = programName(merchant);
+  const [sub, setSub] = useState<Sub>('tiers');
+  const [tiers, setTiers] = useState<SargalTier[]>([]);
+  const [rewards, setRewards] = useState<SargalReward[]>([]);
+  const [members, setMembers] = useState<SummitMember[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activating, setActivating] = useState(false);
+
+  const load = useCallback(async () => {
+    if (!merchant || !online) return;
+    try {
+      const [t, r, m] = await Promise.all([
+        fetchTiers(merchant.id),
+        fetchSargalRewards(merchant.id),
+        fetchSummitMembers(merchant.id),
+      ]);
+      setTiers(t);
+      setRewards(r);
+      setMembers(m);
+    } catch {
+      /* garde l'existant */
+    }
+  }, [merchant, online]);
+
+  useEffect(() => {
+    setLoading(true);
+    load().finally(() => setLoading(false));
+  }, [load]);
+
+  const toggleFeature = async (val: boolean) => {
+    if (!merchant) return;
+    try {
+      const cfg = { ...((merchant.reward_config as any) || {}), summit_club_enabled: val };
+      await updateMerchant(merchant.id, { reward_config: cfg });
+      await refreshMerchant();
+      toast(val ? 'Programme activé.' : 'Programme désactivé.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Modification impossible', 'error');
+    }
+  };
+
+  const activate = async () => {
+    if (!merchant) return;
+    setActivating(true);
+    try {
+      if (!tiers.length) {
+        for (const t of SC_DEFAULT_TIERS) {
+          await createTier({ ...t, merchant_id: merchant.id });
+        }
+      }
+      await toggleFeature(true);
+      await load();
+    } catch (e: any) {
+      toast(e?.message || 'Activation impossible', 'error');
+    } finally {
+      setActivating(false);
+    }
+  };
+
+  return (
+    <Screen scroll padded contentStyle={styles.content}>
+      <PageHeader
+        title={program}
+        subtitle="Récompensez vos meilleurs clients avec des niveaux de fidélité."
+      />
+
+      <OfflineBanner />
+
+      {!enabled ? (
+        <Card style={styles.card}>
+          <Text style={styles.actTitle}>{`Activer ${program}`}</Text>
+          <Text style={styles.actSub}>
+            Créez des niveaux de fidélité et récompensez vos meilleurs clients avec des avantages exclusifs.
+          </Text>
+          <Button label="Activer le programme" icon="award" onPress={activate} loading={activating} large />
+        </Card>
+      ) : (
+        <>
+          <View style={styles.enableRow}>
+            <Text style={styles.enableTxt}>Programme actif</Text>
+            <Switch value={enabled} onValueChange={toggleFeature} trackColor={{ false: colors.s4, true: theme.accent }} thumbColor={enabled ? theme.accentDark : '#888'} />
+          </View>
+
+          <Segmented
+            items={[
+              { key: 'tiers', label: 'Niveaux' },
+              { key: 'rewards', label: 'Récompenses' },
+              { key: 'members', label: 'Membres' },
+            ]}
+            value={sub}
+            onChange={(k) => setSub(k as Sub)}
+          />
+
+          {loading ? (
+            <ActivityIndicator color={theme.accent} style={{ marginVertical: 24 }} />
+          ) : sub === 'tiers' ? (
+            <TiersPane merchant={merchant} tiers={tiers} setTiers={setTiers} toast={toast} />
+          ) : sub === 'rewards' ? (
+            <RewardsPane merchant={merchant} rewards={rewards} setRewards={setRewards} tiers={tiers} toast={toast} />
+          ) : (
+            <MembersPane merchant={merchant} members={members} setMembers={setMembers} tiers={tiers} toast={toast} reload={load} />
+          )}
+        </>
+      )}
+    </Screen>
+  );
+}
+
+// ---------- NIVEAUX ----------
+function TiersPane({ merchant, tiers, setTiers, toast }: any) {
+  const theme = useTheme();
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<SargalTier | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [name, setName] = useState('');
+  const [minP, setMinP] = useState('0');
+  const [maxP, setMaxP] = useState('');
+  const [spend, setSpend] = useState('0');
+  const [prio, setPrio] = useState('1');
+  const [color, setColor] = useState('#16a34a');
+  const [mult, setMult] = useState('1');
+  const [benefits, setBenefits] = useState('');
+
+  const open = (t?: SargalTier) => {
+    setEditing(t || null);
+    setName(t?.name || '');
+    setMinP(String(t?.min_points ?? 0));
+    setMaxP(t?.max_points != null ? String(t.max_points) : '');
+    setSpend(String(t?.min_spend_year ?? 0));
+    setPrio(String(t?.priority ?? tiers.length + 1));
+    setColor(t?.color_hex || '#16a34a');
+    setMult(String((t as any)?.earn_multiplier ?? 1));
+    setBenefits((t?.benefits_json || []).join('\n'));
+    setModal(true);
+  };
+
+  const save = async () => {
+    if (!merchant) return;
+    if (!name.trim()) { toast('Nom du niveau requis.', 'warn'); return; }
+    setBusy(true);
+    try {
+      const payload = {
+        merchant_id: merchant.id,
+        name: name.trim(),
+        min_points: parseInt(minP || '0', 10),
+        max_points: maxP.trim() ? parseInt(maxP, 10) : null,
+        min_spend_year: parseInt(spend || '0', 10),
+        earn_multiplier: Math.max(1, parseFloat((mult || '1').replace(',', '.')) || 1),
+        priority: parseInt(prio || '1', 10),
+        color_hex: color,
+        benefits_json: benefits.split('\n').map((b) => b.trim()).filter(Boolean),
+      };
+      if (editing) {
+        await updateTier(editing.id, payload);
+        setTiers((prev: SargalTier[]) => prev.map((t) => (t.id === editing.id ? { ...t, ...payload } as SargalTier : t)));
+      } else {
+        const created = await createTier(payload);
+        setTiers((prev: SargalTier[]) => [...prev, created]);
+      }
+      toast('Niveau enregistre.', 'success');
+      setModal(false);
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally { setBusy(false); }
+  };
+
+  const remove = async () => {
+    if (!editing) return;
+    setBusy(true);
+    try {
+      await deleteTier(editing.id);
+      setTiers((prev: SargalTier[]) => prev.filter((t) => t.id !== editing.id));
+      toast('Niveau supprime.', 'success');
+      setModal(false);
+    } catch (e: any) {
+      toast(e?.message || 'Suppression impossible', 'error');
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <>
+      <Button label="Ajouter un niveau" icon="plus" onPress={() => open()} />
+      {tiers.length ? (
+        <View style={styles.list}>
+          {tiers.map((t: SargalTier) => (
+            <Pressable key={String(t.id)} style={styles.tierItem} onPress={() => open(t)}>
+              <View style={[styles.tierDot, { backgroundColor: t.color_hex || theme.accent }]} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.tierName}>{t.name}</Text>
+                <Text style={styles.tierMeta}>
+                  {fmtPts(t.min_points)}{t.max_points != null ? ` a ${fmtPts(t.max_points)}` : '+'} pts · {(t.benefits_json || []).length} avantages
+                </Text>
+              </View>
+              <Text style={styles.edit}>Modifier ›</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : (
+        <EmptyState icon="award" title="Aucun niveau" message="Cree les niveaux du programme." />
+      )}
+
+      <TierModal
+        visible={modal}
+        onClose={() => setModal(false)}
+        editing={!!editing}
+        busy={busy}
+        name={name} setName={setName}
+        minP={minP} setMinP={setMinP}
+        maxP={maxP} setMaxP={setMaxP}
+        spend={spend} setSpend={setSpend}
+        prio={prio} setPrio={setPrio}
+        mult={mult} setMult={setMult}
+        color={color} setColor={setColor}
+        benefits={benefits} setBenefits={setBenefits}
+        onSave={save} onRemove={remove}
+      />
+    </>
+  );
+}
+
+function TierModal(props: any) {
+  const { visible, onClose, editing, busy, name, setName, minP, setMinP, maxP, setMaxP, spend, setSpend, prio, setPrio, mult, setMult, color, setColor, benefits, setBenefits, onSave, onRemove } = props;
+  const COLORS = ['#16a34a', '#22c55e', '#4ade80', '#15803d', '#7c3aed', '#f5c842'];
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={styles.modalWrap}>
+        <View style={styles.modalCard}>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
+            <Text style={styles.modalTitle}>{editing ? 'Modifier le niveau' : 'Nouveau niveau'}</Text>
+            <Field label="Nom" value={name} onChangeText={setName} placeholder="Ex : Prestige" />
+            <View style={styles.row2}>
+              <Field label="Points min" value={minP} onChangeText={(t: string) => setMinP(t.replace(/\D/g, ''))} keyboardType="number-pad" containerStyle={{ flex: 1 }} />
+              <Field label="Points max (vide = infini)" value={maxP} onChangeText={(t: string) => setMaxP(t.replace(/\D/g, ''))} keyboardType="number-pad" containerStyle={{ flex: 1 }} />
+            </View>
+            <View style={styles.row2}>
+              <Field label="Depense annuelle" value={spend} onChangeText={(t: string) => setSpend(t.replace(/\D/g, ''))} keyboardType="number-pad" containerStyle={{ flex: 1 }} />
+              <Field label="Priorite" value={prio} onChangeText={(t: string) => setPrio(t.replace(/\D/g, ''))} keyboardType="number-pad" containerStyle={{ flex: 1 }} />
+            </View>
+            <Field label="Multiplicateur de points" value={mult} onChangeText={(t: string) => setMult(t.replace(/[^0-9.,]/g, ''))} keyboardType="decimal-pad" />
+            <Text style={{ fontFamily: fonts.body, fontSize: 12, color: colors.tx3, marginTop: -6, marginBottom: 10 }}>1 = normal, 1,5 = +50%, 2 = double.</Text>
+            <Text style={styles.label}>Couleur</Text>
+            <View style={styles.colorRow}>
+              {COLORS.map((c) => (
+                <Pressable key={c} onPress={() => setColor(c)} style={[styles.colorCell, { backgroundColor: c }, color === c && styles.colorOn]} />
+              ))}
+            </View>
+            <Field label="Avantages (un par ligne)" value={benefits} onChangeText={setBenefits} multiline style={{ minHeight: 80 }} />
+            <Button label={editing ? 'Enregistrer' : 'Ajouter'} onPress={onSave} loading={busy} />
+            {editing ? <Button label="Supprimer" variant="danger" onPress={onRemove} loading={busy} /> : null}
+            <Pressable onPress={onClose} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+// ---------- RECOMPENSES ----------
+function RewardsPane({ merchant, rewards, setRewards, tiers, toast }: any) {
+  const theme = useTheme();
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<SargalReward | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [family, setFamily] = useState(SC_FAMILIES[0].key);
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [cost, setCost] = useState('0');
+  const [tierId, setTierId] = useState('');
+  const [image, setImage] = useState('');
+  const [active, setActive] = useState(true);
+
+  const open = (r?: SargalReward, fam?: string) => {
+    setEditing(r || null);
+    setFamily(r?.family || fam || SC_FAMILIES[0].key);
+    setName(r?.name || '');
+    setDesc(r?.description || '');
+    setCost(String(r?.points_cost ?? 0));
+    setTierId(r?.tier_required_id != null ? String(r.tier_required_id) : '');
+    setImage(r?.image_url || '');
+    setActive(r?.active !== false);
+    setModal(true);
+  };
+
+  const save = async () => {
+    if (!merchant) return;
+    if (!name.trim()) { toast('Nom requis.', 'warn'); return; }
+    setBusy(true);
+    try {
+      const inFamily = rewards.filter((r: SargalReward) => r.family === family).length;
+      const payload = {
+        merchant_id: merchant.id,
+        family,
+        name: name.trim(),
+        description: desc.trim(),
+        points_cost: parseInt(cost || '0', 10),
+        tier_required_id: tierId ? tierId : null,
+        image_url: image.trim() || null,
+        active,
+      };
+      if (editing) {
+        await updateSargalReward(editing.id, payload);
+        setRewards((prev: SargalReward[]) => prev.map((r) => (r.id === editing.id ? { ...r, ...payload } as SargalReward : r)));
+      } else {
+        const created = await createSargalReward({ ...payload, sort_order: inFamily + 1 });
+        setRewards((prev: SargalReward[]) => [...prev, created]);
+      }
+      toast('Recompense enregistree.', 'success');
+      setModal(false);
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally { setBusy(false); }
+  };
+
+  const remove = async () => {
+    if (!editing) return;
+    setBusy(true);
+    try {
+      await deleteSargalReward(editing.id);
+      setRewards((prev: SargalReward[]) => prev.filter((r) => r.id !== editing.id));
+      toast('Recompense supprimee.', 'success');
+      setModal(false);
+    } catch (e: any) {
+      toast(e?.message || 'Suppression impossible', 'error');
+    } finally { setBusy(false); }
+  };
+
+  const toggleActive = async (r: SargalReward) => {
+    try {
+      await updateSargalReward(r.id, { active: !(r.active !== false) });
+      setRewards((prev: SargalReward[]) => prev.map((x) => (x.id === r.id ? { ...x, active: !(x.active !== false) } : x)));
+    } catch (e: any) {
+      toast(e?.message || 'Modification impossible', 'error');
+    }
+  };
+
+  return (
+    <>
+      {SC_FAMILIES.map((fam) => {
+        const items = rewards.filter((r: SargalReward) => r.family === fam.key);
+        return (
+          <Card key={fam.key} style={styles.famCard}>
+            <View style={styles.famHead}>
+              <View style={styles.famTitleRow}>
+                <Icon name={fam.icon} size={16} color={theme.accentDark} />
+                <Text style={styles.famTitle}>{fam.label}</Text>
+              </View>
+              <Pressable onPress={() => open(undefined, fam.key)} hitSlop={8}><Icon name="plus" size={20} color={theme.accentDark} /></Pressable>
+            </View>
+            {items.length ? (
+              items.map((r: SargalReward) => (
+                <Pressable key={String(r.id)} style={styles.scReward} onPress={() => open(r)}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.scRewName, r.active === false && styles.inactive]}>{r.name}</Text>
+                    <Text style={styles.scRewMeta}>{fmtPts(r.points_cost)} pts</Text>
+                  </View>
+                  <Switch value={r.active !== false} onValueChange={() => toggleActive(r)} trackColor={{ false: colors.s4, true: theme.accent }} thumbColor={r.active !== false ? theme.accentDark : '#888'} />
+                </Pressable>
+              ))
+            ) : (
+              <Text style={styles.famEmpty}>Aucune recompense.</Text>
+            )}
+          </Card>
+        );
+      })}
+
+      <Modal visible={modal} transparent animationType="slide" onRequestClose={() => setModal(false)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCard}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
+              <Text style={styles.modalTitle}>{editing ? 'Modifier' : 'Nouvelle recompense'}</Text>
+              <Field label="Nom" value={name} onChangeText={setName} />
+              <Field label="Description" value={desc} onChangeText={setDesc} />
+              <Field label="Cout en points" value={cost} onChangeText={(t) => setCost(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+              <Text style={styles.label}>Niveau requis</Text>
+              <Segmented
+                scroll
+                items={[{ key: '', label: 'Aucun' }, ...tiers.map((t: SargalTier) => ({ key: String(t.id), label: t.name }))]}
+                value={tierId}
+                onChange={setTierId}
+              />
+              <Field label="Image (URL, optionnel)" value={image} onChangeText={setImage} placeholder="https://..." autoCapitalize="none" />
+              <View style={styles.activeRow}>
+                <Text style={styles.uniLabel}>Active</Text>
+                <Switch value={active} onValueChange={setActive} trackColor={{ false: colors.s4, true: theme.accent }} thumbColor={active ? theme.accentDark : '#888'} />
+              </View>
+              <Button label={editing ? 'Enregistrer' : 'Ajouter'} onPress={save} loading={busy} />
+              {editing ? <Button label="Supprimer" variant="danger" onPress={remove} loading={busy} /> : null}
+              <Pressable onPress={() => setModal(false)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
+}
+
+// ---------- MEMBRES ----------
+function MembersPane({ merchant, members, setMembers, tiers, toast, reload }: any) {
+  const theme = useTheme();
+  const [query, setQuery] = useState('');
+  const [tierFilter, setTierFilter] = useState('');
+  const [selected, setSelected] = useState<SummitMember | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [importRows, setImportRows] = useState<{ phone: string; first: string; last: string; email: string }[] | null>(null);
+  const [emailBusy, setEmailBusy] = useState(false);
+
+  // Edition
+  const [first, setFirst] = useState('');
+  const [last, setLast] = useState('');
+  const [num, setNum] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState('');
+  const [tierId, setTierId] = useState('');
+  const [waOpt, setWaOpt] = useState(false);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return members.filter((m: SummitMember) => {
+      if (tierFilter && String(m.tier_id) !== tierFilter) return false;
+      if (!q) return true;
+      return (
+        (m.member_number || '').toLowerCase().includes(q) ||
+        `${m.client_first || ''} ${m.client_last || ''}`.toLowerCase().includes(q) ||
+        onlyDigits(m.client_phone).includes(onlyDigits(q)) ||
+        (m.client_email || '').toLowerCase().includes(q)
+      );
+    });
+  }, [members, query, tierFilter]);
+
+  const openMember = (m: SummitMember) => {
+    setSelected(m);
+    setFirst(m.client_first || '');
+    setLast(m.client_last || '');
+    setNum(m.member_number || '');
+    setEmail(m.client_email || '');
+    setBirthday(m.client_birthday || '');
+    setTierId(m.tier_id != null ? String(m.tier_id) : '');
+    setWaOpt(!!m.whatsapp_opt_in);
+    setHistory([]);
+    if (m.id) fetchMemberHistory(m.id).then(setHistory).catch(() => {});
+  };
+
+  const saveMember = async () => {
+    if (!selected) return;
+    setBusy(true);
+    try {
+      const patch: Record<string, unknown> = {
+        client_first: first.trim(),
+        client_last: last.trim(),
+        client_birthday: birthday.trim() || null,
+        client_email: email.trim() || null,
+        whatsapp_opt_in: waOpt,
+      };
+      if (tierId) {
+        patch.tier_id = tierId;
+        patch.tier_last_evaluated_at = new Date().toISOString();
+      }
+      if (num.trim()) patch.member_number = num.trim();
+      await updateMember(selected.id, patch);
+      setMembers((prev: SummitMember[]) => prev.map((m) => (m.id === selected.id ? { ...m, ...patch } as SummitMember : m)));
+      toast('Membre mis a jour.', 'success');
+      setSelected(null);
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally { setBusy(false); }
+  };
+
+  const exportCSVMembers = async () => {
+    if (!filtered.length) { toast('Aucun membre a exporter.', 'warn'); return; }
+    try {
+      const rows = filtered.map((m: SummitMember) => [
+        m.member_number || '',
+        m.client_first || '',
+        m.client_last || '',
+        maskLast4(m.client_phone),
+        m.client_email || '',
+        tiers.find((t: SargalTier) => String(t.id) === String(m.tier_id))?.name || '',
+        m.active_points ?? 0,
+        m.lifetime_pts ?? 0,
+        m.tier_last_evaluated_at || '',
+      ]);
+      const csv = buildCSV(
+        ['member_number', 'first_name', 'last_name', 'phone', 'email', 'tier', 'active_points', 'lifetime_pts', 'tier_last_evaluated_at'],
+        rows
+      );
+      await exportCSV(`${(merchant?.name || 'boutique').replace(/\s+/g, '_')}_membres.csv`, csv);
+    } catch (e: any) {
+      toast(e?.message || 'Export impossible', 'error');
+    }
+  };
+
+  const pickImport = async () => {
+    try {
+      const text = await pickCSVText();
+      if (!text) return;
+      const rows = parseCSV(text);
+      if (rows.length < 2) { toast('Fichier vide.', 'warn'); return; }
+      const header = rows[0].map(normHeader);
+      const idx = (keys: string[]) => header.findIndex((h) => keys.some((k) => h.includes(k)));
+      const iPhone = idx(['phone', 'telephone', 'tel', 'numero', 'mobile']);
+      const iFirst = idx(['first', 'prenom']);
+      const iLast = idx(['last', 'nom']);
+      const iEmail = idx(['email', 'mail']);
+      if (iPhone < 0 || iFirst < 0) { toast('Colonnes phone + first_name requises.', 'warn'); return; }
+      const parsed = rows.slice(1)
+        .map((r) => ({
+          phone: onlyDigits(r[iPhone]),
+          first: (r[iFirst] || '').trim(),
+          last: iLast >= 0 ? (r[iLast] || '').trim() : '',
+          email: iEmail >= 0 ? (r[iEmail] || '').trim() : '',
+        }))
+        .filter((r) => r.phone && r.first);
+      setImportRows(parsed);
+    } catch (e: any) {
+      toast(e?.message || 'Lecture impossible', 'error');
+    }
+  };
+
+  const prepareCards = async () => {
+    if (!merchant || !importRows) return;
+    setBusy(true);
+    let created = 0;
+    let updated = 0;
+    try {
+      const lowest = [...tiers].sort((a, b) => (a.priority || 0) - (b.priority || 0))[0];
+      for (const row of importRows) {
+        const phone = '+' + row.phone;
+        const existing = await findCardByPhoneExact(merchant.id, phone);
+        if (existing) {
+          const patch: Record<string, unknown> = { client_first: row.first, client_last: row.last, client_email: row.email || null };
+          if (!existing.member_number) patch.member_number = genMemberNumber();
+          await updateMember(existing.id, patch);
+          updated++;
+        } else {
+          await createCard({
+            merchant_id: merchant.id,
+            code: 'LC-' + genMemberNumber().replace('MRZ-', ''),
+            client_name: `${row.first} ${row.last}`.trim(),
+            client_phone: phone,
+            client_phone_raw: row.phone,
+            client_email: row.email || null,
+            member_number: genMemberNumber(),
+            tier_id: lowest ? lowest.id : null,
+          } as any);
+          created++;
+        }
+      }
+      toast(`${created} cree(s), ${updated} mis a jour.`, 'success');
+      setImportRows(null);
+      await reload();
+    } catch (e: any) {
+      toast(e?.message || 'Preparation impossible', 'error');
+    } finally { setBusy(false); }
+  };
+
+  const sendEmail = async () => {
+    const slug = (merchant as any)?.slug;
+    if (!slug) { toast('Aucun slug boutique pour l\'email.', 'warn'); return; }
+    setEmailBusy(true);
+    try {
+      const r = await sendLaunchEmail({ merchant_slug: slug, dry_run: true, segment: 'all' });
+      if (r.error) { toast(r.error, 'error'); return; }
+      toast(`Test : ${r.sent} membre(s) avec email.`, 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Email impossible', 'error');
+    } finally { setEmailBusy(false); }
+  };
+
+  return (
+    <>
+      <View style={styles.memberTools}>
+        <Button label="Importer CSV" icon="upload" variant="secondary" full={false} style={styles.mtool} onPress={pickImport} />
+        <Button label="Exporter CSV" icon="download" variant="secondary" full={false} style={styles.mtool} onPress={exportCSVMembers} />
+      </View>
+      <Button label="Email de lancement (test)" icon="mail" variant="secondary" onPress={sendEmail} loading={emailBusy} />
+
+      <Field value={query} onChangeText={setQuery} placeholder="Numero, nom, telephone, email" autoCapitalize="none" />
+      <Segmented
+        scroll
+        items={[{ key: '', label: 'Tous' }, ...tiers.map((t: SargalTier) => ({ key: String(t.id), label: t.name }))]}
+        value={tierFilter}
+        onChange={setTierFilter}
+      />
+
+      {filtered.length ? (
+        <View style={styles.list}>
+          {filtered.slice(0, 200).map((m: SummitMember) => {
+            const tier = tiers.find((t: SargalTier) => String(t.id) === String(m.tier_id));
+            return (
+              <Pressable key={m.id} style={styles.memberItem} onPress={() => { tapLight(); openMember(m); }}>
+                <View style={[styles.tierDot, { backgroundColor: tier?.color_hex || colors.tx3 }]} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.memberName}>{`${m.client_first || ''} ${m.client_last || ''}`.trim() || 'Membre'}</Text>
+                  <Text style={styles.memberMeta}>{m.member_number || 'Sans numero'} · {maskLast4(m.client_phone)}</Text>
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={[styles.memberPts, { color: theme.accentDark }]}>{fmtPts(m.active_points || 0)}</Text>
+                  <Text style={styles.memberTier}>{tier?.name || 'Aucun'}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : (
+        <EmptyState icon="award" title="Aucun membre" message="Importe ta liste de membres (CSV)." />
+      )}
+
+      {/* Edition membre */}
+      <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(null)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCard}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
+              <Text style={styles.modalTitle}>Membre</Text>
+              <Field label="Numero de membre" value={num} onChangeText={setNum} autoCapitalize="characters" />
+              <View style={styles.row2}>
+                <Field label="Prenom" value={first} onChangeText={setFirst} containerStyle={{ flex: 1 }} />
+                <Field label="Nom" value={last} onChangeText={setLast} containerStyle={{ flex: 1 }} />
+              </View>
+              <Field label="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
+              <Field label="Anniversaire (AAAA-MM-JJ)" value={birthday} onChangeText={setBirthday} placeholder="1990-05-12" />
+              <Text style={styles.label}>Niveau</Text>
+              <Segmented scroll items={[{ key: '', label: 'Aucun' }, ...tiers.map((t: SargalTier) => ({ key: String(t.id), label: t.name }))]} value={tierId} onChange={setTierId} />
+              <View style={styles.activeRow}>
+                <Text style={styles.uniLabel}>Opt-in WhatsApp</Text>
+                <Switch value={waOpt} onValueChange={setWaOpt} trackColor={{ false: colors.s4, true: theme.accent }} thumbColor={waOpt ? theme.accentDark : '#888'} />
+              </View>
+              <View style={styles.divider} />
+              <Text style={styles.label}>Historique</Text>
+              {history.length ? history.slice(0, 12).map((h, i) => (
+                <View key={i} style={styles.histRow}>
+                  <Text style={styles.histNote} numberOfLines={1}>{h.reason || h.type || 'Operation'}</Text>
+                  <Text style={[styles.histPts, { color: theme.accentDark }]}>{(h.points ?? h.delta) >= 0 ? '+' : ''}{h.points ?? h.delta ?? 0}</Text>
+                  <Text style={styles.histTime}>{fmtDate(h.created_at)}</Text>
+                </View>
+              )) : <Text style={styles.famEmpty}>Aucun historique.</Text>}
+              <Button label="Enregistrer" onPress={saveMember} loading={busy} />
+              <Pressable onPress={() => setSelected(null)} style={styles.cancel}><Text style={styles.cancelTxt}>Fermer</Text></Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Apercu import */}
+      <Modal visible={!!importRows} transparent animationType="slide" onRequestClose={() => setImportRows(null)}>
+        <View style={styles.modalWrap}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Preparer les cartes membres</Text>
+            <Text style={styles.famEmpty}>{importRows?.length || 0} ligne(s) valides detectees.</Text>
+            <ScrollView style={{ maxHeight: 240 }} showsVerticalScrollIndicator={false}>
+              {(importRows || []).slice(0, 25).map((r, i) => (
+                <View key={i} style={styles.histRow}>
+                  <Text style={styles.histNote} numberOfLines={1}>{r.first} {r.last}</Text>
+                  <Text style={styles.histTime}>{maskLast4(r.phone)}</Text>
+                </View>
+              ))}
+            </ScrollView>
+            <Button label={`Preparer ${importRows?.length || 0} carte(s)`} onPress={prepareCards} loading={busy} style={{ marginTop: 12 }} />
+            <Pressable onPress={() => setImportRows(null)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+  head: { marginTop: 2 },
+  backBtn: { alignSelf: 'flex-start', paddingVertical: 4 },
+  backTxt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.tx },
+  title: { fontFamily: fonts.heading, fontSize: 26, color: colors.tx, letterSpacing: -0.5 },
+  subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2, marginTop: 2 },
+  card: { gap: 12 },
+  actTitle: { fontFamily: fonts.heading, fontSize: 20, color: colors.tx },
+  actSub: { fontFamily: fonts.body, fontSize: 13.5, color: colors.tx2, lineHeight: 20 },
+  enableRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.s2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b1, paddingHorizontal: 16, paddingVertical: 12 },
+  enableTxt: { fontFamily: fonts.bodyBold, fontSize: 14.5, color: colors.tx },
+  list: { gap: 10 },
+  tierItem: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.s2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b1, padding: 14 },
+  tierDot: { width: 14, height: 14, borderRadius: 7 },
+  tierName: { fontFamily: fonts.bodyBold, fontSize: 15, color: colors.tx },
+  tierMeta: { fontFamily: fonts.body, fontSize: 12, color: colors.tx3, marginTop: 2 },
+  edit: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.tx3 },
+  famCard: { gap: 10 },
+  famHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  famTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  famTitle: { fontFamily: fonts.headingBold, fontSize: 15, color: colors.tx },
+  famEmpty: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3 },
+  scReward: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, borderTopWidth: 1, borderTopColor: colors.b1 },
+  scRewName: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx },
+  inactive: { color: colors.tx3, textDecorationLine: 'line-through' },
+  scRewMeta: { fontFamily: fonts.mono, fontSize: 11, color: colors.tx3, marginTop: 2 },
+  memberTools: { flexDirection: 'row', gap: 10 },
+  mtool: { flex: 1 },
+  memberItem: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.s2, borderRadius: radius.md, borderWidth: 1, borderColor: colors.b1, padding: 12 },
+  memberName: { fontFamily: fonts.bodyBold, fontSize: 14.5, color: colors.tx },
+  memberMeta: { fontFamily: fonts.mono, fontSize: 10.5, color: colors.tx3, marginTop: 2 },
+  memberPts: { fontFamily: fonts.heading, fontSize: 16, color: colors.tx },
+  memberTier: { fontFamily: fonts.body, fontSize: 10.5, color: colors.tx3 },
+  modalWrap: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
+  modalCard: { backgroundColor: colors.s1, borderTopLeftRadius: radius.xl, borderTopRightRadius: radius.xl, padding: spacing.xl, paddingBottom: 34, borderTopWidth: 1, borderColor: colors.b2, maxHeight: '90%' },
+  modalTitle: { fontFamily: fonts.heading, fontSize: 20, color: colors.tx },
+  row2: { flexDirection: 'row', gap: 10 },
+  label: { fontFamily: fonts.bodySemi, fontSize: 11, color: colors.tx3, letterSpacing: 0.6, textTransform: 'uppercase' },
+  colorRow: { flexDirection: 'row', gap: 10 },
+  colorCell: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, borderColor: 'transparent' },
+  colorOn: { borderColor: colors.white },
+  activeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  uniLabel: { fontFamily: fonts.bodyBold, fontSize: 14.5, color: colors.tx },
+  divider: { height: 1, backgroundColor: colors.b1, marginVertical: 2 },
+  histRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
+  histNote: { flex: 1, fontFamily: fonts.body, fontSize: 12.5, color: colors.tx2 },
+  histPts: { fontFamily: fonts.bodyBold, fontSize: 12.5, color: colors.tx },
+  histTime: { fontFamily: fonts.mono, fontSize: 10, color: colors.tx3, minWidth: 54, textAlign: 'right' },
+  cancel: { alignItems: 'center', paddingVertical: 10 },
+  cancelTxt: { fontFamily: fonts.bodyBold, fontSize: 14, color: colors.tx3 },
+});

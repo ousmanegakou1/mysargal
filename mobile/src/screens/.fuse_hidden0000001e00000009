@@ -1,0 +1,130 @@
+// ============================================================
+// MySargal Caisse - Menu "Plus"
+// Regroupe les fonctions secondaires (Recompenses, Notifications, Summit Club,
+// Journal, Reglages) pour garder la barre d'onglets legere en caisse.
+// ============================================================
+
+import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { Screen } from '../components/Screen';
+import { Card } from '../components/Card';
+import { StatusBadge } from '../components/StatusBadge';
+import { OfflineBanner } from '../components/OfflineBanner';
+import { colors, fonts, radius, spacing } from '../theme';
+
+import { RootStackParamList } from '../navigation/types';
+import { useAuth } from '../auth/AuthContext';
+import { useNetwork } from '../offline/NetworkProvider';
+import { tapLight } from '../utils/haptics';
+
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+interface Item {
+  icon: string;
+  label: string;
+  sub: string;
+  to: keyof RootStackParamList;
+}
+
+const ITEMS: Item[] = [
+  { icon: '🎁', label: 'Recompenses', sub: 'Catalogue et remises', to: 'Rewards' },
+  { icon: '📣', label: 'Notifications', sub: 'Campagnes push, WhatsApp, email', to: 'Push' },
+  { icon: '👑', label: 'Summit Club', sub: 'Niveaux, membres, statuts', to: 'Summit' },
+  { icon: '🧾', label: 'Journal', sub: 'Operations du jour', to: 'History' },
+  { icon: '⚙️', label: 'Reglages', sub: 'Boutique, marque, equipe, abonnement', to: 'Settings' },
+];
+
+export function MoreScreen() {
+  const navigation = useNavigation<Nav>();
+  const { merchant } = useAuth();
+  const { pendingCount } = useNetwork();
+
+  return (
+    <Screen scroll padded contentStyle={styles.content}>
+      <View>
+        <Text style={styles.title}>Plus</Text>
+        <Text style={styles.subtitle}>Toutes les fonctions de votre boutique.</Text>
+      </View>
+
+      <OfflineBanner />
+
+      <Card style={styles.shopCard}>
+        <View style={styles.shopHead}>
+          <Text style={styles.shopEmoji}>{merchant?.emoji || '🏪'}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.shopName} numberOfLines={1}>
+              {merchant?.name || 'Ma boutique'}
+            </Text>
+            <Text style={styles.shopMeta}>{merchant?.brand || 'MySargal'}</Text>
+          </View>
+          {merchant?.plan ? <StatusBadge label={String(merchant.plan).toUpperCase()} tone="green" small /> : null}
+        </View>
+      </Card>
+
+      <View style={styles.list}>
+        {ITEMS.map((it) => (
+          <Pressable
+            key={it.to}
+            style={styles.item}
+            onPress={() => {
+              tapLight();
+              navigation.navigate(it.to as any);
+            }}
+          >
+            <View style={styles.itemIcon}>
+              <Text style={styles.itemIconTxt}>{it.icon}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={styles.itemTitleRow}>
+                <Text style={styles.itemLabel}>{it.label}</Text>
+                {it.to === 'History' && pendingCount > 0 ? (
+                  <StatusBadge label={`${pendingCount} en attente`} tone="gold" small />
+                ) : null}
+              </View>
+              <Text style={styles.itemSub}>{it.sub}</Text>
+            </View>
+            <Text style={styles.chevron}>›</Text>
+          </Pressable>
+        ))}
+      </View>
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  content: { gap: spacing.lg, paddingBottom: spacing.xxxl },
+  title: { fontFamily: fonts.heading, fontSize: 26, color: colors.tx, letterSpacing: -0.5, marginTop: 4 },
+  subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2, marginTop: 2 },
+  shopCard: {},
+  shopHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  shopEmoji: { fontSize: 28 },
+  shopName: { fontFamily: fonts.heading, fontSize: 18, color: colors.tx },
+  shopMeta: { fontFamily: fonts.mono, fontSize: 11.5, color: colors.tx3, marginTop: 2 },
+  list: { gap: 10 },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: colors.s2,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.b1,
+    padding: 16,
+  },
+  itemIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+    backgroundColor: colors.s3,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  itemIconTxt: { fontSize: 22 },
+  itemTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  itemLabel: { fontFamily: fonts.headingBold, fontSize: 16, color: colors.tx },
+  itemSub: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3, marginTop: 2 },
+  chevron: { fontFamily: fonts.heading, fontSize: 24, color: colors.tx3 },
+});
