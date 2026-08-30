@@ -2439,13 +2439,13 @@ async function loadApp(){
     // Charger données en parallèle
     const mid=MERCHANT.id;
     const [cards,rewards,txs,tiers]=await Promise.all([
-      fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,cashback_balance&merchant_id=eq.${mid}&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
+      fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance&merchant_id=eq.${mid}&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/rewards?merchant_id=eq.${mid}&order=pts_cost.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/transactions?merchant_id=eq.${mid}&order=created_at.desc&limit=30`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/sargal_tiers?merchant_id=eq.${mid}&order=min_points.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()).catch(()=>[]),
     ]);
 
-    CLIENTS=(cards||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at}));
+    CLIENTS=(cards||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,phone:c.client_phone||c.client_phone_mask||'',masque:!c.client_phone,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at}));
     REWARDS=rewards||[];
     window.CLIENT_TIERS = Array.isArray(tiers)?tiers:[];
     TXS=(txs||[]).map(t=>({id:t.id,cid:t.card_id,pts:t.pts,type:t.type,note:t.note,at:t.created_at}));
@@ -2832,12 +2832,12 @@ async function handleCode(code){
   // Si pas trouvé localement, chercher dans Supabase
   if(!client){
     try{
-      const cards=await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,cashback_balance&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{
+      const cards=await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{
         headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}
       }).then(r=>r.json());
       if(cards&&cards.length){
         const c=cards[0];
-        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at};
+        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone||c.client_phone_mask||'',masque:!c.client_phone,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at};
         CLIENTS.push(client);
       }
     }catch(e){console.warn(e);}
@@ -3747,7 +3747,7 @@ async function trouverClientParTelephone(saisie){
     if(!r.ok) return {erreur:'introuvable', phone:n.phone};
     const lignes = await r.json();
     const trouves = (lignes||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,
-      phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at}));
+      phone:c.client_phone||c.client_phone_mask||'',masque:!c.client_phone,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at}));
     if(!trouves.length) return {erreur:'introuvable', phone:n.phone};
     if(trouves.length > 1) return {erreur:'ambigu', clients:trouves};
     return {client:trouves[0]};
@@ -5517,10 +5517,10 @@ async function kioskProcess(code, isKiosk){
   let client = CLIENTS.find(c => c.code === code);
   if(!client){
     try{
-      const cards = await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,cashback_balance&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json());
+      const cards = await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json());
       if(cards&&cards.length){
         const c=cards[0];
-        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at};
+        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone||c.client_phone_mask||'',masque:!c.client_phone,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at};
         CLIENTS.push(client);
       }
     }catch(e){}
