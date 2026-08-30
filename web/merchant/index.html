@@ -2439,7 +2439,7 @@ async function loadApp(){
     // Charger données en parallèle
     const mid=MERCHANT.id;
     const [cards,rewards,txs,tiers]=await Promise.all([
-      fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance&merchant_id=eq.${mid}&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
+      fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance&merchant_id=eq.${mid}&active=eq.true&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/rewards?merchant_id=eq.${mid}&order=pts_cost.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/transactions?merchant_id=eq.${mid}&order=created_at.desc&limit=30`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/sargal_tiers?merchant_id=eq.${mid}&order=min_points.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()).catch(()=>[]),
