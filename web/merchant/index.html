@@ -3664,9 +3664,11 @@ function renderClients(filter=''){
   document.getElementById('clients-count').textContent=CLIENTS.length;
   const q=(filter||'').toLowerCase();
   if(!q) CLIENTS_TROUVES = null;
+  const qd=q.replace(/\D/g,'');
   const filtered = CLIENTS_TROUVES ? CLIENTS_TROUVES : (q?CLIENTS.filter(c=>
     (c.name||'').toLowerCase().includes(q)||
-    String(c.code||'').toLowerCase().includes(q)
+    String(c.code||'').toLowerCase().includes(q)||
+    (qd && String(c.phone||'').replace(/\D/g,'').includes(qd))
   ):CLIENTS);
   if(!filtered.length){list.innerHTML='<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:var(--tx3);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-user"/></svg></div><div class="empty-title">Aucun client</div><div class="empty-sub">Crée ta première carte de fidélité en quelques secondes.</div><button class="btn btn-primary" onclick="openNewClientModal()"><svg class="btn-svg"><use href="#ic-plus"></use></svg>Nouvelle carte</button></div>';return;}
   const thresh=MERCHANT?.threshold||10;
