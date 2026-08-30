@@ -1226,6 +1226,33 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
             <input id="s-reward" style="flex:1;padding:12px 14px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);font-family:'Plus Jakarta Sans','Inter',sans-serif;font-size:.85rem;color:var(--tx);outline:none"/>
           </div>
         </div>
+
+        <!-- CASHBACK (avoir en F, optionnel) -->
+        <div class="field" style="border-top:1px solid var(--b1);padding-top:14px">
+          <label style="display:flex;align-items:center;gap:9px;font-size:.85rem;font-weight:700;cursor:pointer;margin:0">
+            <input type="checkbox" id="s-cb-on" style="width:17px;height:17px;accent-color:var(--green2)" onchange="document.getElementById('s-cb-box').style.display=this.checked?'flex':'none'"/>
+            Cashback (avoir en argent sur la carte)
+          </label>
+          <div style="font-size:.68rem;color:var(--tx3);margin:5px 0 0 26px;line-height:1.5">Au lieu d'une remise, chaque achat crédite un avoir en argent que le client utilise en caisse. Laissez décoché pour garder votre récompense classique.</div>
+          <div id="s-cb-box" style="display:none;flex-direction:column;gap:10px;margin-top:12px;padding-left:26px">
+            <div>
+              <label style="font-size:.7rem;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.4px">Mode de calcul</label>
+              <select id="s-cb-mode" onchange="cbSyncLabel()" style="width:100%;padding:11px 12px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);font-size:.85rem;color:var(--tx);margin-top:4px;outline:none">
+                <option value="percent">% du montant dépensé</option>
+                <option value="per_point">Argent par point gagné</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="s-cb-rate" type="number" min="0" step="0.1" value="0" style="width:100px;padding:11px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);text-align:center;font-weight:700;outline:none"/>
+              <span id="s-cb-rate-lbl" style="font-size:.78rem;color:var(--tx3)">% du montant dépensé</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="font-size:.78rem;color:var(--tx3)">Utilisable à partir de</span>
+              <input id="s-cb-thresh" type="number" min="0" value="0" style="width:110px;padding:11px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);text-align:center;font-weight:700;outline:none"/>
+              <span style="font-size:.78rem;color:var(--tx3)">d'avoir</span>
+            </div>
+          </div>
+        </div>
         <div class="field"><label>WhatsApp boutique (contact client)</label><input id="s-whatsapp" type="tel" inputmode="tel" placeholder="+221 77 123 45 67"/><div style="font-size:.68rem;color:var(--tx3);margin-top:4px">Affiché sur la carte client (« Contacter sur WhatsApp »). Ne change pas ton numéro de connexion.</div></div>
         <div class="field"><label>Site web</label><input id="s-website" type="url" inputmode="url" placeholder="https://maboutique.com"/><div style="font-size:.68rem;color:var(--tx3);margin-top:4px">Affiché sur la carte client (« Visiter le site »).</div></div>
         <label style="display:flex;align-items:center;gap:9px;font-size:.8rem;font-weight:600;cursor:pointer;margin:4px 0 2px">
@@ -2433,6 +2460,16 @@ async function loadApp(){
     const sWa=document.getElementById('s-whatsapp'); if(sWa) sWa.value=MERCHANT.whatsapp||'';
     const sWeb=document.getElementById('s-website'); if(sWeb) sWeb.value=MERCHANT.website||'';
     const sMail=document.getElementById('s-email-on'); if(sMail) sMail.checked=MERCHANT.email_enabled!==false;
+    // Cashback
+    const sCbOn=document.getElementById('s-cb-on');
+    if(sCbOn){
+      sCbOn.checked=!!MERCHANT.cashback_enabled;
+      const box=document.getElementById('s-cb-box'); if(box) box.style.display=sCbOn.checked?'flex':'none';
+      const m=document.getElementById('s-cb-mode'); if(m) m.value=MERCHANT.cashback_mode||'percent';
+      const r=document.getElementById('s-cb-rate'); if(r) r.value=(MERCHANT.cashback_rate!=null?MERCHANT.cashback_rate:0);
+      const t=document.getElementById('s-cb-thresh'); if(t) t.value=(MERCHANT.cashback_threshold!=null?MERCHANT.cashback_threshold:0);
+      try{ cbSyncLabel(); }catch(e){}
+    }
     const sLat=document.getElementById('s-lat'); if(sLat) sLat.value=(MERCHANT.branch_lat!=null?MERCHANT.branch_lat:'');
     const sLng=document.getElementById('s-lng'); if(sLng) sLng.value=(MERCHANT.branch_lng!=null?MERCHANT.branch_lng:'');
     try{ initPaysDevise(); }catch(e){}
@@ -4081,6 +4118,11 @@ function capterPosition(){
   }, {enableHighAccuracy:true, timeout:12000, maximumAge:0});
 }
 
+function cbSyncLabel(){
+  var m=document.getElementById('s-cb-mode'), l=document.getElementById('s-cb-rate-lbl');
+  if(!m||!l) return;
+  l.textContent = m.value==='per_point' ? "d'avoir par point gagné" : "% du montant dépensé";
+}
 async function saveSettings(){
   if(!ensureMerchantConfigured()) return;
   const name=document.getElementById('s-name')?.value||MERCHANT.name;
@@ -4090,6 +4132,13 @@ async function saveSettings(){
   let website=(document.getElementById('s-website')?.value||'').trim()||null;
   if(website&&!/^https?:\/\//i.test(website)) website='https://'+website;
   const email_enabled=document.getElementById('s-email-on')?.checked!==false;
+
+  // Cashback (avoir en F, optionnel)
+  const cashback_enabled=!!document.getElementById('s-cb-on')?.checked;
+  let cashback_mode=document.getElementById('s-cb-mode')?.value||'percent';
+  if(['percent','per_point'].indexOf(cashback_mode)===-1) cashback_mode='percent';
+  const cashback_rate=Math.max(0, parseFloat(String(document.getElementById('s-cb-rate')?.value||'0').replace(',','.'))||0);
+  const cashback_threshold=Math.max(0, parseInt(document.getElementById('s-cb-thresh')?.value||'0',10)||0);
 
   // Pays et monnaie de la boutique.
   const country_code=document.getElementById('s-pays')?.value||MERCHANT.country_code||'+221';
@@ -4103,9 +4152,9 @@ async function saveSettings(){
   if(gps===false){ toast('Coordonnées invalides — vérifiez la latitude et la longitude','warn'); return; }
   const branch_lat=gps?gps.lat:null, branch_lng=gps?gps.lng:null;
 
-  if(MERCHANT){MERCHANT.name=name;MERCHANT.threshold=threshold;MERCHANT.reward_desc=reward_desc;MERCHANT.whatsapp=whatsapp;MERCHANT.website=website;MERCHANT.email_enabled=email_enabled;MERCHANT.branch_lat=branch_lat;MERCHANT.branch_lng=branch_lng;MERCHANT.country_code=country_code;MERCHANT.currency=currency;MERCHANT.language=language;}
+  if(MERCHANT){MERCHANT.name=name;MERCHANT.threshold=threshold;MERCHANT.reward_desc=reward_desc;MERCHANT.whatsapp=whatsapp;MERCHANT.website=website;MERCHANT.email_enabled=email_enabled;MERCHANT.branch_lat=branch_lat;MERCHANT.branch_lng=branch_lng;MERCHANT.country_code=country_code;MERCHANT.currency=currency;MERCHANT.language=language;MERCHANT.cashback_enabled=cashback_enabled;MERCHANT.cashback_mode=cashback_mode;MERCHANT.cashback_rate=cashback_rate;MERCHANT.cashback_threshold=cashback_threshold;}
   try{
-    await sbPatch(`/rest/v1/merchants?id=eq.${MERCHANT.id}`,{name,threshold,reward_desc,whatsapp,website,email_enabled,branch_lat,branch_lng,country_code,currency,language});
+    await sbPatch(`/rest/v1/merchants?id=eq.${MERCHANT.id}`,{name,threshold,reward_desc,whatsapp,website,email_enabled,branch_lat,branch_lng,country_code,currency,language,cashback_enabled,cashback_mode,cashback_rate,cashback_threshold});
     localStorage.setItem('lc_merchant',JSON.stringify(MERCHANT));
     try{ window.msI18nMarchand && msI18nMarchand.appliquer(language); }catch(e){}
     toast('Sauvegardé ✓','ok');

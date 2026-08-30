@@ -248,6 +248,7 @@ async function loadCard(code){
       remaining_pts:remaining,
       progress_pct:pct,
       reward_ready:pts>=threshold,
+      cashback_balance:Number(card.cashback_balance||0),
       rewards:Array.isArray(card.rewards)?card.rewards:[],
       history:Array.isArray(card.history)?card.history:[],
       boost:card.boost||null,
@@ -265,6 +266,8 @@ async function loadCard(code){
         whatsapp:merchant.whatsapp||null,
         website:merchant.website||null,
         threshold:threshold,
+        cashback_enabled:merchant.cashback_enabled===true,
+        cashback_threshold:Number(merchant.cashback_threshold||0),
         brand:safeBrand
       }
     };
@@ -303,6 +306,11 @@ function render(data){
   const tier=getTier(data.lifetime_pts||0);
   const pct=data.progress_pct||0;
   const hasRwd=data.reward_ready;
+  const cbOn=data.merchant?.cashback_enabled===true;
+  const cbBal=Number(data.cashback_balance||0);
+  const cbThresh=Number(data.merchant?.cashback_threshold||0);
+  const cbReady=cbOn && cbBal>0 && cbBal>=cbThresh;
+  const fmtF=(n)=>Math.round(Number(n)||0).toLocaleString('fr-FR')+' F';
   const pid='p'+Math.random().toString(36).slice(2,7);
 
   document.getElementById('app').innerHTML=`
@@ -335,8 +343,10 @@ function render(data){
               <div style="font-size:.54rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">points fidélité</div>
               <div class="lc-pts">${data.pts||0}</div>
               <div style="font-size:.74rem;color:rgba(255,255,255,.85);margin-top:4px;font-weight:600">${esc(data.client_name)}</div>
-              <div style="font-size:.58rem;margin-top:3px;color:${hasRwd?'#fde68a':'rgba(255,255,255,.4)'}">
-                ${hasRwd?'<svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:4px"><use href="#ic-gift"></use></svg>Récompense disponible !':'encore '+data.remaining_pts+' pts → '+esc(data.merchant?.reward_desc||'')}
+              <div style="font-size:.58rem;margin-top:3px;color:${(cbOn?cbReady:hasRwd)?'#fde68a':'rgba(255,255,255,.4)'}">
+                ${cbOn
+                  ? '<svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:4px"><use href="#ic-gift"></use></svg>Cashback : '+fmtF(cbBal)+(cbReady?' · utilisable':'')
+                  : (hasRwd?'<svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:4px"><use href="#ic-gift"></use></svg>Récompense disponible !':'encore '+data.remaining_pts+' pts → '+esc(data.merchant?.reward_desc||''))}
               </div>
             </div>
           </div>
@@ -363,12 +373,17 @@ function render(data){
       <div class="stat"><div class="stat-val">${data.pts||0}</div><div class="stat-lbl">Points</div></div>
       <div class="stat"><div class="stat-val">${data.lifetime_pts||0}</div><div class="stat-lbl">Cumulés</div></div>
       <div class="stat"><div class="stat-val">${pct}%</div><div class="stat-lbl">Progression</div></div>
-      <div class="stat"><div class="stat-val">${data.remaining_pts||0}</div><div class="stat-lbl">avant récompense</div></div>
+      ${cbOn
+        ? `<div class="stat"><div class="stat-val" style="color:var(--gold2,#f5c842)">${fmtF(cbBal)}</div><div class="stat-lbl">cashback</div></div>`
+        : `<div class="stat"><div class="stat-val">${data.remaining_pts||0}</div><div class="stat-lbl">avant récompense</div></div>`}
     </div>
 
     ${data.boost?`<div class="section"><div style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(245,158,11,.1));border:1.5px solid rgba(245,158,11,.4);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px"><div style="display:flex"><svg viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#f59e0b;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-fire"></use></svg></div><div><div style="font-size:.9rem;font-weight:800;color:#f59e0b">Points x${Number(data.boost.x)||2} en ce moment !</div><div style="font-size:.72rem;color:var(--tx3)">Chaque achat rapporte ${Number(data.boost.x)||2} fois plus de points — jusqu'au ${new Date(data.boost.until).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}.</div></div></div></div>`:''}
 
-    ${hasRwd?`<div class="section"><div class="reward-banner"><div class="rb-glow"></div>${Array.from({length:10},(_,i)=>'<span class="rb-conf" style="left:'+(6+i*9)+'%;animation-delay:'+(i*0.22).toFixed(2)+'s;background:'+['#f5c842','#22c55e','#4ade80','#ffffff','#f59e0b'][i%5]+'"></span>').join('')}<div style="display:flex;position:relative;z-index:1"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--gold,#f5c842);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-trophy"></use></svg></div><div style="position:relative;z-index:1"><div style="font-size:.95rem;font-weight:800;color:var(--gold2,#f5c842);margin-bottom:3px">Récompense débloquée</div><div style="font-size:.75rem;color:var(--gold2)">Montre cette page au commerçant : <strong>${esc(data.merchant?.reward_desc||'')}</strong></div></div></div></div>`:''}
+    ${cbOn
+      ? (cbReady?`<div class="section"><div class="reward-banner"><div class="rb-glow"></div>${Array.from({length:10},(_,i)=>'<span class="rb-conf" style="left:'+(6+i*9)+'%;animation-delay:'+(i*0.22).toFixed(2)+'s;background:'+['#f5c842','#22c55e','#4ade80','#ffffff','#f59e0b'][i%5]+'"></span>').join('')}<div style="display:flex;position:relative;z-index:1"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--gold,#f5c842);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-trophy"></use></svg></div><div style="position:relative;z-index:1"><div style="font-size:.95rem;font-weight:800;color:var(--gold2,#f5c842);margin-bottom:3px">Cashback utilisable : ${fmtF(cbBal)}</div><div style="font-size:.75rem;color:var(--gold2)">Montre cette page au commerçant pour l'utiliser en réduction.</div></div></div></div>`
+        :`<div class="section"><div style="background:var(--s2,#fff);border:1px solid var(--b1,#e3ece6);border-radius:14px;padding:14px 16px;text-align:center"><div style="font-size:.9rem;font-weight:800;color:var(--tx,#0b140d)">Cashback : ${fmtF(cbBal)}</div><div style="font-size:.72rem;color:var(--tx3,#7d9284);margin-top:3px">${cbThresh>0?('Utilisable dès '+fmtF(cbThresh)+' de cashback.'):'Continuez à cumuler.'}</div></div></div>`)
+      : (hasRwd?`<div class="section"><div class="reward-banner"><div class="rb-glow"></div>${Array.from({length:10},(_,i)=>'<span class="rb-conf" style="left:'+(6+i*9)+'%;animation-delay:'+(i*0.22).toFixed(2)+'s;background:'+['#f5c842','#22c55e','#4ade80','#ffffff','#f59e0b'][i%5]+'"></span>').join('')}<div style="display:flex;position:relative;z-index:1"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--gold,#f5c842);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-trophy"></use></svg></div><div style="position:relative;z-index:1"><div style="font-size:.95rem;font-weight:800;color:var(--gold2,#f5c842);margin-bottom:3px">Récompense débloquée</div><div style="font-size:.75rem;color:var(--gold2)">Montre cette page au commerçant : <strong>${esc(data.merchant?.reward_desc||'')}</strong></div></div></div></div>`:'')}
 
     ${(data.rewards&&data.rewards.length)?`<div class="section">
       <div style="font-size:.66rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg>Catalogue des récompenses</div>
