@@ -2411,14 +2411,16 @@ async function loadApp(){
 
     // Charger données en parallèle
     const mid=MERCHANT.id;
-    const [cards,rewards,txs]=await Promise.all([
+    const [cards,rewards,txs,tiers]=await Promise.all([
       fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask&merchant_id=eq.${mid}&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/rewards?merchant_id=eq.${mid}&order=pts_cost.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/transactions?merchant_id=eq.${mid}&order=created_at.desc&limit=30`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
+      fetch(`${SB_URL}/rest/v1/sargal_tiers?merchant_id=eq.${mid}&order=min_points.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()).catch(()=>[]),
     ]);
 
     CLIENTS=(cards||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,created:c.created_at}));
     REWARDS=rewards||[];
+    window.CLIENT_TIERS = Array.isArray(tiers)?tiers:[];
     TXS=(txs||[]).map(t=>({id:t.id,cid:t.card_id,pts:t.pts,type:t.type,note:t.note,at:t.created_at}));
 
     // Mettre à jour les settings
@@ -3582,6 +3584,12 @@ function boostAnnounce(){
 // quelle. Le filtre local ne porte que sur le nom et le code, jamais sur le
 // téléphone, qui n'existe ici que sous forme masquée.
 let CLIENTS_TROUVES = null;
+// Niveau (statut) d'un client selon son cumul de points, depuis les paliers configures.
+function _clientTier(life){
+  var ts=(window.CLIENT_TIERS||[]).filter(function(t){return (t.min_points||0)<=(life||0);})
+    .sort(function(a,b){return (b.min_points||0)-(a.min_points||0);});
+  return ts[0]||null;
+}
 function renderClients(filter=''){
   const list=document.getElementById('clients-list');
   document.getElementById('clients-count').textContent=CLIENTS.length;
@@ -3596,11 +3604,14 @@ function renderClients(filter=''){
   list.innerHTML=[...filtered].sort((a,b)=>(b.pts||0)-(a.pts||0)).map(c=>{
     const pct=Math.min(100,Math.round(((c.pts||0)/thresh)*100));
     const ready=(c.pts||0)>=thresh;
+    const tier=_clientTier(c.lifetime||0);
+    const tierBadge=tier?`<span style="display:inline-flex;align-items:center;gap:4px;background:${esc(tier.color_hex||'#16a34a')}22;color:${esc(tier.color_hex||'#0f7a37')};border:1px solid ${esc(tier.color_hex||'#16a34a')};padding:2px 8px;border-radius:99px;font-size:.62rem;font-weight:700;margin-top:5px">${esc(tier.name||'')}</span>`:'';
     return `<div class="client-item" onclick="quickScan('${c.id}')">
       <div class="client-av">${c.name[0]}</div>
       <div class="client-info">
         <div class="client-name">${esc(c.name)}</div>
         <div class="client-meta" id="tel-${c.id}">${c.phone?esc(c.phone):'—'} · ${esc(c.code)}</div>
+        ${tierBadge?`<div>${tierBadge}</div>`:''}
         <div style="display:flex;gap:5px;margin-top:7px;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" style="width:auto;padding:5px 9px;font-size:.68rem" title="Voir le numéro complet" onclick="event.stopPropagation();revelerTel('${c.id}')"><svg class="pt-svg" style="margin-right:0"><use href="#ic-user"/></svg></button>
           <button class="btn btn-ghost btn-sm" style="width:auto;padding:5px 9px;font-size:.68rem" onclick="event.stopPropagation();clientSendWA('${c.id}')"><svg class="pt-svg" style="margin-right:0"><use href="#ic-chat"/></svg></button>
