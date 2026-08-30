@@ -2439,13 +2439,13 @@ async function loadApp(){
     // Charger données en parallèle
     const mid=MERCHANT.id;
     const [cards,rewards,txs,tiers]=await Promise.all([
-      fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask&merchant_id=eq.${mid}&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
+      fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,cashback_balance&merchant_id=eq.${mid}&order=created_at.desc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/rewards?merchant_id=eq.${mid}&order=pts_cost.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/transactions?merchant_id=eq.${mid}&order=created_at.desc&limit=30`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()),
       fetch(`${SB_URL}/rest/v1/sargal_tiers?merchant_id=eq.${mid}&order=min_points.asc`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json()).catch(()=>[]),
     ]);
 
-    CLIENTS=(cards||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,created:c.created_at}));
+    CLIENTS=(cards||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at}));
     REWARDS=rewards||[];
     window.CLIENT_TIERS = Array.isArray(tiers)?tiers:[];
     TXS=(txs||[]).map(t=>({id:t.id,cid:t.card_id,pts:t.pts,type:t.type,note:t.note,at:t.created_at}));
@@ -2832,12 +2832,12 @@ async function handleCode(code){
   // Si pas trouvé localement, chercher dans Supabase
   if(!client){
     try{
-      const cards=await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{
+      const cards=await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,cashback_balance&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{
         headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}
       }).then(r=>r.json());
       if(cards&&cards.length){
         const c=cards[0];
-        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,created:c.created_at};
+        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at};
         CLIENTS.push(client);
       }
     }catch(e){console.warn(e);}
@@ -2919,6 +2919,17 @@ function renderResult(client){
         <div class="rstat"><div class="rstat-val">${rem}</div><div class="rstat-lbl">Restants</div></div>
       </div>
       <div class="result-prog"><div class="result-prog-fill" style="width:${pct}%"></div></div>
+      ${(MERCHANT&&MERCHANT.cashback_enabled)?(function(){
+        var bal=Number(client.cashback||0), thr=Number(MERCHANT.cashback_threshold||0), canUse=bal>0&&bal>=thr;
+        var f=function(n){return (typeof msFmtMontant==='function')?msFmtMontant(n):(n+' F');};
+        return '<div style="margin-top:10px;padding:12px 14px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between;gap:10px">'
+          +'<div><div style="font-size:.64rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;font-weight:700">Cashback</div>'
+          +'<div style="font-size:1.15rem;font-weight:800;color:var(--green2)">'+f(bal)+'</div>'
+          +((!canUse&&thr>0)?'<div style="font-size:.64rem;color:var(--tx3)">Utilisable dès '+f(thr)+'</div>':'')
+          +'</div>'
+          +'<button class="btn btn-primary" style="width:auto;padding:9px 14px;'+(canUse?'':'opacity:.5')+'" '+(canUse?'':'disabled')+' onclick="useCashbackWeb(\''+client.id+'\')">Utiliser</button>'
+          +'</div>';
+      })():''}
       <div class="pts-form">
         <div class="quick-pts" id="quick-pts-btns">${getQuickPtsButtons()}</div>
         <div class="pts-row">
@@ -3158,6 +3169,27 @@ async function useReward(clientId,rewardId){
     renderHome();
     if(currentPage==='rewards')loadRewardHistory();
   }catch(e){toast(e.message||'Erreur','err');try{msScanFail&&msScanFail(e.message||'Erreur');}catch(_){}}
+}
+
+async function useCashbackWeb(clientId){
+  if(!ensureMerchantConfigured()) return;
+  const client=CLIENTS.find(c=>c.id===clientId);
+  if(!client){toast('Client introuvable','err');return;}
+  const bal=Number(client.cashback||0);
+  const thr=Number((MERCHANT&&MERCHANT.cashback_threshold)||0);
+  const f=function(n){return (typeof msFmtMontant==='function')?msFmtMontant(n):(n+' F');};
+  if(bal<=0){toast('Aucun cashback','warn');return;}
+  if(bal<thr){toast('Cashback utilisable dès '+f(thr),'warn');return;}
+  if(!confirm('Appliquer '+f(bal)+' de cashback en réduction pour '+client.name+' ?'))return;
+  try{
+    const res=await sbEdge('redeem-cashback',{card_code:client.code,merchant_id:MERCHANT.id,amount:bal});
+    client.cashback=Number((res&&res.cashback_balance)||0);
+    TXS.push({id:'t'+Date.now(),cid:clientId,pts:0,type:'cashback',note:'Cashback utilisé : '+f(bal),at:new Date().toISOString()});
+    toast('Cashback appliqué : '+f(bal),'ok');
+    try{msScanFx&&msScanFx(true);}catch(_){}
+    renderResult(client);
+    try{renderClients&&renderClients();}catch(_){}
+  }catch(e){toast(e.message||'Erreur','err');}
 }
 
 // ── 🔔 Notification aux clients (Web Push, gratuit) ──
@@ -3715,7 +3747,7 @@ async function trouverClientParTelephone(saisie){
     if(!r.ok) return {erreur:'introuvable', phone:n.phone};
     const lignes = await r.json();
     const trouves = (lignes||[]).map(c=>({id:c.id,code:c.code,name:c.client_name,
-      phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,created:c.created_at}));
+      phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at}));
     if(!trouves.length) return {erreur:'introuvable', phone:n.phone};
     if(trouves.length > 1) return {erreur:'ambigu', clients:trouves};
     return {client:trouves[0]};
@@ -5485,10 +5517,10 @@ async function kioskProcess(code, isKiosk){
   let client = CLIENTS.find(c => c.code === code);
   if(!client){
     try{
-      const cards = await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json());
+      const cards = await fetch(`${SB_URL}/rest/v1/loyalty_cards?select=id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,cashback_balance&code=eq.${code}&merchant_id=eq.${MERCHANT.id}&limit=1`,{headers:{'apikey':SB_ANON,'Authorization':`Bearer ${tok()}`}}).then(r=>r.json());
       if(cards&&cards.length){
         const c=cards[0];
-        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,created:c.created_at};
+        client={id:c.id,code:c.code,name:c.client_name,phone:c.client_phone_mask||'',masque:true,pts:c.pts,lifetime:c.lifetime_pts,cashback:Number(c.cashback_balance||0),created:c.created_at};
         CLIENTS.push(client);
       }
     }catch(e){}
