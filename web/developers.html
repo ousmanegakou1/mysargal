@@ -82,6 +82,28 @@ b{color:var(--tx);font-weight:600}
   </div>
 
   <div class="card">
+    <h2><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-dot"></use></svg> Odoo</h2>
+    <p>Odoo se connecte via l'API MySargal, sans module à installer (Odoo auto-hébergé). Activez le <b>mode développeur</b>, puis <b>Paramètres → Technique → Actions automatisées</b> : sur le modèle <code class="inline">Commande (sale.order)</code> ou <code class="inline">Point de vente</code>, déclencheur « à la confirmation / au paiement », avec ce code :</p>
+    <pre>for order in records:
+    partner = order.partner_id
+    phone = partner.phone or partner.mobile
+    if not phone:
+        continue
+    requests.post(
+        "https://iiocxlvcuoqafzlisqwd.supabase.co/functions/v1/api-order",
+        headers={"x-api-key": "TA_CLE", "Content-Type": "application/json"},
+        json={
+            "phone": phone,
+            "name": partner.name,
+            "amount": int(order.amount_total),
+            "order_id": order.name,
+        },
+        timeout=10,
+    )</pre>
+    <p>À chaque commande confirmée, les points du client sont crédités automatiquement. Pour <b>Odoo Online (SaaS)</b>, où les appels réseau sont restreints, un petit module MySargal dédié peut être fourni sur demande.</p>
+  </div>
+
+  <div class="card">
     <h2><svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-.15em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-cog"></use></svg> Site custom (n'importe quel langage)</h2>
     <p>Appelle l'endpoint après chaque paiement confirmé :</p>
     <pre>curl -X POST \

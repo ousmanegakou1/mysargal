@@ -2654,15 +2654,13 @@ function renderHome(){
   document.getElementById('today-pts').textContent=todayTxs.reduce((s,t)=>s+(t.pts||0),0);
   document.getElementById('total-clients-count').textContent=CLIENTS.length;
   document.getElementById('clients-sub').textContent=CLIENTS.length+' fidèles';
+  const _cbOn=!!MERCHANT?.cashback_enabled;
   const _thresh=MERCHANT?.threshold||10;
-  const _ready=CLIENTS.filter(c=>(c.pts||0)>=_thresh).length;
+  const _ready=_cbOn?0:CLIENTS.filter(c=>(c.pts||0)>=_thresh).length;
   const _sub=document.getElementById('rewards-sub-txt');
-  if(_sub)_sub.textContent=_ready>0?_ready+' prêt'+(_ready>1?'s':''):'0 prêts';
+  if(_sub)_sub.textContent=_cbOn?'Cashback actif':(_ready>0?_ready+' prêt'+(_ready>1?'s':''):'0 prêts');
   const _badge=document.getElementById('reward-ready-badge');
-  if(_badge){_badge.style.display=_ready>0?'block':'none';_badge.textContent=_ready;}
-  const ready=CLIENTS.filter(c=>(c.pts||0)>=(MERCHANT.threshold||10)).length;
-  const badge=document.getElementById('reward-ready-badge');
-  if(badge){badge.style.display=ready>0?'block':'none';badge.textContent=ready;}
+  if(_badge){_badge.style.display=(!_cbOn&&_ready>0)?'block':'none';_badge.textContent=_ready;}
   const act=document.getElementById('home-activity');
   const recent=[...TXS].reverse().slice(0,5);
   if(!recent.length){
@@ -4041,6 +4039,13 @@ function renderRewards(){
   const readyClients = CLIENTS.filter(c=>(c.pts||0)>=thresh);
 
   let html = '';
+
+  // Mode cashback : le programme de recompenses points est desactive.
+  if(MERCHANT?.cashback_enabled){
+    html += '<div style="background:rgba(34,197,94,.08);border:1.5px solid rgba(34,197,94,.3);border-radius:var(--r2);padding:14px 16px;margin-bottom:12px;font-size:.8rem;color:var(--tx2)">Votre boutique est en mode <b>cashback</b>. Le programme de récompenses par points est désactivé : vos clients gagnent un avoir en argent, utilisable en caisse.</div>';
+    list.innerHTML = html;
+    return;
+  }
 
   // Section clients prêts
   if(readyClients.length){
