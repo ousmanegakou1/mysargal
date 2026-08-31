@@ -266,7 +266,11 @@ async function loadCard(code){
         whatsapp:merchant.whatsapp||null,
         website:merchant.website||null,
         threshold:threshold,
+        pts_amount_mode:merchant.pts_amount_mode===true,
+        pts_fcfa_per_point:Number(merchant.pts_fcfa_per_point||0),
         cashback_enabled:merchant.cashback_enabled===true,
+        cashback_mode:merchant.cashback_mode||'percent',
+        cashback_rate:Number(merchant.cashback_rate||0),
         cashback_threshold:Number(merchant.cashback_threshold||0),
         brand:safeBrand
       }
@@ -384,6 +388,27 @@ function render(data){
       ? (cbReady?`<div class="section"><div class="reward-banner"><div class="rb-glow"></div>${Array.from({length:10},(_,i)=>'<span class="rb-conf" style="left:'+(6+i*9)+'%;animation-delay:'+(i*0.22).toFixed(2)+'s;background:'+['#f5c842','#22c55e','#4ade80','#ffffff','#f59e0b'][i%5]+'"></span>').join('')}<div style="display:flex;position:relative;z-index:1"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--gold,#f5c842);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-trophy"></use></svg></div><div style="position:relative;z-index:1"><div style="font-size:.95rem;font-weight:800;color:var(--gold2,#f5c842);margin-bottom:3px">Cashback utilisable : ${fmtF(cbBal)}</div><div style="font-size:.75rem;color:var(--gold2)">Montre cette page au commerçant pour l'utiliser en réduction.</div></div></div></div>`
         :`<div class="section"><div style="background:var(--s2,#fff);border:1px solid var(--b1,#e3ece6);border-radius:14px;padding:14px 16px;text-align:center"><div style="font-size:.9rem;font-weight:800;color:var(--tx,#0b140d)">Cashback : ${fmtF(cbBal)}</div><div style="font-size:.72rem;color:var(--tx3,#7d9284);margin-top:3px">${cbThresh>0?('Utilisable dès '+fmtF(cbThresh)+' de cashback.'):'Continuez à cumuler.'}</div></div></div>`)
       : (hasRwd?`<div class="section"><div class="reward-banner"><div class="rb-glow"></div>${Array.from({length:10},(_,i)=>'<span class="rb-conf" style="left:'+(6+i*9)+'%;animation-delay:'+(i*0.22).toFixed(2)+'s;background:'+['#f5c842','#22c55e','#4ade80','#ffffff','#f59e0b'][i%5]+'"></span>').join('')}<div style="display:flex;position:relative;z-index:1"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--gold,#f5c842);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-trophy"></use></svg></div><div style="position:relative;z-index:1"><div style="font-size:.95rem;font-weight:800;color:var(--gold2,#f5c842);margin-bottom:3px">Récompense débloquée</div><div style="font-size:.75rem;color:var(--gold2)">Montre cette page au commerçant : <strong>${esc(data.merchant?.reward_desc||'')}</strong></div></div></div></div>`:'')}
+
+    ${(function(){
+      var m=data.merchant||{};
+      var earn = (m.pts_amount_mode && m.pts_fcfa_per_point>0)
+        ? ('1 point pour chaque '+fmtF(m.pts_fcfa_per_point)+' dépensés')
+        : 'Vous gagnez des points à chaque achat en boutique.';
+      var reward;
+      if(m.cashback_enabled){
+        reward = (m.cashback_mode==='per_point')
+          ? (fmtF(m.cashback_rate)+' de cashback par point gagné')
+          : (m.cashback_rate+'% de vos achats reversés en cashback');
+        if(m.cashback_threshold>0) reward += ' · utilisable dès '+fmtF(m.cashback_threshold);
+      } else {
+        reward = (m.threshold||0)+' points = '+(esc(m.reward_desc||'votre récompense'));
+      }
+      function row(ic,txt){return '<div style="display:flex;align-items:flex-start;gap:11px;padding:11px 0"><div style="flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:rgba(34,197,94,.14);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:var(--green2,#22c55e);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><use href="#'+ic+'"></use></svg></div><div style="flex:1;font-size:.82rem;line-height:1.5;color:var(--tx2,#c9d6cf);padding-top:5px">'+txt+'</div></div>';}
+      return '<div class="section"><div style="background:var(--card-bg,rgba(255,255,255,.04));border:1.5px solid var(--line,rgba(255,255,255,.08));border-radius:var(--r2,18px);padding:6px 16px 10px">'
+        +'<div style="font-size:.66rem;color:var(--tx3);font-family:\'DM Mono\',monospace;text-transform:uppercase;letter-spacing:.6px;margin:12px 0 2px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-star"></use></svg>Comment ça marche</div>'
+        + row('ic-card', earn) + row('ic-gift', reward)
+        + '</div></div>';
+    })()}
 
     ${(data.rewards&&data.rewards.length)?`<div class="section">
       <div style="font-size:.66rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg>Catalogue des récompenses</div>
