@@ -2881,6 +2881,8 @@ function renderResult(client){
   const hasReward=(client.pts||0)>=thresh;
   document.getElementById('scan-result').innerHTML=`
     ${(()=>{
+      // Mode cashback : pas de recompense points, on masque l'offre.
+      if(MERCHANT && MERCHANT.cashback_enabled) return '';
       // Récompenses du catalogue que ce client peut s'offrir
       const affordable=(REWARDS||[]).filter(r=>r.active!==false&&(client.pts||0)>=(r.pts_cost||0));
       if(affordable.length){

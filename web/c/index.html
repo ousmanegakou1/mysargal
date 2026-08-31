@@ -410,7 +410,7 @@ function render(data){
         + '</div></div>';
     })()}
 
-    ${(data.rewards&&data.rewards.length)?`<div class="section">
+    ${(!cbOn && data.rewards&&data.rewards.length)?`<div class="section">
       <div style="font-size:.66rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-gift"></use></svg>Catalogue des récompenses</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         ${data.rewards.map(r=>{
