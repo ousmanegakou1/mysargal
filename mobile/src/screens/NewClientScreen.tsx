@@ -5,7 +5,7 @@
 // ============================================================
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -155,6 +155,7 @@ export function NewClientScreen() {
       <SafeAreaView style={styles.flex} edges={['top']}>
         <PageHeader style={styles.navBar} title="Nouvelle carte" />
 
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
           <Card style={styles.card}>
             <Field label="Nom du client" value={name} onChangeText={setName} placeholder="Ex : Awa Diop" autoCapitalize="words" />
@@ -202,6 +203,7 @@ export function NewClientScreen() {
 
           <Button label="Creer la carte" icon="credit-card" onPress={create} loading={busy} large />
         </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );

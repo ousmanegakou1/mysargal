@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, ActivityIndicator, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -77,6 +77,8 @@ export function ClientsScreen() {
   // Le numero reel a-t-il ete recupere ? Sinon, un champ vide ne doit PAS
   // etre interprete comme « efface le numero » (sinon perte de donnee).
   const [editRevealOk, setEditRevealOk] = useState(false);
+  // Confirmation de suppression, affichee dans le meme modal (pas d'alerte native).
+  const [confirmDel, setConfirmDel] = useState(false);
   const [history, setHistory] = useState<Transaction[]>([]);
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [importBusy, setImportBusy] = useState(false);
@@ -219,33 +221,35 @@ export function ClientsScreen() {
     openSMS(phone, WA_MESSAGES.carte(firstName(selected.client_name), merchant.name, cardUrl(selected.code)));
   };
 
-  const doDeactivate = async () => {
+  // La confirmation s'affiche DANS le modal : une alerte native par-dessus un
+  // Modal RN deja presente ne s'affiche pas de facon fiable sur iOS (le
+  // commercant a l'impression que le bouton ne fait rien).
+  const doDeactivate = () => {
+    if (!selected) return;
+    setEditOpen(false);
+    setConfirmDel(true);
+  };
+
+  const confirmDeactivate = async () => {
     if (!selected) return;
     const carte = selected;
-    Alert.alert(
-      'Supprimer la carte',
-      `La carte de ${carte.client_name || 'ce client'} sera desactivee et ses points remis a 0. Le cumul a vie est conserve.`,
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: async () => {
-            setDetailBusy(true);
-            try {
-              await deactivateCard(carte.id);
-              setCards((prev) => prev.filter((c) => c.id !== carte.id));
-              toast('Carte supprimee, points remis a 0.', 'success');
-              setSelected(null);
-            } catch (e: any) {
-              toast(e?.message || 'Suppression impossible', 'error');
-            } finally {
-              setDetailBusy(false);
-            }
-          },
-        },
-      ]
-    );
+    setDetailBusy(true);
+    try {
+      await deactivateCard(carte.id);
+      // La liste affichee fusionne `cards` et `remote` (resultats de recherche
+      // par telephone), et `remote` est prioritaire : il faut retirer la carte
+      // des DEUX, sinon elle reste visible apres suppression.
+      setCards((prev) => prev.filter((c) => c.id !== carte.id));
+      setRemote((prev) => prev.filter((c) => c.id !== carte.id));
+      toast('Carte supprimee, points remis a 0.', 'success');
+      setConfirmDel(false);
+      setEditOpen(false);
+      setSelected(null);
+    } catch (e: any) {
+      toast(e?.message || 'Suppression impossible', 'error');
+    } finally {
+      setDetailBusy(false);
+    }
   };
 
   // ----- Modifier la fiche client (nom + numero WhatsApp) -----
@@ -286,13 +290,14 @@ export function ClientsScreen() {
       await updateCardClient(selected.id, champs);
       const majTel = 'client_phone' in champs;
       if (majTel) setRevealed(tel || null);
-      setCards((prev) =>
-        prev.map((c) =>
-          c.id === selected.id
-            ? { ...c, client_name: nom, ...(majTel ? { client_phone: tel || null } : {}) }
-            : c
-        )
-      );
+      // Mettre a jour les DEUX sources : la liste fusionne `cards` et `remote`
+      // (recherche par telephone), et `remote` est prioritaire a l'affichage.
+      const majLigne = (c: LoyaltyCardRow) =>
+        c.id === selected.id
+          ? { ...c, client_name: nom, ...(majTel ? { client_phone: tel || null } : {}) }
+          : c;
+      setCards((prev) => prev.map(majLigne));
+      setRemote((prev) => prev.map(majLigne));
       setSelected((s) =>
         s ? { ...s, client_name: nom, ...(majTel ? { client_phone: tel || null } : {}) } : s
       );
@@ -354,9 +359,11 @@ export function ClientsScreen() {
       let ignored = 0;
       for (let r = 1; r < rows.length; r++) {
         const row = rows[r];
-        const name = (iName >= 0 ? row[iName] : '').trim();
-        const phoneRaw = iPhone >= 0 ? onlyDigits(row[iPhone]) : '';
-        const email = (iEmail >= 0 ? row[iEmail] : '').trim();
+        // Une ligne CSV peut avoir MOINS de colonnes que l'en-tete (export
+        // Excel qui coupe les cellules vides) : row[i] vaut alors undefined.
+        const name = String((iName >= 0 ? row[iName] : '') ?? '').trim();
+        const phoneRaw = iPhone >= 0 ? onlyDigits(row[iPhone] ?? '') : '';
+        const email = String((iEmail >= 0 ? row[iEmail] : '') ?? '').trim();
         if (!name || (!phoneRaw && !email)) {
           ignored++;
           continue;
@@ -474,10 +481,55 @@ export function ClientsScreen() {
       )}
 
       {/* Detail client */}
-      <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(null)}>
+      {/* Fiche client. L'edition s'affiche DANS ce meme modal : deux <Modal>
+          visibles en meme temps ne s'ouvrent pas de facon fiable sur iOS. */}
+      <Modal
+        visible={!!selected}
+        transparent
+        animationType="slide"
+        onRequestClose={() => {
+          if (confirmDel) setConfirmDel(false);
+          else if (editOpen) setEditOpen(false);
+          else { setSelected(null); setEditOpen(false); setConfirmDel(false); }
+        }}
+      >
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalWrap}>
           <View style={styles.modalCard}>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 14 }}>
+            {confirmDel ? (
+              <View style={{ gap: 12 }}>
+                <Text style={styles.detailName}>Supprimer la carte</Text>
+                <Text style={styles.editHelp}>
+                  La carte de {selected?.client_name || 'ce client'} sera desactivee et ses points remis a 0.
+                  Le cumul a vie et l'historique sont conserves. Cette action est definitive.
+                </Text>
+                <Button label="Oui, supprimer" variant="danger" onPress={confirmDeactivate} loading={detailBusy} />
+                <Button label="Annuler" variant="ghost" onPress={() => setConfirmDel(false)} />
+              </View>
+            ) : editOpen ? (
+              <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
+                <Text style={styles.detailName}>Modifier le client</Text>
+                <Text style={styles.editHelp}>
+                  Corrigez le nom ou le numero WhatsApp. Le numero sert a envoyer la carte et les messages.
+                </Text>
+                <Field label="Nom du client" value={editName} onChangeText={setEditName} placeholder="Ex : Awa Diop" autoCapitalize="words" />
+                <Field
+                  label="Numero WhatsApp (avec indicatif)"
+                  value={editPhone}
+                  onChangeText={(t) => setEditPhone(t.replace(/[^\d+ ]/g, ''))}
+                  placeholder="+221 77 123 45 67"
+                  keyboardType="phone-pad"
+                />
+                {!editRevealOk ? (
+                  <Text style={styles.editWarn}>
+                    Numero actuel non recupere. Laissez vide pour le conserver tel quel, ou saisissez un nouveau numero pour le remplacer.
+                  </Text>
+                ) : null}
+                <Button label="Enregistrer" onPress={doSaveEdit} loading={savingEdit} />
+                <Button label="Annuler" variant="ghost" onPress={() => setEditOpen(false)} />
+              </ScrollView>
+            ) : (
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 14 }}>
               <View style={styles.detailHead}>
                 <Avatar name={selected?.client_name} size={54} />
                 <View style={{ flex: 1 }}>
@@ -501,7 +553,7 @@ export function ClientsScreen() {
                     )}
                   </View>
                 </View>
-                <Pressable onPress={() => setSelected(null)} style={styles.close} hitSlop={8}>
+                <Pressable onPress={() => { setSelected(null); setEditOpen(false); setConfirmDel(false); }} style={styles.close} hitSlop={8}>
                   <Icon name="x" size={22} color={colors.tx2} />
                 </Pressable>
               </View>
@@ -558,6 +610,8 @@ export function ClientsScreen() {
                   label="Encaisser"
                   onPress={() => {
                     const c = selected;
+                    setEditOpen(false);
+                    setConfirmDel(false);
                     setSelected(null);
                     if (c) navigation.navigate('Client', { code: c.code });
                   }}
@@ -593,35 +647,10 @@ export function ClientsScreen() {
               />
               <Button label="Supprimer la carte" variant="danger" onPress={doDeactivate} loading={detailBusy} />
             </ScrollView>
+            )}
           </View>
         </View>
-      </Modal>
-
-      {/* Modification de la fiche client */}
-      <Modal visible={editOpen} transparent animationType="slide" onRequestClose={() => setEditOpen(false)}>
-        <View style={styles.modalWrap}>
-          <View style={[styles.modalCard, { gap: 12 }]}>
-            <Text style={styles.detailName}>Modifier le client</Text>
-            <Text style={styles.editHelp}>
-              Corrigez le nom ou le numero WhatsApp. Le numero sert a envoyer la carte et les messages.
-            </Text>
-            <Field label="Nom du client" value={editName} onChangeText={setEditName} placeholder="Ex : Awa Diop" autoCapitalize="words" />
-            <Field
-              label="Numero WhatsApp (avec indicatif)"
-              value={editPhone}
-              onChangeText={(t) => setEditPhone(t.replace(/[^\d+ ]/g, ''))}
-              placeholder="+221 77 123 45 67"
-              keyboardType="phone-pad"
-            />
-            {!editRevealOk ? (
-              <Text style={styles.editWarn}>
-                Numero actuel non recupere. Laissez vide pour le conserver tel quel, ou saisissez un nouveau numero pour le remplacer.
-              </Text>
-            ) : null}
-            <Button label="Enregistrer" onPress={doSaveEdit} loading={savingEdit} />
-            <Button label="Annuler" variant="ghost" onPress={() => setEditOpen(false)} />
-          </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Apercu import */}
@@ -634,7 +663,7 @@ export function ClientsScreen() {
               <ImportStat value={importPreview?.dupes || 0} label="doublons" />
               <ImportStat value={importPreview?.ignored || 0} label="ignores" />
             </View>
-            <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
+            <ScrollView style={{ maxHeight: 220 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {(importPreview?.toCreate || []).slice(0, 20).map((c, i) => (
                 <View key={i} style={styles.importRow}>
                   <Text style={styles.importName} numberOfLines={1}>{c.name}</Text>

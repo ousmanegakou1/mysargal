@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Switch, Modal, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Switch, Modal, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -582,6 +582,7 @@ export function SettingsScreen() {
       {/* Chips onglets (scroll horizontal, compacts, pilule) */}
       <ScrollView
         horizontal
+        keyboardShouldPersistTaps="handled"
         showsHorizontalScrollIndicator={false}
         style={styles.chipsScroll}
         contentContainerStyle={styles.chipsRow}
@@ -1056,6 +1057,7 @@ export function SettingsScreen() {
 
       {/* Modal branche */}
       <Modal visible={branchModal} animationType="slide" transparent onRequestClose={() => setBranchModal(false)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalWrap}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Nouvelle boutique</Text>
@@ -1064,10 +1066,12 @@ export function SettingsScreen() {
             <Pressable onPress={() => setBranchModal(false)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Modal caissier */}
       <Modal visible={cashierModal} animationType="slide" transparent onRequestClose={() => setCashierModal(false)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalWrap}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Nouveau caissier</Text>
@@ -1077,6 +1081,7 @@ export function SettingsScreen() {
             <Pressable onPress={() => setCashierModal(false)} style={styles.cancel}><Text style={styles.cancelTxt}>Annuler</Text></Pressable>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
     </Screen>
   );

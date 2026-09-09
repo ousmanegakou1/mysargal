@@ -37,7 +37,10 @@ export function Screen({
   padded = true,
   edges = ['top'],
   contentStyle,
-  keyboardAvoiding,
+  // Active par defaut : sans cela le clavier recouvre les champs de saisie sur
+  // presque tous les ecrans (reglages, cartes cadeaux, notifications...).
+  // Sans effet sur un ecran sans champ.
+  keyboardAvoiding = true,
 }: Props) {
   const theme = useTheme();
   const inner = scroll ? (

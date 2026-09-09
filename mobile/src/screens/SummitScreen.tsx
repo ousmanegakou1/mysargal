@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, ScrollView, Switch, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, ScrollView, Switch, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -285,6 +285,7 @@ function TierModal(props: any) {
   const COLORS = ['#16a34a', '#22c55e', '#4ade80', '#15803d', '#7c3aed', '#f5c842'];
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.modalWrap}>
         <View style={styles.modalCard}>
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
@@ -313,6 +314,7 @@ function TierModal(props: any) {
           </ScrollView>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -426,6 +428,7 @@ function RewardsPane({ merchant, rewards, setRewards, tiers, toast }: any) {
       })}
 
       <Modal visible={modal} transparent animationType="slide" onRequestClose={() => setModal(false)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalWrap}>
           <View style={styles.modalCard}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
@@ -451,6 +454,7 @@ function RewardsPane({ merchant, rewards, setRewards, tiers, toast }: any) {
             </ScrollView>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );
@@ -670,6 +674,7 @@ function MembersPane({ merchant, members, setMembers, tiers, toast, reload }: an
 
       {/* Edition membre */}
       <Modal visible={!!selected} transparent animationType="slide" onRequestClose={() => setSelected(null)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalWrap}>
           <View style={styles.modalCard}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 12 }} keyboardShouldPersistTaps="handled">
@@ -701,6 +706,7 @@ function MembersPane({ merchant, members, setMembers, tiers, toast, reload }: an
             </ScrollView>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Apercu import */}
@@ -709,7 +715,7 @@ function MembersPane({ merchant, members, setMembers, tiers, toast, reload }: an
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Preparer les cartes membres</Text>
             <Text style={styles.famEmpty}>{importRows?.length || 0} ligne(s) valides detectees.</Text>
-            <ScrollView style={{ maxHeight: 240 }} showsVerticalScrollIndicator={false}>
+            <ScrollView style={{ maxHeight: 240 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {(importRows || []).slice(0, 25).map((r, i) => (
                 <View key={i} style={styles.histRow}>
                   <Text style={styles.histNote} numberOfLines={1}>{r.first} {r.last}</Text>

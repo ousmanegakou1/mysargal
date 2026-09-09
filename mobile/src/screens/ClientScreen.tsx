@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView, Alert, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView, Alert, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppBackground } from '../components/AppBackground';
@@ -432,6 +432,7 @@ export function ClientScreen() {
           right={!card.merchant?.cashback_enabled && card.reward_ready ? <StatusBadge label="Recompense prete" tone="gold" icon="gift" small /> : undefined}
         />
 
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           contentContainerStyle={styles.scroll}
           showsVerticalScrollIndicator={false}
@@ -702,6 +703,7 @@ export function ClientScreen() {
             </Card>
           ) : null}
         </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
       <SuccessOverlay
         show={celebrate}
@@ -711,6 +713,7 @@ export function ClientScreen() {
 
       {/* Modification de la fiche client */}
       <Modal visible={editOpen} transparent animationType="slide" onRequestClose={() => setEditOpen(false)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.mdBackdrop}>
           <View style={styles.mdSheet}>
             <Text style={styles.mdTitle}>Modifier le client</Text>
@@ -734,6 +737,7 @@ export function ClientScreen() {
             <Button label="Annuler" variant="ghost" onPress={() => setEditOpen(false)} />
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

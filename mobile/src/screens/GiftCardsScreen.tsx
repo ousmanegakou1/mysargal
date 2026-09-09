@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Switch, ActivityIndicator, Alert, Modal } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Switch, ActivityIndicator, Alert, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -423,6 +423,7 @@ function ListTab({ merchant, online, toast, currency }: any) {
       )}
 
       <Modal visible={!!reloadTarget} animationType="slide" transparent onRequestClose={() => setReloadTarget(null)}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.modalWrap}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Recharger la carte</Text>
@@ -439,6 +440,7 @@ function ListTab({ merchant, online, toast, currency }: any) {
             <Pressable onPress={() => setReloadTarget(null)} style={styles.modalCancel}><Text style={styles.modalCancelTxt}>Annuler</Text></Pressable>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
     </>
   );

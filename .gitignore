@@ -21,3 +21,6 @@ dist/
 *.p8
 *.key
 supabase/.temp/
+
+# Fichiers residuels du montage disque
+.fuse_hidden*
