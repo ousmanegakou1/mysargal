@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Modal, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Modal, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -35,6 +35,7 @@ import {
   clientByPhone,
   revealPhone,
   deactivateCard,
+  updateCardClient,
   fetchCardTransactions,
   insertCardsBatch,
 } from '../api/endpoints';
@@ -68,6 +69,14 @@ export function ClientsScreen() {
   const [selected, setSelected] = useState<LoyaltyCardRow | null>(null);
   const [revealed, setRevealed] = useState<string | null>(null);
   const [detailBusy, setDetailBusy] = useState(false);
+  // Modification de la fiche client (nom + numero)
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+  // Le numero reel a-t-il ete recupere ? Sinon, un champ vide ne doit PAS
+  // etre interprete comme « efface le numero » (sinon perte de donnee).
+  const [editRevealOk, setEditRevealOk] = useState(false);
   const [history, setHistory] = useState<Transaction[]>([]);
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [importBusy, setImportBusy] = useState(false);
@@ -212,16 +221,87 @@ export function ClientsScreen() {
 
   const doDeactivate = async () => {
     if (!selected) return;
-    setDetailBusy(true);
-    try {
-      await deactivateCard(selected.id);
-      setCards((prev) => prev.filter((c) => c.id !== selected.id));
-      toast('Carte desactivee.', 'success');
-      setSelected(null);
-    } catch (e: any) {
-      toast(e?.message || 'Desactivation impossible', 'error');
-    } finally {
+    const carte = selected;
+    Alert.alert(
+      'Supprimer la carte',
+      `La carte de ${carte.client_name || 'ce client'} sera desactivee et ses points remis a 0. Le cumul a vie est conserve.`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Supprimer',
+          style: 'destructive',
+          onPress: async () => {
+            setDetailBusy(true);
+            try {
+              await deactivateCard(carte.id);
+              setCards((prev) => prev.filter((c) => c.id !== carte.id));
+              toast('Carte supprimee, points remis a 0.', 'success');
+              setSelected(null);
+            } catch (e: any) {
+              toast(e?.message || 'Suppression impossible', 'error');
+            } finally {
+              setDetailBusy(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // ----- Modifier la fiche client (nom + numero WhatsApp) -----
+  const openEdit = async () => {
+    if (!selected) return;
+    setEditName(selected.client_name || '');
+    let p: string | null = revealed;
+    if (!p) {
+      setDetailBusy(true);
+      try {
+        p = await revealPhone(selected.id, 'Modification de la fiche client', null);
+        setRevealed(p);
+      } catch {
+        p = null;
+      }
       setDetailBusy(false);
+    }
+    setEditPhone(p || '');
+    setEditRevealOk(!!p);
+    setEditOpen(true);
+  };
+
+  const doSaveEdit = async () => {
+    if (!selected) return;
+    const nom = editName.trim();
+    if (!nom) { toast('Le nom est obligatoire.', 'warn'); return; }
+    const tel = editPhone.trim();
+    if (tel) {
+      const n = onlyDigits(tel).length;
+      if (n < 8 || n > 15) { toast('Numero de telephone invalide.', 'warn'); return; }
+    }
+    setSavingEdit(true);
+    try {
+      // On ne touche au numero que si on sait ce qu'on ecrase.
+      const champs: { client_name: string; client_phone?: string | null } = { client_name: nom };
+      if (tel) champs.client_phone = tel;
+      else if (editRevealOk) champs.client_phone = null;
+      await updateCardClient(selected.id, champs);
+      const majTel = 'client_phone' in champs;
+      if (majTel) setRevealed(tel || null);
+      setCards((prev) =>
+        prev.map((c) =>
+          c.id === selected.id
+            ? { ...c, client_name: nom, ...(majTel ? { client_phone: tel || null } : {}) }
+            : c
+        )
+      );
+      setSelected((s) =>
+        s ? { ...s, client_name: nom, ...(majTel ? { client_phone: tel || null } : {}) } : s
+      );
+      setEditOpen(false);
+      toast('Fiche client mise a jour.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Modification impossible', 'error');
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -503,8 +583,43 @@ export function ClientsScreen() {
                 <Text style={styles.histEmpty}>Aucune operation.</Text>
               )}
 
-              <Button label="Desactiver la carte" variant="danger" onPress={doDeactivate} loading={detailBusy} style={{ marginTop: 4 }} />
+              <Button
+                label="Modifier les infos du client"
+                icon="edit"
+                variant="secondary"
+                onPress={openEdit}
+                loading={detailBusy}
+                style={{ marginTop: 4 }}
+              />
+              <Button label="Supprimer la carte" variant="danger" onPress={doDeactivate} loading={detailBusy} />
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modification de la fiche client */}
+      <Modal visible={editOpen} transparent animationType="slide" onRequestClose={() => setEditOpen(false)}>
+        <View style={styles.modalWrap}>
+          <View style={[styles.modalCard, { gap: 12 }]}>
+            <Text style={styles.detailName}>Modifier le client</Text>
+            <Text style={styles.editHelp}>
+              Corrigez le nom ou le numero WhatsApp. Le numero sert a envoyer la carte et les messages.
+            </Text>
+            <Field label="Nom du client" value={editName} onChangeText={setEditName} placeholder="Ex : Awa Diop" autoCapitalize="words" />
+            <Field
+              label="Numero WhatsApp (avec indicatif)"
+              value={editPhone}
+              onChangeText={(t) => setEditPhone(t.replace(/[^\d+ ]/g, ''))}
+              placeholder="+221 77 123 45 67"
+              keyboardType="phone-pad"
+            />
+            {!editRevealOk ? (
+              <Text style={styles.editWarn}>
+                Numero actuel non recupere. Laissez vide pour le conserver tel quel, ou saisissez un nouveau numero pour le remplacer.
+              </Text>
+            ) : null}
+            <Button label="Enregistrer" onPress={doSaveEdit} loading={savingEdit} />
+            <Button label="Annuler" variant="ghost" onPress={() => setEditOpen(false)} />
           </View>
         </View>
       </Modal>
@@ -641,6 +756,8 @@ const styles = StyleSheet.create({
   histPts: { fontFamily: fonts.bodyBold, fontSize: 12.5 },
   histTime: { fontFamily: fonts.mono, fontSize: 9.5, color: colors.tx3, minWidth: 70, textAlign: 'right' },
   histEmpty: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3 },
+  editHelp: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3, lineHeight: 18, marginBottom: 4 },
+  editWarn: { fontFamily: fonts.body, fontSize: 12, color: colors.gold2, lineHeight: 17 },
   importStats: { flexDirection: 'row', marginVertical: 12 },
   importStat: { flex: 1, alignItems: 'center', gap: 2 },
   importStatVal: { fontFamily: fonts.heading, fontSize: 22, color: colors.tx },

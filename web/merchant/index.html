@@ -2871,7 +2871,7 @@ async function handleCode(code){
         <div style="margin-bottom:8px"><svg viewBox="0 0 24 24" style="width:30px;height:30px;stroke:var(--tx2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><use href="#ic-help"/></svg></div>
         <div style="font-size:.9rem;font-weight:700;margin-bottom:4px">Carte introuvable</div>
         <div style="font-size:.75rem;color:var(--tx3);margin-bottom:16px">Le code <strong style="color:var(--tx2);font-family:'DM Mono',monospace">${esc(code)}</strong> n'existe pas.</div>
-        <button class="btn btn-primary" onclick="openNewClientModal('${esc(code)}')"><svg class="btn-svg"><use href="#ic-plus"/></svg>Créer une carte</button>
+        <button class="btn btn-primary" onclick="openNewClientModal('${esc(escJs(code))}')"><svg class="btn-svg"><use href="#ic-plus"/></svg>Créer une carte</button>
         <button class="btn btn-ghost" style="margin-top:8px" onclick="resetScanUI()">Réessayer</button>
       </div>`;
     toast('Carte inconnue','warn');
@@ -4070,7 +4070,7 @@ async function createClient(){
     if(mccAct){
       mccAct.innerHTML=`
         ${phone?`
-        <button class="btn btn-primary" style="width:100%" onclick="sendWA('${phone}','${esc(name)}','${card.code}','${cardUrl}')">
+        <button class="btn btn-primary" style="width:100%" onclick="sendWA('${escJs(phone)}','${esc(escJs(name))}','${escJs(card.code)}','${escJs(cardUrl)}')">
           <svg class="btn-svg"><use href="#ic-chat"/></svg>Envoyer par WhatsApp
         </button>
         <button class="btn btn-ghost" style="width:100%" onclick="sendSMS('${phone}','${cardUrl}')">
@@ -4433,7 +4433,27 @@ async function msRegenApiKey(){
 // ════════════════════════════════════════
 // UTILS
 // ════════════════════════════════════════
-const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// Échappement pour une chaîne JS placée dans un attribut (onclick="fn('…')").
+// esc() ne suffit PAS ici : le navigateur décode les entités AVANT que le JS
+// soit analysé, donc une apostrophe encodée redevient une apostrophe et casse
+// la chaîne. Les noms sénégalais (N'Diaye, M'Baye…) faisaient planter la page.
+const escJs=s=>String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');
+
+// Le stockage local est un CACHE : s'il est plein (QuotaExceededError, vu en
+// production avec un logo lourd), on ne doit jamais faire planter le flux en
+// cours. On purge le cache le plus gros, on réessaie une fois, puis on renonce.
+try{
+  const _lsSet = Storage.prototype.setItem;
+  Storage.prototype.setItem = function(k, v){
+    try{ return _lsSet.call(this, k, v); }
+    catch(e){
+      try{ this.removeItem('lc_merchant'); }catch(_){}
+      try{ return _lsSet.call(this, k, v); }catch(_){}
+      try{ console.warn('Stockage local plein, mise en cache ignorée :', k); }catch(_){}
+    }
+  };
+}catch(e){}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const genCode=()=>'LC-'+Math.random().toString(36).slice(2,8).toUpperCase();
 
@@ -5269,7 +5289,9 @@ loadApp=async function(){
   if(MERCHANT?.id){
     try{
       const gcs=await fetch(SB_URL+'/rest/v1/gift_cards?merchant_id=eq.'+MERCHANT.id+'&order=created_at.desc',{headers:authH()}).then(r=>r.json());
-      GIFT_CARDS=gcs||[];
+      // PostgREST renvoie un OBJET d'erreur (jeton expiré, RLS) et pas un
+      // tableau : sans ce garde, le Dashboard plantait sur .filter().
+      GIFT_CARDS=Array.isArray(gcs)?gcs:[];
     }catch(e){
       GIFT_CARDS=[];
     }
@@ -6622,7 +6644,10 @@ async function initPWA(){
     const reg = await navigator.serviceWorker.register('/sw.js');
     console.log('SW registered');
 
-    // Request push permission if not already granted
+    // Request push permission if not already granted.
+    // Safari iOS n'expose pas Notification hors app installée : on sort
+    // proprement au lieu de lever « Can't find variable: Notification ».
+    if(typeof Notification === 'undefined') return;
     if(Notification.permission === 'default'){
       // Show prompt after 30 seconds (not immediately)
       setTimeout(() => askPushPermission(reg), 30000);
@@ -6696,7 +6721,7 @@ async function savePushSubscription(sub){
 
 // Send local notification (for immediate feedback)
 function localNotify(title, body, url='/merchant/'){
-  if(Notification.permission !== 'granted') return;
+  if(typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
   navigator.serviceWorker.ready.then(reg => {
     reg.showNotification(title, {
       body,
