@@ -94,6 +94,13 @@ export function NewClientScreen() {
         throw new Error('Creation impossible');
       }
       notifySuccess();
+      if (resp.already) {
+        // Carte deja existante pour ce numero : rien n'a ete cree ni envoye.
+        // On le dit clairement, sinon le commercant croit avoir envoye la carte.
+        toast('Ce client a deja une carte. La voici — utilise « Envoyer » pour la renvoyer.', 'warn');
+      } else if (resp.wa_sent === false && fullPhone) {
+        toast('Carte creee, mais l envoi WhatsApp n a pas abouti. Utilise « Envoyer ».', 'warn');
+      }
       if (resp.bonus) toast(`Parrainage applique : +${resp.bonus} pts.`, 'success');
       setCreated({ code: resp.card.code, name: name.trim(), phone: fullPhone });
     } catch (e: any) {

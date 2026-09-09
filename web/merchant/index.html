@@ -4114,6 +4114,14 @@ async function createClient(){
       throw new Error((resp&&resp.error)||'La carte n\'a pas été enregistrée');
     }
     if(document.getElementById('nc-referrer')) document.getElementById('nc-referrer').value='';
+    // Retour honnête au commerçant : si ce numéro avait déjà une carte, le
+    // serveur renvoie l'existante SANS rien envoyer. Sans ce message, il croit
+    // avoir créé la carte et l'avoir envoyée au client.
+    if(resp.already){
+      toast('Ce client a déjà une carte — la voici. Utilise « Envoyer par WhatsApp » pour la renvoyer.','warn');
+    } else if(resp.wa_sent===false && phone){
+      toast('Carte créée, mais l\'envoi WhatsApp n\'a pas abouti. Utilise « Envoyer par WhatsApp ».','warn');
+    }
     finalize(resp.card,{serverWa:true});
   }catch(e){
     if(!navigator.onLine){

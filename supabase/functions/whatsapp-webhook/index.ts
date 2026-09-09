@@ -76,6 +76,30 @@ Deno.serve(async (req) => {
   try { body = await req.json() } catch (_) { return new Response('EVENT_RECEIVED', { status: 200 }) }
   try {
     const change = body?.entry?.[0]?.changes?.[0]?.value
+
+    // ── Accuses de livraison Meta ────────────────────────────────────────
+    // Meta renvoie ici l'etat reel de chaque message envoye : sent, delivered,
+    // read, ou failed avec le motif. Sans cela, on ne sait jamais si le client
+    // a effectivement recu sa carte : l'API accepte le message (200) meme
+    // quand il n'est finalement pas distribue.
+    const statuses = change?.statuses
+    if (Array.isArray(statuses) && statuses.length) {
+      const dbs = sb()
+      for (const st of statuses) {
+        try {
+          if (!st?.id) continue
+          const patch: Record<string, unknown> = { delivery_status: st.status || null }
+          if (st.status === 'delivered' || st.status === 'read') patch.delivered_at = new Date().toISOString()
+          if (st.status === 'failed') {
+            const e = (Array.isArray(st.errors) && st.errors[0]) || {}
+            patch.delivery_error = String(e.title || e.message || e.details || e.code || 'echec').slice(0, 280)
+          }
+          await dbs.from('whatsapp_logs').update(patch).eq('wa_message_id', st.id)
+        } catch (_) {}
+      }
+      return new Response('EVENT_RECEIVED', { status: 200 })
+    }
+
     const msg = change?.messages?.[0]
     if (!msg || !msg.from) return new Response('EVENT_RECEIVED', { status: 200 })
     const from = String(msg.from)

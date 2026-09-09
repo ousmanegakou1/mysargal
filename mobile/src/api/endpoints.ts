@@ -255,7 +255,10 @@ export async function createCardServer(params: {
   design_url?: string | null;
   design_name?: string | null;
   referrer_code?: string | null;
-}): Promise<{ success: boolean; card: LoyaltyCardRow; bonus?: number }> {
+  // `already` = ce numero avait deja une carte dans cette boutique : le serveur
+  // renvoie l'existante SANS rien creer ni renvoyer de message. Il faut le dire
+  // au commercant, sinon il croit avoir cree une carte et envoye le message.
+}): Promise<{ success: boolean; card: LoyaltyCardRow; already?: boolean; wa_sent?: boolean; bonus?: number }> {
   return edge('merchant-create-card', params);
 }
 

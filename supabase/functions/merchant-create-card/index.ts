@@ -27,8 +27,10 @@ async function verifyJwt(token, secret) {
 async function sendWelcome(sb, ctx, phone, name, brand, cardUrl, welcome) {
   const digits = onlyDigits(phone)
   const to = '+' + digits
-  const log = async (status, provider, note) => {
-    try { await sb.from('whatsapp_logs').insert({ merchant_id: ctx?.merchant_id || null, card_id: ctx?.card_id || null, to_phone: to, template: 'welcome', message: String(note || 'Carte creee').slice(0, 280), status, provider }) } catch (_) {}
+  // On range l'identifiant Meta (wamid) : c'est lui qui permet au webhook de
+  // rattacher ensuite l'accuse de livraison (delivered / read / failed).
+  const log = async (status, provider, note, wamid) => {
+    try { await sb.from('whatsapp_logs').insert({ merchant_id: ctx?.merchant_id || null, card_id: ctx?.card_id || null, to_phone: to, template: 'welcome', message: String(note || 'Carte creee').slice(0, 280), status, provider, wa_message_id: wamid || null }) } catch (_) {}
   }
   if (digits.length < 8) { await log('failed', 'none', 'numero invalide'); return { ok: false } }
   const TOKEN = Deno.env.get('WA_TOKEN'); const PHONE_ID = Deno.env.get('WA_PHONE_ID')
@@ -37,7 +39,12 @@ async function sendWelcome(sb, ctx, phone, name, brand, cardUrl, welcome) {
       const payload = { messaging_product: 'whatsapp', to: digits, type: 'template', template: { name: 'carte_fidelite', language: { code: 'fr' }, components: [{ type: 'body', parameters: [{ type: 'text', text: name }, { type: 'text', text: brand }, { type: 'text', text: cardUrl }] }] } }
       const r = await fetch(`https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       const txt = await r.text()
-      if (r.ok) { await log('sent', 'wa-cloud', 'carte_fidelite'); return { ok: true, provider: 'wa-cloud' } }
+      if (r.ok) {
+        let wamid = null
+        try { wamid = JSON.parse(txt)?.messages?.[0]?.id || null } catch (_) {}
+        await log('sent', 'wa-cloud', 'carte_fidelite', wamid)
+        return { ok: true, provider: 'wa-cloud', wamid }
+      }
       await log('failed', 'wa-cloud', `carte_fidelite ${r.status} ${txt}`)
     } catch (e) { await log('failed', 'wa-cloud', 'exc ' + (e?.message || e)) }
   } else {
