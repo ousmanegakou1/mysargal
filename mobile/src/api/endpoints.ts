@@ -75,7 +75,7 @@ export async function getPoints(code: string, merchantId: string): Promise<CardL
 // Recherche brute d'une carte par code (PostgREST) pour le cache hors ligne.
 export async function findCardByCode(code: string, merchantId: string): Promise<LoyaltyCardRow | null> {
   const fields =
-    'id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask';
+    'id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance';
   const rows = await restGet<LoyaltyCardRow[]>(
     `/loyalty_cards?select=${fields}&code=eq.${encodeURIComponent(code)}&merchant_id=eq.${merchantId}&limit=1`
   );
@@ -86,7 +86,7 @@ export async function findCardByCode(code: string, merchantId: string): Promise<
 export async function findCardsByPhone(phone: string, merchantId: string): Promise<LoyaltyCardRow[]> {
   const d = onlyDigits(phone);
   const fields =
-    'id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask';
+    'id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance';
   // client_phone stocke avec ou sans +, on tente les deux formes.
   const rows = await restGet<LoyaltyCardRow[]>(
     `/loyalty_cards?select=${fields}&merchant_id=eq.${merchantId}` +
@@ -120,6 +120,21 @@ export async function redeemReward(
     card_code: cardCode,
     merchant_id: merchantId,
     reward_id: rewardId || null,
+  });
+}
+
+// redeem-cashback : debite l'avoir cashback d'une carte (utilisation en caisse).
+export async function redeemCashback(
+  cardCode: string,
+  merchantId: string,
+  amount: number,
+  cashierId?: string | null
+): Promise<{ success: boolean; redeemed: number; cashback_balance: number }> {
+  return edge('redeem-cashback', {
+    card_code: cardCode,
+    merchant_id: merchantId,
+    amount,
+    cashier_id: cashierId || null,
   });
 }
 
@@ -195,12 +210,12 @@ export async function registerDevice(params: {
 // ---------- LOYALTY : LISTE / CREATION / ETAT ----------
 
 const CARD_FIELDS =
-  'id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask';
+  'id,code,merchant_id,client_name,pts,lifetime_pts,active,created_at,client_phone_mask,client_phone,cashback_balance';
 
 // Liste complete des cartes de la boutique (onglet Clients).
 export async function fetchCards(merchantId: string, limit = 1000): Promise<LoyaltyCardRow[]> {
   const rows = await restGet<LoyaltyCardRow[]>(
-    `/loyalty_cards?select=${CARD_FIELDS}&merchant_id=eq.${merchantId}&order=created_at.desc&limit=${limit}`
+    `/loyalty_cards?select=${CARD_FIELDS}&merchant_id=eq.${merchantId}&active=eq.true&order=created_at.desc&limit=${limit}`
   );
   return rows || [];
 }
@@ -230,6 +245,20 @@ export interface CreateCardParams {
 }
 
 // Creation d'une carte a la volee (loyalty_cards).
+// merchant-create-card : cree la carte cote serveur ET envoie la carte au
+// client par WhatsApp automatiquement (template + repli). A privilegier sur
+// createCard (qui insere sans envoyer).
+export async function createCardServer(params: {
+  merchant_id: string;
+  name: string;
+  phone?: string | null;
+  design_url?: string | null;
+  design_name?: string | null;
+  referrer_code?: string | null;
+}): Promise<{ success: boolean; card: LoyaltyCardRow; bonus?: number }> {
+  return edge('merchant-create-card', params);
+}
+
 export async function createCard(params: CreateCardParams): Promise<LoyaltyCardRow> {
   const rows = await restPost<LoyaltyCardRow[]>('/loyalty_cards', {
     ...params,
@@ -245,9 +274,27 @@ export async function insertCardsBatch(rows: Record<string, unknown>[]): Promise
   await restPost('/loyalty_cards', rows);
 }
 
-// Desactiver une carte.
+// Desactiver une carte : les points actifs sont remis a 0.
+// Les points a vie (cumul) restent, pour garder l'historique du client.
 export async function deactivateCard(id: string): Promise<void> {
-  await restPatch(`/loyalty_cards?id=eq.${id}`, { active: false }, { minimal: true });
+  await restPatch(`/loyalty_cards?id=eq.${id}`, { active: false, pts: 0 }, { minimal: true });
+}
+
+// Modifier les informations d'un client (nom et numero WhatsApp).
+// Le masque du numero est recalcule automatiquement par la base.
+export async function updateCardClient(
+  id: string,
+  fields: { client_name?: string; client_phone?: string | null }
+): Promise<void> {
+  const body: Record<string, unknown> = {};
+  if (typeof fields.client_name === 'string') body.client_name = fields.client_name.trim().slice(0, 80);
+  if (fields.client_phone !== undefined) {
+    const p = fields.client_phone ? String(fields.client_phone).replace(/[^\d+]/g, '') : null;
+    body.client_phone = p;
+    body.client_phone_raw = p;
+  }
+  if (!Object.keys(body).length) return;
+  await restPatch(`/loyalty_cards?id=eq.${id}`, body, { minimal: true });
 }
 
 // Reveler le telephone reel (audite cote serveur).

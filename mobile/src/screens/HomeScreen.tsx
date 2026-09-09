@@ -162,7 +162,7 @@ export function HomeScreen() {
               <View style={styles.bellBadge}>
                 <Text style={styles.bellBadgeTxt}>{unreadNotifs > 9 ? '9+' : unreadNotifs}</Text>
               </View>
-            ) : stats.readyCount > 0 ? (
+            ) : !merchant?.cashback_enabled && stats.readyCount > 0 ? (
               <View style={[styles.bellDot, { backgroundColor: theme.accent }]} />
             ) : null}
           </Pressable>
@@ -221,8 +221,12 @@ export function HomeScreen() {
           <NavRow
             icon="star"
             title="Recompenses"
-            sub={`${stats.readyCount} prete${stats.readyCount > 1 ? 's' : ''} a remettre`}
-            badge={stats.readyCount}
+            sub={
+              merchant?.cashback_enabled
+                ? 'Programme cashback actif'
+                : `${stats.readyCount} prete${stats.readyCount > 1 ? 's' : ''} a remettre`
+            }
+            badge={merchant?.cashback_enabled ? undefined : stats.readyCount}
             onPress={() => goTab('Rewards')}
             accentSoftBg={theme.accentSoftBg}
             accentDark={theme.accentDark}

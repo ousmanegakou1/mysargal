@@ -2,15 +2,19 @@
 // MySargal Caisse - Utilitaires de formatage
 // ============================================================
 
+import { DEVISES } from './currency';
+
 export function onlyDigits(v: unknown): string {
   return String(v ?? '').replace(/\D/g, '');
 }
 
 // Formate un montant en franc CFA (ou devise fournie).
-export function fmtMoney(amount: number, currency = 'FCFA'): string {
+export function fmtMoney(amount: number, currency?: string | null): string {
+  const raw = currency || 'FCFA';
+  const cur = DEVISES[String(raw).toUpperCase()]?.symbol || raw;
   const n = Math.round(Number(amount) || 0);
   const s = n.toLocaleString('fr-FR').replace(/ /g, ' ');
-  return `${s} ${currency}`;
+  return `${s} ${cur}`;
 }
 
 // Formate un nombre de points.

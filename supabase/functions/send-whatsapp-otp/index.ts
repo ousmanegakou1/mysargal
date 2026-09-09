@@ -15,6 +15,14 @@ serve(async (req) => {
     const dg = digits(phone); const plus = "+" + dg;
     if (plus === DEMO_PHONE) return new Response(JSON.stringify({ success: true }), { headers: { ...cors, "Content-Type": "application/json" } });
     const sb = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
+    // Comptes de démo (revue Apple / Google Play) : ne JAMAIS tenter d'envoi,
+    // renvoyer succès pour que le réviseur atteigne l'écran de saisie du code
+    // (le code fixe est validé par verify-whatsapp-otp). Évite le 502 bloquant.
+    let demoP = "";
+    try { const { data: dcfg } = await sb.from("ms_config").select("valeur").eq("cle", "demo_phone").maybeSingle(); demoP = String(dcfg?.valeur || ""); } catch (_) {}
+    if (!demoP) demoP = Deno.env.get("MS_DEMO_PHONE") || "";
+    const demoSet = demoP.split(",").map((s) => s.trim()).filter(Boolean);
+    if (demoSet.includes(plus)) return new Response(JSON.stringify({ success: true }), { headers: { ...cors, "Content-Type": "application/json" } });
     const since = new Date(Date.now() - 3600000).toISOString();
     const { count } = await sb.from("client_otps").select("id", { count: "exact", head: true }).eq("phone", dg).gte("created_at", since);
     if ((count || 0) >= 3) return new Response(JSON.stringify({ error: "Trop de demandes. Réessaie dans une heure." }), { status: 429, headers: { ...cors, "Content-Type": "application/json" } });

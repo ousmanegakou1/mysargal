@@ -1,19 +1,20 @@
 // ============================================================
 // MySargal Caisse - Pressable anime reutilisable
 // Effet d'enfoncement (scale + legere opacite) au ressort + retour haptique.
-// Anime uniquement transform/opacity via l'API Animated integree de React
-// Native (useNativeDriver) -> fluide et 100% stable, aucun module natif a
-// aligner. Respecte "reduire les animations".
+// IMPORTANT : on utilise le Pressable NATIF de React Native (pas gesture-handler),
+// car les gestes gesture-handler ne fonctionnent pas dans un <Modal> sur Android
+// (fenetre native separee du GestureHandlerRootView). Le Pressable natif, lui,
+// marche partout, modals inclus. Animation via Animated (useNativeDriver).
 // ============================================================
 
 import React, { useCallback, useRef } from 'react';
 import {
   Animated,
+  Pressable,
   StyleProp,
   ViewStyle,
   AccessibilityRole,
 } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { motion } from '../theme';
 import { useReduceMotion } from '../utils/motion';
 import { tapLight, tapMedium } from '../utils/haptics';
@@ -33,6 +34,8 @@ interface Props {
   accessibilityLabel?: string;
   hitSlop?: number;
 }
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /**
  * Remplace Pressable/TouchableOpacity partout ou l'on veut un feedback tactile
@@ -83,47 +86,37 @@ export function PressableScale({
     [reduce, scale, opacity, scaleTo]
   );
 
-  const tap = Gesture.Tap()
-    .enabled(!disabled)
-    .maxDuration(10000)
-    .onBegin(() => {
-      setPressed(true);
-    })
-    .onFinalize(() => {
-      setPressed(false);
-    })
-    .onEnd(() => {
-      fireHaptic();
-      onPress?.();
-    });
-
-  const long = Gesture.LongPress()
-    .enabled(!disabled && !!onLongPress)
-    .minDuration(450)
-    .onStart(() => {
-      tapMedium();
-      onLongPress?.();
-    });
-
-  const gesture = Gesture.Simultaneous(tap, long);
-
-  const animatedStyle = {
-    transform: [{ scale }],
-    opacity: disabled ? 0.45 : opacity,
-  };
-
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View
-        style={[style, animatedStyle]}
-        accessible
-        accessibilityRole={accessibilityRole}
-        accessibilityLabel={accessibilityLabel}
-        accessibilityState={{ disabled: !!disabled }}
-        hitSlop={hitSlop}
-      >
-        {children}
-      </Animated.View>
-    </GestureDetector>
+    <AnimatedPressable
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      onPress={
+        disabled
+          ? undefined
+          : () => {
+              fireHaptic();
+              onPress?.();
+            }
+      }
+      onLongPress={
+        disabled || !onLongPress
+          ? undefined
+          : () => {
+              tapMedium();
+              onLongPress();
+            }
+      }
+      disabled={disabled}
+      hitSlop={hitSlop}
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled: !!disabled }}
+      style={[
+        style,
+        { transform: [{ scale }], opacity: disabled ? 0.45 : opacity },
+      ]}
+    >
+      {children}
+    </AnimatedPressable>
   );
 }

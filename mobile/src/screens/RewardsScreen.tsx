@@ -196,6 +196,15 @@ export function RewardsScreen() {
 
       <OfflineBanner />
 
+      {merchant?.cashback_enabled ? (
+        <View style={styles.cbNote}>
+          <Text style={styles.cbNoteTxt}>
+            Votre boutique est en mode cashback. Le programme de recompenses par points est desactive : vos
+            clients gagnent un avoir en argent, utilisable en caisse.
+          </Text>
+        </View>
+      ) : null}
+
       <View style={styles.statsRow}>
         <Stat value={String(readyCount)} label="Clients prets" accent />
         <View style={styles.vsep} />
@@ -297,6 +306,8 @@ const styles = StyleSheet.create({
   backTxt: { fontFamily: fonts.bodyBold, fontSize: 16, color: colors.tx },
   title: { fontFamily: fonts.heading, fontSize: 26, color: colors.tx, letterSpacing: -0.5 },
   subtitle: { fontFamily: fonts.body, fontSize: 14, color: colors.tx2, marginTop: 2 },
+  cbNote: { backgroundColor: colors.s3, borderWidth: 1, borderColor: colors.b1, borderRadius: radius.md, padding: 14 },
+  cbNoteTxt: { fontFamily: fonts.body, fontSize: 13, color: colors.tx2, lineHeight: 19 },
   statsRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.s2, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.b1, paddingVertical: 16 },
   stat: { flex: 1, alignItems: 'center', gap: 3 },
   statVal: { fontFamily: fonts.heading, fontSize: 22, color: colors.tx },

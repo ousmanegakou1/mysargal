@@ -22,6 +22,13 @@ export interface Merchant {
   // Mode de points : montant -> points converti cote client.
   pts_amount_mode?: boolean | null;
   pts_fcfa_per_point?: number | null;
+  // Cashback (avoir en argent, optionnel)
+  cashback_enabled?: boolean | null;
+  cashback_mode?: string | null; // 'percent' | 'per_point'
+  cashback_rate?: number | null;
+  cashback_threshold?: number | null;
+  // Validite des cartes en mois (0 = pas d'expiration). Appliquee aux nouvelles cartes.
+  card_validity_months?: number | null;
   reward_config?: Record<string, unknown> | null;
   user_id?: string | null;
   created_at?: string | null;
@@ -53,6 +60,7 @@ export interface CardLookup {
   progress_pct: number;
   reward_ready: boolean;
   remaining_pts: number;
+  cashback_balance?: number;
   last_scan_at: string | null;
   merchant: {
     name?: string;
@@ -60,6 +68,10 @@ export interface CardLookup {
     threshold?: number;
     reward_desc?: string | null;
     brand?: string | null;
+    cashback_enabled?: boolean | null;
+    cashback_mode?: string | null;
+    cashback_rate?: number | null;
+    cashback_threshold?: number | null;
   };
 }
 
@@ -152,6 +164,8 @@ export interface LoyaltyCardRow {
   active?: boolean;
   created_at?: string | null;
   client_phone_mask?: string | null;
+  client_phone?: string | null;
+  cashback_balance?: number;
 }
 
 // Carte cadeau complete (table gift_cards) pour la liste marchande.

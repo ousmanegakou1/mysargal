@@ -24,7 +24,7 @@ import { useTheme } from '../theme/ThemeProvider';
 
 import { useAuth } from '../auth/AuthContext';
 import { useNetwork } from '../offline/NetworkProvider';
-import { generateCardCode, createCard, applyReferral } from '../api/endpoints';
+import { createCardServer } from '../api/endpoints';
 import { COUNTRIES, DEFAULT_COUNTRY, Country } from '../utils/phone';
 import { onlyDigits } from '../utils/format';
 import { WA_MESSAGES, openWhatsApp, openSMS, copyText, cardUrl, firstName } from '../utils/wa';
@@ -80,31 +80,22 @@ export function NewClientScreen() {
     }
     setBusy(true);
     try {
-      const code = await generateCardCode();
-      await createCard({
-        merchant_id: merchant.id,
-        code,
-        client_name: name.trim(),
-        client_phone: fullPhone || null,
-        client_phone_raw: digits || null,
-        design_name: design,
-      });
-      notifySuccess();
-      // Envoi automatique de la carte au client par WhatsApp.
-      if (fullPhone) {
-        openWhatsApp(fullPhone, WA_MESSAGES.bienvenue(firstName(name), merchant.name, cardUrl(code)));
-      }
-      // Parrainage eventuel.
       const ref = referrer.trim().toUpperCase();
-      if (ref) {
-        try {
-          const r = await applyReferral(merchant.id, ref, code);
-          if (r.bonus) toast(`Parrainage applique : +${r.bonus} pts.`, 'success');
-        } catch (e: any) {
-          toast(e?.message || 'Parrainage refuse', 'warn');
-        }
+      // Creation cote serveur : cree la carte ET l'envoie au client par
+      // WhatsApp automatiquement (comme le web).
+      const resp = await createCardServer({
+        merchant_id: merchant.id,
+        name: name.trim(),
+        phone: fullPhone || null,
+        design_name: design,
+        referrer_code: ref || null,
+      });
+      if (!resp || !resp.success || !resp.card || !resp.card.code) {
+        throw new Error('Creation impossible');
       }
-      setCreated({ code, name: name.trim(), phone: fullPhone });
+      notifySuccess();
+      if (resp.bonus) toast(`Parrainage applique : +${resp.bonus} pts.`, 'success');
+      setCreated({ code: resp.card.code, name: name.trim(), phone: fullPhone });
     } catch (e: any) {
       toast(e?.message || 'Creation impossible', 'error');
     } finally {

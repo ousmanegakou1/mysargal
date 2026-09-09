@@ -48,20 +48,26 @@ serve(async (req) => {
     const secret = Deno.env.get("MS_JWT_SECRET");
     const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    // ── Compte de démonstration ──────────────────────────────────────────
-    // Secret d'environnement en priorité, sinon la table verrouillée.
-    let demoPhone = Deno.env.get("MS_DEMO_PHONE") || "";
+    // ── Comptes de démonstration (revue Apple / Google Play) ─────────────
+    // Source autoritaire : la table verrouillée ms_config. demo_phone peut
+    // contenir plusieurs numéros séparés par des virgules (ex. un +1 pour
+    // Apple et un +221 pour Google). L'empreinte SHA-256 du code fixe vit
+    // dans demo_code.valeur_hash. Repli sur les secrets d'env si ms_config
+    // est vide. Le code en clair n'existe nulle part.
+    let demoPhonesRaw = "";
     let demoHash = "";
-    const demoCodeEnv = Deno.env.get("MS_DEMO_CODE") || "";
-    if (!demoPhone || !demoCodeEnv) {
+    {
       const { data: cfg } = await sb.from("ms_config").select("cle,valeur,valeur_hash").in("cle", ["demo_phone", "demo_code"]);
       for (const l of cfg || []) {
-        if (l.cle === "demo_phone" && !demoPhone) demoPhone = String(l.valeur || "");
+        if (l.cle === "demo_phone") demoPhonesRaw = String(l.valeur || "");
         if (l.cle === "demo_code") demoHash = String(l.valeur_hash || "");
       }
     }
-    if (demoPhone && plus === demoPhone) {
-      const attendu = demoCodeEnv ? await sha256hex(demoCodeEnv) : demoHash;
+    if (!demoPhonesRaw) demoPhonesRaw = Deno.env.get("MS_DEMO_PHONE") || "";
+    const demoCodeEnv = Deno.env.get("MS_DEMO_CODE") || "";
+    const demoSet = demoPhonesRaw.split(",").map((s) => s.trim()).filter(Boolean);
+    if (demoSet.includes(plus)) {
+      const attendu = demoHash || (demoCodeEnv ? await sha256hex(demoCodeEnv) : "");
       const fourni = await sha256hex(String(code).trim());
       if (!attendu || !memeChaine(fourni, attendu)) return json({ error: ECHEC }, 400);
       const t = secret ? await mintJwt(secret, { role: "authenticated", iss: "mysargal", phone: plus }, 2592000) : null;

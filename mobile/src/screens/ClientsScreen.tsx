@@ -142,6 +142,7 @@ export function ClientsScreen() {
         (c) =>
           (c.client_name || '').toLowerCase().includes(q) ||
           (c.code || '').toLowerCase().includes(q) ||
+          (!!onlyDigits(q) && onlyDigits(c.client_phone || '').includes(onlyDigits(q))) ||
           onlyDigits(c.client_phone_mask).includes(onlyDigits(q))
       )
       .sort((a, b) => (b.pts || 0) - (a.pts || 0));
@@ -172,7 +173,7 @@ export function ClientsScreen() {
     }
   };
 
-  const contactPhone = revealed || selected?.client_phone_mask || '';
+  const contactPhone = revealed || selected?.client_phone || selected?.client_phone_mask || '';
 
   const sendWA = async () => {
     if (!selected || !merchant) return;
@@ -367,7 +368,7 @@ export function ClientsScreen() {
                       {c.client_name || 'Client'}
                     </Text>
                     <Text style={styles.rowMeta}>
-                      {c.code} · {maskLabel(c.client_phone_mask) || 'numero masque'}
+                      {c.code} · {c.client_phone || maskLabel(c.client_phone_mask) || 'numero masque'}
                     </Text>
                     {rowTier ? (
                       <View style={styles.rowTier}>
@@ -436,7 +437,7 @@ export function ClientsScreen() {
                 </View>
                 <View style={styles.detailStat}>
                   <Text style={styles.detailStatVal}>
-                    {revealed ? maskLast4(revealed) : maskLabel(selected?.client_phone_mask) || 'Non renseigne'}
+                    {revealed || selected?.client_phone || maskLabel(selected?.client_phone_mask) || 'Non renseigne'}
                   </Text>
                   <Text style={styles.detailStatLbl}>telephone</Text>
                 </View>
@@ -451,7 +452,27 @@ export function ClientsScreen() {
               <View style={styles.actionsGrid}>
                 <MiniBtn icon="message-circle" label="WhatsApp" onPress={sendWA} />
                 <MiniBtn icon="mail" label="SMS" onPress={sendSMS} />
-                <MiniBtn icon="phone" label="Appeler" onPress={() => (contactPhone ? callPhone(contactPhone) : toast('Numero masque.', 'warn'))} />
+                <MiniBtn
+                  icon="phone"
+                  label="Appeler"
+                  onPress={async () => {
+                    if (!selected) return;
+                    // Numero reel : celui revele, sinon le complet charge, sinon on revele.
+                    let phone: string | null =
+                      revealed ||
+                      (selected.client_phone && onlyDigits(selected.client_phone).length >= 8 ? selected.client_phone : null);
+                    if (!phone) {
+                      try {
+                        phone = await revealPhone(selected.id, 'Appel depuis la liste clients', null);
+                        setRevealed(phone);
+                      } catch {
+                        phone = null;
+                      }
+                    }
+                    if (phone && onlyDigits(phone).length >= 8) callPhone(phone);
+                    else toast('Numero indisponible.', 'warn');
+                  }}
+                />
                 <MiniBtn
                   icon="plus"
                   label="Encaisser"

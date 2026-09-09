@@ -103,6 +103,18 @@ export function SettingsScreen() {
   const [expiryMonths, setExpiryMonths] = useState(String((m as any)?.pts_expiry_months || 12));
   const [savingExp, setSavingExp] = useState(false);
 
+  // Validite de la carte (0 = pas d'expiration). Appliquee aux nouvelles cartes.
+  const [cardValidOn, setCardValidOn] = useState<boolean>(((m as any)?.card_validity_months || 0) > 0);
+  const [cardValidMonths, setCardValidMonths] = useState(String((m as any)?.card_validity_months || 12));
+  const [savingCv, setSavingCv] = useState(false);
+
+  // Cashback (avoir en argent, optionnel)
+  const [cbOn, setCbOn] = useState<boolean>(!!m?.cashback_enabled);
+  const [cbMode, setCbMode] = useState<string>(m?.cashback_mode || 'percent');
+  const [cbRate, setCbRate] = useState(String(m?.cashback_rate ?? ''));
+  const [cbThresh, setCbThresh] = useState(String(m?.cashback_threshold ?? ''));
+  const [savingCb, setSavingCb] = useState(false);
+
   // Marque
   const [bg1, setBg1] = useState((m?.brand as any)?.bg1 || BRAND_PRESETS[0].bg1);
   const [bg2, setBg2] = useState((m?.brand as any)?.bg2 || BRAND_PRESETS[0].bg2);
@@ -190,6 +202,10 @@ export function SettingsScreen() {
     setRatio(String(m.pts_fcfa_per_point || deviseInfo(m.currency).ratio));
     setExpiryOn(!!(m as any)?.pts_expiry_enabled);
     setExpiryMonths(String((m as any)?.pts_expiry_months || 12));
+    setCbOn(!!m.cashback_enabled);
+    setCbMode(m.cashback_mode || 'percent');
+    setCbRate(String(m.cashback_rate ?? ''));
+    setCbThresh(String(m.cashback_threshold ?? ''));
     setLogoUrl(m.logo_url || '');
     const cfg = (m.reward_config as any) || {};
     setWinback(!!cfg.winback_enabled);
@@ -279,6 +295,42 @@ export function SettingsScreen() {
       toast(e?.message || 'Enregistrement impossible', 'error');
     } finally {
       setSavingExp(false);
+    }
+  };
+
+  // Validite de la carte : duree en mois appliquee a chaque NOUVELLE carte.
+  // A l'echeance, les points actifs sont remis a 0 (la carte reste utilisable).
+  const saveCardValidity = async () => {
+    if (!m) return;
+    const mois = cardValidOn ? Math.max(1, Math.min(parseInt(cardValidMonths || '12', 10) || 12, 120)) : 0;
+    setSavingCv(true);
+    try {
+      await updateMerchant(m.id, { card_validity_months: mois } as any);
+      await refreshMerchant();
+      toast(mois > 0 ? `Cartes valables ${mois} mois.` : 'Cartes sans expiration.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setSavingCv(false);
+    }
+  };
+
+  const saveCashback = async () => {
+    if (!m) return;
+    setSavingCb(true);
+    try {
+      await updateMerchant(m.id, {
+        cashback_enabled: cbOn,
+        cashback_mode: cbMode === 'per_point' ? 'per_point' : 'percent',
+        cashback_rate: Math.max(0, parseFloat(cbRate.replace(',', '.')) || 0),
+        cashback_threshold: Math.max(0, parseInt(cbThresh || '0', 10) || 0),
+      });
+      await refreshMerchant();
+      toast('Cashback enregistre.', 'success');
+    } catch (e: any) {
+      toast(e?.message || 'Enregistrement impossible', 'error');
+    } finally {
+      setSavingCb(false);
     }
   };
 
@@ -676,6 +728,64 @@ export function SettingsScreen() {
           <Field label="Duree de validite (mois)" value={expiryMonths} onChangeText={(t) => setExpiryMonths(t.replace(/\D/g, ''))} keyboardType="number-pad" />
         ) : null}
         <Button label="Enregistrer l'expiration" onPress={saveExpiry} loading={savingExp} />
+      </Card>
+
+      {/* Validite de la carte */}
+      <Card style={styles.card}>
+        <SectionHeader title="VALIDITE DE LA CARTE" help="Duree de vie d'une carte, appliquee automatiquement a chaque nouvelle carte creee." />
+        <View style={styles.rowBetween}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.switchLabel}>Cartes a duree limitee</Text>
+            <Text style={styles.help}>Desactive : les cartes n'expirent jamais.</Text>
+          </View>
+          <Switch value={cardValidOn} onValueChange={setCardValidOn} trackColor={{ false: colors.s4, true: evTheme.accent }} thumbColor={cardValidOn ? evTheme.accentDark : '#888'} />
+        </View>
+        {cardValidOn ? (
+          <>
+            <Field label="Validite (mois)" value={cardValidMonths} onChangeText={(t) => setCardValidMonths(t.replace(/\D/g, ''))} keyboardType="number-pad" />
+            <Text style={styles.help}>
+              A l'echeance, les points actifs du client sont remis a 0. La carte reste utilisable et le cumul a vie est conserve.
+              Ne s'applique qu'aux nouvelles cartes.
+            </Text>
+          </>
+        ) : null}
+        <Button label="Enregistrer la validite" onPress={saveCardValidity} loading={savingCv} />
+      </Card>
+
+      {/* Cashback */}
+      <Card style={styles.card}>
+        <SectionHeader title="CASHBACK" help="Un avoir en argent sur la carte, au lieu d'une remise. Le client l'utilise en caisse." />
+        <View style={styles.rowBetween}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.switchLabel}>Activer le cashback</Text>
+            <Text style={styles.help}>Desactive : vous gardez votre recompense classique.</Text>
+          </View>
+          <Switch value={cbOn} onValueChange={setCbOn} trackColor={{ false: colors.s4, true: evTheme.accent }} thumbColor={cbOn ? evTheme.accentDark : '#888'} />
+        </View>
+        {cbOn ? (
+          <>
+            <Text style={styles.label}>Mode de calcul</Text>
+            <Segmented items={[{ key: 'percent', label: '% du montant' }, { key: 'per_point', label: 'Par point' }]} value={cbMode} onChange={setCbMode} />
+            <Field
+              label={cbMode === 'per_point' ? `Avoir par point (${deviseInfo(currency).symbol})` : 'Pourcentage du montant (%)'}
+              value={cbRate}
+              onChangeText={(t) => setCbRate(t.replace(/[^\d.,]/g, ''))}
+              keyboardType="decimal-pad"
+            />
+            <Field
+              label={`Utilisable a partir de (${deviseInfo(currency).symbol})`}
+              value={cbThresh}
+              onChangeText={(t) => setCbThresh(t.replace(/\D/g, ''))}
+              keyboardType="number-pad"
+            />
+            {cbMode === 'per_point' ? (
+              <Text style={styles.help}>Le client gagne aussi ses points : il cumule points et cashback.</Text>
+            ) : (
+              <Text style={styles.help}>Independant des points, base sur le montant depense.</Text>
+            )}
+          </>
+        ) : null}
+        <Button label="Enregistrer le cashback" onPress={saveCashback} loading={savingCb} />
       </Card>
       </>
       ) : null}

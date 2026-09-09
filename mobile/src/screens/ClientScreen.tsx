@@ -6,7 +6,7 @@
 // ============================================================
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView, Alert, Modal } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppBackground } from '../components/AppBackground';
@@ -34,7 +34,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useAppStore } from '../store/appStore';
 import { useQueue } from '../offline/queue';
 import { useNetwork } from '../offline/NetworkProvider';
-import { getPoints, addPoints, redeemReward, fetchRewards, findCardByCode, revealPhone, deactivateCard, syncWallet, fetchTiers } from '../api/endpoints';
+import { getPoints, addPoints, redeemReward, redeemCashback, fetchRewards, findCardByCode, revealPhone, deactivateCard, updateCardClient, syncWallet, fetchTiers } from '../api/endpoints';
 import { CardLookup, Reward, ApiError, SargalTier } from '../api/types';
 import { fmtPts, fmtMoney, maskLabel } from '../utils/format';
 import { isAmountMode, fcfaPerPoint, ptsFromAmount, quickValues } from '../utils/points';
@@ -68,6 +68,14 @@ export function ClientScreen() {
   const [celebrate, setCelebrate] = useState(false);
   const [cardId, setCardId] = useState<string | null>(null);
   const [revealed, setRevealed] = useState<string | null>(null);
+  // Modification de la fiche client (nom + numero)
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+  // Le numero reel a-t-il bien ete recupere ? Si non, un champ vide ne doit
+  // PAS etre interprete comme « efface le numero » (sinon perte de donnee).
+  const [editRevealOk, setEditRevealOk] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
   const [tiers, setTiers] = useState<SargalTier[]>([]);
 
@@ -154,15 +162,68 @@ export function ClientScreen() {
   };
   const doDeactivate = async () => {
     if (!cardId) { toast('Carte non identifiee.', 'warn'); return; }
+    Alert.alert(
+      'Desactiver la carte',
+      'Les points de ce client seront remis a 0. Le cumul a vie est conserve.',
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Desactiver',
+          style: 'destructive',
+          onPress: async () => {
+            setActionBusy(true);
+            try {
+              await deactivateCard(cardId);
+              toast('Carte desactivee, points remis a 0.', 'success');
+              navigation.goBack();
+            } catch (e) {
+              toast((e as ApiError).message || 'Desactivation impossible', 'error');
+            } finally {
+              setActionBusy(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // ----- Modification des infos client (nom + numero WhatsApp) -----
+  const openEdit = async () => {
+    if (!cardId) { toast('Carte non identifiee.', 'warn'); return; }
+    setEditName(card?.client_name || '');
     setActionBusy(true);
+    const p = await ensureRevealed('Modification de la fiche client');
+    setActionBusy(false);
+    setEditPhone(p || '');
+    setEditRevealOk(!!p);
+    setEditOpen(true);
+  };
+
+  const doSaveEdit = async () => {
+    if (!cardId) return;
+    const nom = editName.trim();
+    if (!nom) { toast('Le nom est obligatoire.', 'warn'); return; }
+    const tel = editPhone.trim();
+    if (tel) {
+      const n = tel.replace(/\D/g, '').length;
+      if (n < 8 || n > 15) { toast('Numero de telephone invalide.', 'warn'); return; }
+    }
+    setSavingEdit(true);
     try {
-      await deactivateCard(cardId);
-      toast('Carte desactivee.', 'success');
-      navigation.goBack();
+      // On ne touche au numero que si on sait ce qu'on ecrase : soit un nouveau
+      // numero est saisi, soit l'ancien a bien ete lu (le vider est alors voulu).
+      const champs: { client_name: string; client_phone?: string | null } = { client_name: nom };
+      if (tel) champs.client_phone = tel;
+      else if (editRevealOk) champs.client_phone = null;
+      await updateCardClient(cardId, champs);
+      if ('client_phone' in champs) setRevealed(tel || null);
+      setEditOpen(false);
+      toast('Fiche client mise a jour.', 'success');
+      await load();
     } catch (e) {
-      toast((e as ApiError).message || 'Desactivation impossible', 'error');
+      toast((e as ApiError).message || 'Modification impossible', 'error');
     } finally {
-      setActionBusy(false);
+      setSavingEdit(false);
     }
   };
 
@@ -327,6 +388,40 @@ export function ClientScreen() {
     }
   };
 
+  // Utilisation du cashback : applique tout l'avoir en reduction (debit serveur).
+  const useCashback = () => {
+    if (!card || !merchant) return;
+    const solde = Math.round(card.cashback_balance || 0);
+    if (solde <= 0) return;
+    Alert.alert(
+      'Utiliser le cashback',
+      `Appliquer ${fmtMoney(solde, merchant.currency)} de cashback en reduction pour ${card.client_name || 'ce client'} ?`,
+      [
+        { text: 'Annuler', style: 'cancel' },
+        {
+          text: 'Utiliser',
+          onPress: async () => {
+            setSubmitting(true);
+            try {
+              const res = await redeemCashback(card.code, merchant.id, solde);
+              const newCard: CardLookup = { ...card, cashback_balance: res.cashback_balance };
+              setCard(newCard);
+              cacheClient(newCard);
+              notifySuccess();
+              setCelebrate(true);
+              toast(`Cashback appliqué : ${fmtMoney(res.redeemed, merchant.currency)}`, 'success');
+            } catch (e) {
+              const err = e as ApiError;
+              toast(err.message || 'Cashback impossible', 'error');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.root}>
       <AppBackground />
@@ -334,7 +429,7 @@ export function ClientScreen() {
         {/* Barre haut */}
         <PageHeader
           style={styles.navBar}
-          right={card.reward_ready ? <StatusBadge label="Recompense prete" tone="gold" icon="gift" small /> : undefined}
+          right={!card.merchant?.cashback_enabled && card.reward_ready ? <StatusBadge label="Recompense prete" tone="gold" icon="gift" small /> : undefined}
         />
 
         <ScrollView
@@ -392,35 +487,65 @@ export function ClientScreen() {
               </View>
             </View>
 
-            <View style={styles.progressBlock}>
-              <ProgressBar pct={pct} ready={card.reward_ready} height={14} />
-              <View style={styles.progressLabels}>
-                {card.reward_ready ? (
-                  <View style={styles.readyRow}>
-                    <Icon name="gift" size={14} color={colors.gold} />
-                    <Text style={styles.readyTxt}>{rewardDesc} - prete a remettre</Text>
-                  </View>
-                ) : (
-                  <Text style={styles.remainTxt}>
-                    Encore {fmtPts(remaining)} pts pour : {rewardDesc}
-                  </Text>
-                )}
-                <Text style={styles.pctTxt}>{pct}%</Text>
+            {!card.merchant?.cashback_enabled ? (
+              <View style={styles.progressBlock}>
+                <ProgressBar pct={pct} ready={card.reward_ready} height={14} />
+                <View style={styles.progressLabels}>
+                  {card.reward_ready ? (
+                    <View style={styles.readyRow}>
+                      <Icon name="gift" size={14} color={colors.gold} />
+                      <Text style={styles.readyTxt}>{rewardDesc} - prete a remettre</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.remainTxt}>
+                      Encore {fmtPts(remaining)} pts pour : {rewardDesc}
+                    </Text>
+                  )}
+                  <Text style={styles.pctTxt}>{pct}%</Text>
+                </View>
               </View>
-            </View>
+            ) : null}
           </Card>
+
+          {/* Cashback (si active pour la boutique) */}
+          {card.merchant?.cashback_enabled ? (
+            <Card elevated style={styles.cbCard}>
+              <View style={styles.cbRow}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.cbLabel}>Cashback disponible</Text>
+                  <Text style={[styles.cbValue, { color: theme.accentDark }]}>
+                    {fmtMoney(card.cashback_balance || 0, merchant?.currency)}
+                  </Text>
+                </View>
+                <Button
+                  label="Utiliser"
+                  icon="credit-card"
+                  full={false}
+                  disabled={submitting || (card.cashback_balance || 0) <= 0 || (card.cashback_balance || 0) < (card.merchant?.cashback_threshold || 0)}
+                  onPress={useCashback}
+                />
+              </View>
+              {(card.cashback_balance || 0) < (card.merchant?.cashback_threshold || 0) ? (
+                <Text style={styles.cbHint}>
+                  Utilisable dès {fmtMoney(card.merchant?.cashback_threshold || 0, merchant?.currency)}
+                </Text>
+              ) : null}
+            </Card>
+          ) : null}
 
           {/* Actions */}
           {mode === 'menu' ? (
             <View style={styles.actions}>
               <Button label="Crediter un achat" icon="plus" onPress={() => setMode('credit')} large />
-              <Button
-                label="Remettre une recompense"
-                icon="gift"
-                variant={card.reward_ready ? 'gold' : 'secondary'}
-                onPress={() => setMode('reward')}
-                disabled={card.pts < (rewards[0]?.pts_cost || threshold)}
-              />
+              {!card.merchant?.cashback_enabled ? (
+                <Button
+                  label="Remettre une recompense"
+                  icon="gift"
+                  variant={card.reward_ready ? 'gold' : 'secondary'}
+                  onPress={() => setMode('reward')}
+                  disabled={card.pts < (rewards[0]?.pts_cost || threshold)}
+                />
+              ) : null}
 
               {/* Contact / carte */}
               <Card style={styles.contactCard}>
@@ -440,6 +565,10 @@ export function ClientScreen() {
                   <Pressable style={styles.contactBtn} onPress={doSMS} disabled={actionBusy}><Icon name="mail" size={16} color={theme.accentDark} /><Text style={styles.contactBtnTxt}>SMS</Text></Pressable>
                   <Pressable style={styles.contactBtn} onPress={doCall} disabled={actionBusy}><Icon name="phone" size={16} color={theme.accentDark} /><Text style={styles.contactBtnTxt}>Appeler</Text></Pressable>
                 </View>
+                <Pressable onPress={openEdit} disabled={actionBusy} style={styles.editRow}>
+                  <Icon name="edit" size={14} color={theme.accentDark} />
+                  <Text style={[styles.editTxt, { color: theme.accentDark }]}>Modifier les infos du client</Text>
+                </Pressable>
                 <Pressable onPress={doDeactivate} disabled={actionBusy} style={styles.deactivate}>
                   <Text style={styles.deactivateTxt}>Desactiver la carte</Text>
                 </Pressable>
@@ -579,6 +708,33 @@ export function ClientScreen() {
         title="Operation reussie"
         onDone={() => setCelebrate(false)}
       />
+
+      {/* Modification de la fiche client */}
+      <Modal visible={editOpen} transparent animationType="slide" onRequestClose={() => setEditOpen(false)}>
+        <View style={styles.mdBackdrop}>
+          <View style={styles.mdSheet}>
+            <Text style={styles.mdTitle}>Modifier le client</Text>
+            <Text style={styles.mdHelp}>
+              Corrigez le nom ou le numero WhatsApp. Le numero sert a envoyer la carte et les messages.
+            </Text>
+            <Field label="Nom du client" value={editName} onChangeText={setEditName} placeholder="Ex : Awa Diop" autoCapitalize="words" />
+            <Field
+              label="Numero WhatsApp (avec indicatif)"
+              value={editPhone}
+              onChangeText={(t) => setEditPhone(t.replace(/[^\d+ ]/g, ''))}
+              placeholder="+221 77 123 45 67"
+              keyboardType="phone-pad"
+            />
+            {!editRevealOk ? (
+              <Text style={styles.mdWarn}>
+                Numero actuel non recupere. Laissez vide pour le conserver tel quel, ou saisissez un nouveau numero pour le remplacer.
+              </Text>
+            ) : null}
+            <Button label="Enregistrer" onPress={doSaveEdit} loading={savingEdit} />
+            <Button label="Annuler" variant="ghost" onPress={() => setEditOpen(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -612,6 +768,11 @@ const styles = StyleSheet.create({
   },
   tierChipTxt: { fontFamily: fonts.bodyBold, fontSize: 12.5 },
   tierHint: { fontFamily: fonts.bodySemi, fontSize: 12.5, color: colors.tx2, marginTop: 10, marginBottom: 2 },
+  cbCard: { gap: 8 },
+  cbRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  cbLabel: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.tx3, letterSpacing: 0.4, textTransform: 'uppercase' },
+  cbValue: { fontFamily: fonts.heading, fontSize: 26, letterSpacing: -0.5, marginTop: 2 },
+  cbHint: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3 },
   root: { flex: 1 },
   flex: { flex: 1 },
   navBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.lg, paddingVertical: 10 },
@@ -647,6 +808,13 @@ const styles = StyleSheet.create({
   contactBtnTxt: { fontFamily: fonts.bodySemi, fontSize: 12, color: colors.tx2 },
   deactivate: { alignItems: 'center', paddingVertical: 6 },
   deactivateTxt: { fontFamily: fonts.bodyBold, fontSize: 12.5, color: colors.red },
+  editRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 8 },
+  editTxt: { fontFamily: fonts.bodyBold, fontSize: 12.5 },
+  mdBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
+  mdSheet: { backgroundColor: colors.s2, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.lg, gap: 12, borderTopWidth: 1, borderColor: colors.b2 },
+  mdTitle: { fontFamily: fonts.headingBold, fontSize: 18, color: colors.tx },
+  mdHelp: { fontFamily: fonts.body, fontSize: 12.5, color: colors.tx3, lineHeight: 18 },
+  mdWarn: { fontFamily: fonts.body, fontSize: 12, color: colors.gold2, lineHeight: 17 },
   formCard: { gap: 14 },
   formHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   formTitle: { fontFamily: fonts.headingBold, fontSize: 17, color: colors.tx },

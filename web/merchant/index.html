@@ -1331,6 +1331,29 @@ html[data-theme="light"] .ms-burst{background:rgba(20,45,28,.32)}
           <button class="btn btn-primary" style="margin-top:10px" onclick="saveExpirySettings()">Sauvegarder</button>
         </div>
       </div>
+
+      <!-- VALIDITÉ DE LA CARTE -->
+      <div style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);padding:18px;margin-bottom:14px">
+        <div style="font-size:.68rem;color:var(--tx3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">Validité de la carte</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div>
+            <div style="font-size:.85rem;font-weight:700;margin-bottom:2px">Cartes à durée limitée</div>
+            <div style="font-size:.72rem;color:var(--tx3)">Appliquée automatiquement à chaque nouvelle carte créée</div>
+          </div>
+          <button id="cardval-btn" onclick="toggleCardValidityBtn()" style="padding:7px 16px;border-radius:20px;border:1.5px solid var(--b2);background:var(--s3);color:var(--tx2);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;min-width:60px">OFF</button>
+        </div>
+        <div id="cardval-config" style="display:none">
+          <div class="field" style="margin-bottom:0">
+            <label>Validité (mois)</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="cardval-months" type="number" value="12" min="1" max="120" style="width:80px;padding:12px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);font-family:'Montserrat',sans-serif;font-size:1.2rem;font-weight:700;text-align:center;outline:none"/>
+              <span style="font-size:.78rem;color:var(--tx3)">mois après création → points remis à 0</span>
+            </div>
+          </div>
+          <div style="font-size:.72rem;color:var(--tx3);margin-top:8px;line-height:1.5">À l'échéance, les points actifs du client sont remis à 0. La carte reste utilisable et le cumul à vie est conservé. Ne s'applique qu'aux nouvelles cartes.</div>
+          <button class="btn btn-primary" style="margin-top:10px" onclick="saveCardValiditySettings()">Sauvegarder</button>
+        </div>
+      </div>
       </div>
 
       <!-- ════════ ONGLET : POS ════════ -->
@@ -3687,7 +3710,8 @@ function renderClients(filter=''){
           <button class="btn btn-ghost btn-sm" style="width:auto;padding:5px 9px;font-size:.68rem" title="Voir le numéro complet" onclick="event.stopPropagation();revelerTel('${c.id}')"><svg class="pt-svg" style="margin-right:0"><use href="#ic-user"/></svg></button>
           <button class="btn btn-ghost btn-sm" style="width:auto;padding:5px 9px;font-size:.68rem" onclick="event.stopPropagation();clientSendWA('${c.id}')"><svg class="pt-svg" style="margin-right:0"><use href="#ic-chat"/></svg></button>
           <button class="btn btn-ghost btn-sm" style="width:auto;padding:5px 9px;font-size:.68rem" onclick="event.stopPropagation();quickScan('${c.id}')"><svg class="pt-svg" style="width:14px;margin-right:3px"><use href="#ic-card"/></svg>Encaisser</button>
-          <button class="btn btn-ghost btn-sm" style="padding:5px 9px;font-size:.68rem;width:auto;color:var(--red)" onclick="event.stopPropagation();deactivateClientCard('${c.id}')">✕</button>
+          <button class="btn btn-ghost btn-sm" style="width:auto;padding:5px 9px;font-size:.68rem" title="Modifier le nom ou le numéro" onclick="event.stopPropagation();editClientCard('${c.id}')">Modifier</button>
+          <button class="btn btn-ghost btn-sm" style="padding:5px 9px;font-size:.68rem;width:auto;color:var(--red)" title="Désactiver la carte (points remis à 0)" onclick="event.stopPropagation();deactivateClientCard('${c.id}')">✕</button>
         </div>
         <div class="client-prog"><div class="client-prog-fill" style="width:${pct}%"></div></div>
       </div>
@@ -3843,16 +3867,91 @@ async function clientSendWA(id){
 async function deactivateClientCard(id){
   const c=CLIENTS.find(x=>x.id===id);
   if(!c)return;
-  const ok=confirm(`Désactiver la carte ${c.code} de ${c.name} ?`);
+  const ok=confirm(`Désactiver la carte ${c.code} de ${c.name} ?\n\nLes points de ce client seront remis à 0.`);
   if(!ok)return;
   try{
-    await sbPatch('/rest/v1/loyalty_cards?id=eq.'+id,{active:false});
-  }catch(e){}
+    // Supprimer/désactiver une carte remet les points actifs à 0.
+    // Les points à vie (cumul) restent, pour garder l'historique.
+    await sbPatch('/rest/v1/loyalty_cards?id=eq.'+id,{active:false,pts:0});
+  }catch(e){
+    // Si le serveur a refusé, ne pas faire croire que c'est fait : sinon la
+    // carte réapparaît au rafraîchissement et le staff ne comprend pas.
+    toast((e&&e.message)||'Désactivation impossible','err');
+    return;
+  }
   CLIENTS=CLIENTS.filter(x=>x.id!==id);
   TXS=TXS.filter(t=>t.cid!==id);
   renderClients();
   renderHome();
-  toast('Carte désactivée','warn');
+  toast('Carte désactivée, points remis à 0','warn');
+}
+
+// ── Modifier la fiche client (nom + numéro WhatsApp) ──────────────────
+// Le numéro complet est révélé via la RPC auditée, comme partout ailleurs.
+// Le masque est une colonne générée : il se met à jour tout seul en base.
+async function editClientCard(id){
+  const c=CLIENTS.find(x=>x.id===id);
+  if(!c) return;
+  if(!c.complet){
+    try{
+      const r=await fetch(`${SB_URL}/rest/v1/rpc/reveler_telephone`,{
+        method:'POST', headers:{...authH(),'Content-Type':'application/json'},
+        body:JSON.stringify({p_card:id, p_motif:'Modification de la fiche client', p_cashier:(typeof msActiveCashier==='function'?msActiveCashier():null)})
+      });
+      const tel=await r.json();
+      if(r.ok&&tel) c.complet=String(tel);
+    }catch(e){}
+  }
+  // Si on n'a PAS pu récupérer le numéro réel, le champ s'ouvre vide : il ne
+  // faut alors surtout pas interpréter ce vide comme « efface le numéro ».
+  const revealOk = !!c.complet;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML=`
+    <div style="background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2) var(--r2) 0 0;padding:20px;width:100%;max-width:520px">
+      <div style="font-family:'Montserrat',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:4px">Modifier le client</div>
+      <div style="font-size:.75rem;color:var(--tx3);margin-bottom:14px">Corrigez le nom ou le numéro WhatsApp. Le numéro sert à envoyer la carte et les messages.</div>
+      <div class="field"><label>Nom du client</label>
+        <input id="ec-name" type="text" value="${esc(c.name||'')}" style="width:100%;padding:12px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);font-size:.95rem;outline:none"/></div>
+      <div class="field"><label>Numéro WhatsApp (avec indicatif)</label>
+        <input id="ec-phone" type="tel" value="${esc(c.complet||'')}" placeholder="+221 77 123 45 67" style="width:100%;padding:12px;background:var(--s3);border:1.5px solid var(--b1);border-radius:var(--r);color:var(--tx);font-size:.95rem;outline:none"/>
+        ${revealOk?'':'<div style="font-size:.72rem;color:var(--gold2);margin-top:6px;line-height:1.5">Numéro actuel non récupéré. Laissez vide pour le conserver tel quel, ou saisissez un nouveau numéro pour le remplacer.</div>'}</div>
+      <button class="btn btn-primary" id="ec-save" style="width:100%;margin-top:6px">Enregistrer</button>
+      <button class="btn btn-ghost" id="ec-cancel" style="width:100%;margin-top:8px">Annuler</button>
+    </div>`;
+  document.body.appendChild(ov);
+  const close=()=>{ try{document.body.removeChild(ov);}catch(e){} };
+  ov.querySelector('#ec-cancel').onclick=close;
+  ov.onclick=(e)=>{ if(e.target===ov) close(); };
+  ov.querySelector('#ec-save').onclick=async()=>{
+    const nom=(ov.querySelector('#ec-name').value||'').trim();
+    if(!nom){ toast('Le nom est obligatoire','warn'); return; }
+    let tel=(ov.querySelector('#ec-phone').value||'').replace(/[^\d+]/g,'');
+    if(tel){
+      const n=tel.replace(/\D/g,'').length;
+      if(n<8||n>15){ toast('Numéro de téléphone invalide','warn'); return; }
+    } else { tel=null; }
+    // On ne touche au numéro que si on sait ce qu'on écrase : soit l'utilisateur
+    // a saisi un nouveau numéro, soit on avait bien lu l'ancien (vider = voulu).
+    const patch={client_name:nom};
+    if(tel){ patch.client_phone=tel; patch.client_phone_raw=tel; }
+    else if(revealOk){ patch.client_phone=null; patch.client_phone_raw=null; }
+    const btn=ov.querySelector('#ec-save'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>';
+    try{
+      await sbPatch('/rest/v1/loyalty_cards?id=eq.'+id, patch);
+      c.name=nom;
+      if('client_phone' in patch){
+        c.complet=tel||null;
+        c.phone=tel?(typeof msMasqueTel==='function'?msMasqueTel(tel):tel):'';
+      }
+      close();
+      renderClients();
+      toast('Fiche client mise à jour','ok');
+    }catch(e){
+      btn.disabled=false; btn.textContent='Enregistrer';
+      toast(e.message||'Modification impossible','err');
+    }
+  };
 }
 
 let ncSelDesign='green';
@@ -6458,6 +6557,57 @@ function initExpiryUI(){
   if(months && MERCHANT?.pts_expiry_months) months.value = MERCHANT.pts_expiry_months;
 }
 
+// ── Validité de la carte (durée définie par la boutique) ──────────────
+// 0 = pas d'expiration. Appliquée à chaque NOUVELLE carte créée : le serveur
+// pose l'échéance, puis une tâche quotidienne remet les points actifs à 0.
+function toggleCardValidityBtn(){
+  const btn = document.getElementById('cardval-btn');
+  const config = document.getElementById('cardval-config');
+  if(!btn) return;
+  const on = btn.textContent === 'ON';
+  if(on){
+    btn.textContent = 'OFF';
+    btn.style.background = 'var(--s3)';
+    btn.style.color = 'var(--tx2)';
+    btn.style.borderColor = 'var(--b2)';
+    if(config) config.style.display = 'none';
+  } else {
+    btn.textContent = 'ON';
+    btn.style.background = 'var(--green2)';
+    btn.style.color = '#fff';
+    btn.style.borderColor = 'var(--green2)';
+    if(config) config.style.display = '';
+  }
+}
+
+async function saveCardValiditySettings(){
+  const on = document.getElementById('cardval-btn')?.textContent === 'ON';
+  let months = parseInt(document.getElementById('cardval-months')?.value||12);
+  if(on && (!months || months < 1 || months > 120)){ toast('Durée invalide (1 à 120 mois)','err'); return; }
+  const val = on ? months : 0;
+  try{
+    await sbPatch(`/rest/v1/merchants?id=eq.${MERCHANT.id}`,{ card_validity_months: val });
+    MERCHANT.card_validity_months = val;
+    toast(val>0 ? `Cartes valables ${val} mois` : 'Cartes sans expiration','ok');
+  }catch(e){ toast(e.message||'Erreur','err'); }
+}
+
+function initCardValidityUI(){
+  const btn = document.getElementById('cardval-btn');
+  const config = document.getElementById('cardval-config');
+  const months = document.getElementById('cardval-months');
+  if(!btn) return;
+  const v = parseInt(MERCHANT?.card_validity_months||0)||0;
+  if(v > 0){
+    btn.textContent = 'ON';
+    btn.style.background = 'var(--green2)';
+    btn.style.color = '#fff';
+    btn.style.borderColor = 'var(--green2)';
+    if(config) config.style.display = '';
+    if(months) months.value = v;
+  }
+}
+
 
 // ════════════════════════════════════════
 // PWA + PUSH NOTIFICATIONS
@@ -6649,7 +6799,7 @@ if(isLoggedIn()){
   bootFromCache();   // affichage immédiat (cache local, page restaurée)
   loadApp();         // rafraîchissement des données en arrière-plan
   silentRefreshSession();
-  setTimeout(()=>{ initWaToggles(); loadBranches(); initExpiryUI(); initAmountPtsUI(); initPWA(); }, 800);
+  setTimeout(()=>{ initWaToggles(); loadBranches(); initExpiryUI(); initCardValidityUI(); initAmountPtsUI(); initPWA(); }, 800);
 } else {
   showPage('login');
 }
